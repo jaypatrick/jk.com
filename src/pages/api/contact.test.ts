@@ -56,7 +56,7 @@ describe('POST /api/contact', () => {
           }),
         }),
         {
-          ANALYTICS: { writeDataPoint } as unknown as AnalyticsEngineDataset,
+          ANALYTICS: { writeDataPoint } as CloudflareBindings['ANALYTICS'],
         }
       )
     );

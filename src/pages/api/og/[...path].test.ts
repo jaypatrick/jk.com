@@ -20,7 +20,7 @@ describe('GET /api/og/[...path]', () => {
     const response = await GET({
       params: {},
       request: new Request('https://example.com/api/og'),
-    } as Parameters<typeof GET>[0]);
+    } as unknown as Parameters<typeof GET>[0]);
     const body = new Uint8Array(await response.arrayBuffer());
 
     expect(generateOgImage).toHaveBeenCalledWith({
@@ -41,7 +41,7 @@ describe('GET /api/og/[...path]', () => {
     await GET({
       params: { path: 'blog/new-post' },
       request: new Request('https://example.com/api/og?title=%20Custom%20&description=%20Desc%20'),
-    } as Parameters<typeof GET>[0]);
+    } as unknown as Parameters<typeof GET>[0]);
 
     expect(generateOgImage).toHaveBeenCalledWith({
       title: 'Custom',
