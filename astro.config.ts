@@ -5,14 +5,17 @@ import tailwindcss from '@tailwindcss/vite';
 import emdash from 'emdash/astro';
 import { d1, r2 } from '@emdash-cms/cloudflare';
 
+const cloudflareAdapterOptions = {
+  compatibilityDate: '2025-01-01',
+  imageService: 'passthrough',
+};
+
 // https://astro.build/config
 export default defineConfig({
   output: 'server',
 
-  adapter: cloudflare({
-    // Astro 6 uses workerd runtime natively — no platformProxy config needed
-    imageService: 'passthrough',
-  }),
+  // Astro 6 uses workerd runtime natively — no platformProxy config needed
+  adapter: cloudflare(cloudflareAdapterOptions as Parameters<typeof cloudflare>[0]),
 
   integrations: [
     svelte(),

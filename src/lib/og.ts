@@ -58,11 +58,11 @@ const fetchFontData = async (): Promise<{ regular: ArrayBuffer; bold: ArrayBuffe
       return { regular, bold };
     })();
 
-    fontData = pendingFontData.catch((error: unknown) => {
+    fontData = pendingFontData;
+    pendingFontData.catch(() => {
       if (fontData === pendingFontData) {
         fontData = undefined;
       }
-      throw error;
     });
   }
 
@@ -75,11 +75,11 @@ const ensureResvgInitialized = async (): Promise<void> => {
       await initWasm(resvgWasmModule);
     })();
 
-    wasmInitialization = pendingWasmInitialization.catch((error: unknown) => {
+    wasmInitialization = pendingWasmInitialization;
+    pendingWasmInitialization.catch(() => {
       if (wasmInitialization === pendingWasmInitialization) {
         wasmInitialization = undefined;
       }
-      throw error;
     });
   }
 
