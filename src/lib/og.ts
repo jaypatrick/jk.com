@@ -1,5 +1,6 @@
 import satori from 'satori';
 import { Resvg, initWasm } from '@resvg/resvg-wasm';
+import resvgWasmModule from '@resvg/resvg-wasm/index_bg.wasm?module';
 
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
@@ -67,15 +68,10 @@ const fetchFontData = async (origin: string): Promise<{ regular: ArrayBuffer; bo
   return fontData;
 };
 
-const ensureResvgInitialized = async (origin: string): Promise<void> => {
+const ensureResvgInitialized = async (): Promise<void> => {
   if (!wasmInitialization) {
-    const wasmUrl = new URL('/resvg.wasm', origin);
     const pendingWasmInitialization = (async () => {
-      const wasmResponse = await fetch(wasmUrl);
-      if (!wasmResponse.ok) {
-        throw new Error(`Failed to fetch resvg wasm from ${wasmUrl.href}: ${wasmResponse.status}`);
-      }
-      await initWasm(wasmResponse);
+      await initWasm(resvgWasmModule);
     })();
 
     wasmInitialization = pendingWasmInitialization.catch((error: unknown) => {
@@ -203,7 +199,7 @@ export const generateOgImage = async ({
   path,
   origin,
 }: GenerateOgImageOptions): Promise<Uint8Array> => {
-  await ensureResvgInitialized(origin);
+  await ensureResvgInitialized();
   const fonts = await fetchFontData(origin);
   const tree = createOgTree({ title, description, path: normalizePath(path) });
 
