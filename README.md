@@ -44,6 +44,9 @@ npm run dev
 # Build for production
 npm run build
 
+# Run unit tests
+npm run test
+
 # Deploy to Cloudflare Workers
 npm run deploy
 ```
