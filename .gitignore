@@ -1,6 +1,7 @@
 # Build output
 dist/
 .astro/
+public/resvg.wasm
 
 # Dependencies
 node_modules/

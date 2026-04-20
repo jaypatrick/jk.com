@@ -15,9 +15,21 @@ interface Props {
 const {
   title = 'JK.com | Enterprise Cloud Consulting — Jayson Knight',
   description = 'Jayson Knight — Solutions Architect specializing in Microsoft Azure, Cloudflare, and .NET. 20+ years building enterprise software that scales.',
-  ogImage = '/og-image.jpg',
+  ogImage: ogImageProp,
   noIndex = false,
 } = Astro.props;
+
+const buildDynamicOgImagePath = (pageTitle: string, pageDescription: string, pagePath: string): string => {
+  const params = new URLSearchParams({
+    title: pageTitle,
+    description: pageDescription,
+  });
+
+  return `/api/og${pagePath}?${params.toString()}`;
+};
+
+const resolvedOgImage = ogImageProp ?? buildDynamicOgImagePath(title, description, Astro.url.pathname);
+const resolvedOgImageUrl = new URL(resolvedOgImage, Astro.site).href;
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
@@ -41,14 +53,14 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
     <meta property="og:url" content={canonicalUrl.href} />
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
-    <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
+    <meta property="og:image" content={resolvedOgImageUrl} />
     <meta property="og:site_name" content="JK.com" />
 
     <!-- Twitter -->
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content={title} />
     <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={new URL(ogImage, Astro.site).href} />
+    <meta name="twitter:image" content={resolvedOgImageUrl} />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
