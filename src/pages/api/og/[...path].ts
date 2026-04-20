@@ -22,7 +22,7 @@ export const GET: APIRoute = async ({ params, request, locals }) => {
       description,
       path: pagePath,
       assetOrigin: url.origin,
-      fetchAsset: (u) => locals.runtime.env.ASSETS.fetch(new Request(u)),
+      fetchAsset: (assetUrl) => locals.runtime.env.ASSETS.fetch(new Request(assetUrl)),
     });
     const pngBody = png.buffer instanceof ArrayBuffer ? png.buffer : png.slice().buffer;
 
