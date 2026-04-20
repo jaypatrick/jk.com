@@ -2,6 +2,7 @@
 dist/
 .astro/
 public/resvg.wasm
+public/fonts/space-grotesk-*.woff
 
 # Dependencies
 node_modules/

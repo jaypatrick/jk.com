@@ -7,10 +7,8 @@ const OG_BACKGROUND = '#05050a';
 const OG_ACCENT = '#00d4ff';
 const DEFAULT_SITE_ORIGIN = 'https://jaysonknight.com';
 
-const SPACE_GROTESK_REGULAR =
-  'https://unpkg.com/@fontsource/space-grotesk/files/space-grotesk-latin-400-normal.woff';
-const SPACE_GROTESK_BOLD =
-  'https://unpkg.com/@fontsource/space-grotesk/files/space-grotesk-latin-700-normal.woff';
+const SPACE_GROTESK_REGULAR = '/fonts/space-grotesk-400.woff';
+const SPACE_GROTESK_BOLD = '/fonts/space-grotesk-700.woff';
 
 interface SatoriLikeElement {
   type: string;
@@ -38,26 +36,29 @@ const normalizePath = (path: string): string => {
   return path.startsWith('/') ? path : `/${path}`;
 };
 
-const fetchFontData = async (): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
+const fetchBinary = async (url: URL, label: string): Promise<ArrayBuffer> => {
+  const response = await fetch(url);
+  if (!response.ok) {
+    throw new Error(`Failed to fetch ${label}: ${response.status} ${response.statusText}`);
+  }
+
+  return response.arrayBuffer();
+};
+
+const fetchFontData = async (origin?: string): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
   if (!fontDataPromise) {
     fontDataPromise = (async () => {
+      const baseUrl = origin ?? DEFAULT_SITE_ORIGIN;
       const [regular, bold] = await Promise.all([
-        fetch(SPACE_GROTESK_REGULAR).then(async (response) => {
-          if (!response.ok) {
-            throw new Error(`Failed to fetch Space Grotesk regular font: ${response.status}`);
-          }
-          return response.arrayBuffer();
-        }),
-        fetch(SPACE_GROTESK_BOLD).then(async (response) => {
-          if (!response.ok) {
-            throw new Error(`Failed to fetch Space Grotesk bold font: ${response.status}`);
-          }
-          return response.arrayBuffer();
-        }),
+        fetchBinary(new URL(SPACE_GROTESK_REGULAR, baseUrl), 'Space Grotesk regular font'),
+        fetchBinary(new URL(SPACE_GROTESK_BOLD, baseUrl), 'Space Grotesk bold font'),
       ]);
 
       return { regular, bold };
-    })();
+    })().catch((error: unknown) => {
+      fontDataPromise = undefined;
+      throw error;
+    });
   }
 
   return fontDataPromise;
@@ -67,7 +68,16 @@ const ensureResvgInitialized = async (origin?: string): Promise<void> => {
   if (!wasmInitializationPromise) {
     const baseUrl = origin ?? DEFAULT_SITE_ORIGIN;
     const wasmUrl = new URL('/resvg.wasm', baseUrl);
-    wasmInitializationPromise = initWasm(fetch(wasmUrl));
+    wasmInitializationPromise = (async () => {
+      const wasmResponse = await fetch(wasmUrl);
+      if (!wasmResponse.ok) {
+        throw new Error(`Failed to fetch resvg wasm from ${wasmUrl.href}: ${wasmResponse.status}`);
+      }
+      await initWasm(wasmResponse);
+    })().catch((error: unknown) => {
+      wasmInitializationPromise = undefined;
+      throw error;
+    });
   }
 
   await wasmInitializationPromise;
@@ -188,7 +198,7 @@ export const generateOgImage = async ({
   origin,
 }: GenerateOgImageOptions): Promise<Uint8Array> => {
   await ensureResvgInitialized(origin);
-  const fonts = await fetchFontData();
+  const fonts = await fetchFontData(origin);
 
   const svg = await satori(createOgTree({ title, description, path: normalizePath(path) }), {
     width: OG_WIDTH,
