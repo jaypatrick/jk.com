@@ -1,0 +1,103 @@
+name: Deploy to Cloudflare Workers
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+env:
+  NODE_VERSION: '24'
+
+jobs:
+  # ─────────────────────────────────────────────
+  # Build + lint on every push/PR
+  # ─────────────────────────────────────────────
+  build:
+    name: Build
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Generate Wrangler types
+        run: npx wrangler types --env-interface CloudflareBindings src/env.d.ts
+        continue-on-error: true  # Non-fatal if bindings not yet set up
+
+      - name: Type check
+        run: npx tsc --noEmit
+
+      - name: Build
+        run: npm run build
+        env:
+          # Add build-time env vars here (non-secret only)
+          SITE_URL: https://jaysonknight.com
+
+      - name: Upload build artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: dist
+          path: dist/
+          retention-days: 1
+
+  # ─────────────────────────────────────────────
+  # Deploy to Cloudflare Workers (main branch only)
+  # ─────────────────────────────────────────────
+  deploy:
+    name: Deploy
+    runs-on: ubuntu-latest
+    needs: build
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    environment:
+      name: production
+      url: https://jaysonknight.com
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node 24
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ env.NODE_VERSION }}
+          cache: 'npm'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download build artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: dist
+          path: dist/
+
+      - name: Apply D1 migrations (EmDash)
+        run: npx wrangler d1 migrations apply jk-emdash --remote
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        continue-on-error: true  # Non-fatal on first deploy (table may exist)
+
+      - name: Deploy to Cloudflare Workers
+        run: npx wrangler deploy
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+
+# ─────────────────────────────────────────────
+# Required GitHub Secrets (set in repo Settings → Secrets → Actions):
+#
+#   CLOUDFLARE_API_TOKEN   — Wrangler API token (Workers:Edit permission)
+#   CLOUDFLARE_ACCOUNT_ID  — Your Cloudflare account ID
+#
+# Get your API token at: https://dash.cloudflare.com/profile/api-tokens
+# Use the "Edit Cloudflare Workers" template
+# ─────────────────────────────────────────────

@@ -1,0 +1,60 @@
+// Cloudflare Workers configuration for JK.com
+// Run `wrangler types` after editing to regenerate TypeScript bindings
+{
+  "name": "jk-dot-com",
+  "main": "dist/_worker.js",
+  "compatibility_date": "2025-01-01",
+  "compatibility_flags": ["nodejs_compat"],
+
+  // D1 Database — used by EmDash for blog CMS
+  "d1_databases": [
+    {
+      "binding": "DB",
+      "database_name": "jk-emdash",
+      // TODO: Run `npm run db:create` and paste the database_id here
+      "database_id": "YOUR_DATABASE_ID_HERE"
+    }
+  ],
+
+  // R2 Bucket — used by EmDash for media uploads
+  "r2_buckets": [
+    {
+      "binding": "MEDIA_BUCKET",
+      "bucket_name": "jk-media"
+    }
+  ],
+
+  // KV Namespace — for edge caching and session data
+  "kv_namespaces": [
+    {
+      "binding": "CACHE",
+      "id": "YOUR_KV_NAMESPACE_ID_HERE"
+    }
+  ],
+
+  // Analytics Engine — for custom event tracking
+  "analytics_engine_datasets": [
+    {
+      "binding": "ANALYTICS",
+      "dataset": "jk_analytics"
+    }
+  ],
+
+  // Workers Observability — Cloudflare-native logging and tracing
+  "observability": {
+    "enabled": true,
+    "head_sampling_rate": 1
+  },
+
+  // Environment variables — set secrets via `wrangler secret put`
+  "vars": {
+    "ENVIRONMENT": "production",
+    "SITE_URL": "https://jaysonknight.com"
+  },
+
+  // Assets — static files served from Cloudflare's edge
+  "assets": {
+    "directory": "./dist/client",
+    "binding": "ASSETS"
+  }
+}

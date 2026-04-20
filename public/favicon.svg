@@ -1,0 +1,66 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100" width="100" height="100">
+  <defs>
+    <!-- Subtle grid pattern -->
+    <pattern id="grid" width="10" height="10" patternUnits="userSpaceOnUse">
+      <path d="M 10 0 L 0 0 0 10" fill="none" stroke="#1e2d3d" stroke-width="0.4"/>
+    </pattern>
+    <!-- Cyan glow filter -->
+    <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
+      <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+      <feMerge>
+        <feMergeNode in="blur"/>
+        <feMergeNode in="SourceGraphic"/>
+      </feMerge>
+    </filter>
+    <!-- Subtle vignette gradient -->
+    <radialGradient id="vignette" cx="50%" cy="50%" r="70%">
+      <stop offset="0%" stop-color="#0d1117" stop-opacity="0"/>
+      <stop offset="100%" stop-color="#05050a" stop-opacity="0.8"/>
+    </radialGradient>
+  </defs>
+
+  <!-- Background -->
+  <rect width="100" height="100" rx="12" fill="#05050a"/>
+  <!-- Grid overlay -->
+  <rect width="100" height="100" rx="12" fill="url(#grid)"/>
+  <!-- Vignette -->
+  <rect width="100" height="100" rx="12" fill="url(#vignette)"/>
+
+  <!-- Accent line — top -->
+  <rect x="12" y="8" width="76" height="1.5" rx="1" fill="#00d4ff" opacity="0.6"/>
+  <!-- Accent line — bottom -->
+  <rect x="12" y="90" width="76" height="1.5" rx="1" fill="#00d4ff" opacity="0.6"/>
+
+  <!-- JK letterform — custom geometric treatment -->
+  <!-- J -->
+  <g filter="url(#glow)" fill="#00d4ff">
+    <!-- J vertical stroke -->
+    <rect x="18" y="22" width="7" height="38" rx="1"/>
+    <!-- J foot curve (simplified as rect + circle) -->
+    <rect x="14" y="52" width="11" height="7" rx="3.5"/>
+    <!-- J top serif dot (optional) -->
+    <rect x="16" y="18" width="11" height="4" rx="1"/>
+  </g>
+
+  <!-- K -->
+  <g filter="url(#glow)" fill="#00d4ff">
+    <!-- K vertical stroke -->
+    <rect x="38" y="22" width="7" height="42" rx="1"/>
+    <!-- K upper diagonal -->
+    <polygon points="45,40 68,22 76,22 76,27 56,44"/>
+    <!-- K lower diagonal -->
+    <polygon points="45,46 76,64 76,68 68,68 45,52"/>
+  </g>
+
+  <!-- Corner accent marks — cyberpunk detail -->
+  <g fill="none" stroke="#0078d4" stroke-width="1.5" opacity="0.5">
+    <!-- Top-left corner -->
+    <path d="M 4 16 L 4 4 L 16 4"/>
+    <!-- Top-right corner -->
+    <path d="M 84 4 L 96 4 L 96 16"/>
+    <!-- Bottom-left corner -->
+    <path d="M 4 84 L 4 96 L 16 96"/>
+    <!-- Bottom-right corner -->
+    <path d="M 84 96 L 96 96 L 96 84"/>
+  </g>
+</svg>

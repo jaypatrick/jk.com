@@ -1,0 +1,7 @@
+User-agent: *
+Allow: /
+
+# Don't index EmDash admin
+Disallow: /_emdash/
+
+Sitemap: https://jaysonknight.com/sitemap-index.xml

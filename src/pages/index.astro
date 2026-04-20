@@ -1,0 +1,34 @@
+---
+// index.astro — JK.com homepage
+// Astro 6 SSR + Cloudflare Workers — composing all Svelte sections
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Hero from '../components/sections/Hero.svelte';
+import About from '../components/sections/About.svelte';
+import Services from '../components/sections/Services.svelte';
+import Portfolio from '../components/sections/Portfolio.svelte';
+import Contact from '../components/sections/Contact.svelte';
+
+// Cloudflare runtime locals — available in SSR
+const { runtime } = Astro.locals;
+// const env = runtime?.env; // Access bindings: env.DB, env.CACHE, etc.
+---
+
+<BaseLayout
+  title="JK.com | Azure Solutions Architecture & Cloud Consulting — Jayson Knight"
+  description="Jayson Knight — Solutions Architect specializing in Microsoft Azure, Cloudflare platform, and .NET. 20+ years building enterprise software that scales. Based in Charlotte, NC."
+>
+  <!-- Hero: full-screen "THIS. IS. JK.com" -->
+  <Hero client:load />
+
+  <!-- About: who I am, expertise, philosophy -->
+  <About client:visible />
+
+  <!-- Services: technical + creative tabs -->
+  <Services client:visible />
+
+  <!-- Portfolio: case studies + clients -->
+  <Portfolio client:visible />
+
+  <!-- Contact: form + phone + location -->
+  <Contact client:visible />
+</BaseLayout>

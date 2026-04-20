@@ -1,0 +1,34 @@
+# Build output
+dist/
+.astro/
+
+# Dependencies
+node_modules/
+
+# Environment & secrets — NEVER commit these
+.env
+.env.*
+!.env.example
+.dev.vars
+
+# Wrangler generated files — commit wrangler.jsonc but not these
+.wrangler/
+wrangler.d.ts
+
+# OS & editor
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+.vscode/settings.json
+.idea/
+
+# Logs
+*.log
+npm-debug.log*
+
+# TypeScript
+*.tsbuildinfo
+
+# Test artifacts
+coverage/

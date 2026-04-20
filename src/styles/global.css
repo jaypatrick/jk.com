@@ -1,0 +1,421 @@
+/* JK.com — Global Styles
+ * TailwindCSS v4 — configuration via @theme block (no tailwind.config.ts needed)
+ * Cyberpunk aesthetic: near-black, electric blues, cyan accents, red pops
+ */
+
+@import "tailwindcss";
+
+/* ============================================================
+   THEME — Custom design tokens become Tailwind utility classes
+   e.g. --color-cyan → bg-cyan, text-cyan, border-cyan
+   ============================================================ */
+@theme {
+  /* --- Colors --- */
+  --color-bg:         #05050a;   /* near-black with blue cast */
+  --color-surface:    #0d1117;   /* dark navy surface */
+  --color-card:       #111827;   /* card background */
+  --color-card-hover: #161f2e;
+  --color-border:     #1e2d3d;   /* subtle border */
+  --color-border-glow:#0078d4;
+
+  /* Brand palette */
+  --color-primary:    #0078d4;   /* Microsoft Azure blue */
+  --color-primary-dim:#005ba1;
+  --color-cyan:       #00d4ff;   /* electric cyan — main accent */
+  --color-cyan-dim:   #0099cc;
+  --color-cyan-glow:  #00f5ff;   /* neon glow variant */
+  --color-red:        #ff2d55;   /* accent red — CTAs, warnings */
+  --color-red-dim:    #cc2244;
+
+  /* Text */
+  --color-text:       #e2e8f0;   /* primary text */
+  --color-text-dim:   #94a3b8;   /* secondary/muted text */
+  --color-text-ghost: #475569;   /* disabled / subtle */
+
+  /* --- Typography --- */
+  /* Font families — populated by Astro Fonts API at build time */
+  --font-heading:     var(--font-space-grotesk, 'Space Grotesk'), system-ui, sans-serif;
+  --font-mono:        var(--font-jetbrains-mono, 'JetBrains Mono'), 'Courier New', monospace;
+  --font-body:        system-ui, -apple-system, sans-serif;
+
+  /* --- Spacing / sizing --- */
+  --max-content:      1280px;
+  --header-height:    64px;
+
+  /* --- Animations --- */
+  --duration-fast:    150ms;
+  --duration-normal:  300ms;
+  --duration-slow:    600ms;
+
+  /* --- Glow effects (used in box-shadow) --- */
+  --glow-cyan:        0 0 20px rgba(0, 212, 255, 0.4);
+  --glow-cyan-sm:     0 0 8px rgba(0, 212, 255, 0.3);
+  --glow-red:         0 0 20px rgba(255, 45, 85, 0.4);
+  --glow-primary:     0 0 20px rgba(0, 120, 212, 0.4);
+}
+
+/* ============================================================
+   BASE STYLES
+   ============================================================ */
+*, *::before, *::after {
+  box-sizing: border-box;
+}
+
+html {
+  scroll-behavior: smooth;
+  font-size: 16px;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+body {
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: var(--font-body);
+  line-height: 1.6;
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+
+/* ============================================================
+   TYPOGRAPHY
+   ============================================================ */
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-heading);
+  font-weight: 600;
+  line-height: 1.1;
+  letter-spacing: -0.02em;
+  color: var(--color-text);
+}
+
+code, pre, kbd, samp {
+  font-family: var(--font-mono);
+}
+
+/* ============================================================
+   SELECTION
+   ============================================================ */
+::selection {
+  background: rgba(0, 212, 255, 0.25);
+  color: var(--color-cyan-glow);
+}
+
+/* ============================================================
+   SCROLLBAR — custom cyberpunk scrollbar
+   ============================================================ */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: var(--color-surface);
+}
+
+::-webkit-scrollbar-thumb {
+  background: var(--color-cyan-dim);
+  border-radius: 3px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: var(--color-cyan);
+}
+
+/* ============================================================
+   FOCUS — accessible, on-brand focus ring
+   ============================================================ */
+:focus-visible {
+  outline: 2px solid var(--color-cyan);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+/* ============================================================
+   GRID OVERLAY — subtle background grid (CSS only, no JS)
+   Apply `.grid-overlay` to a container
+   ============================================================ */
+.grid-overlay {
+  background-image:
+    linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0, 212, 255, 0.03) 1px, transparent 1px);
+  background-size: 48px 48px;
+}
+
+/* ============================================================
+   GLITCH TEXT EFFECT — for hero heading
+   ============================================================ */
+@keyframes glitch-1 {
+  0%, 100% { clip-path: inset(0 0 95% 0); transform: translate(-2px, 0); }
+  25%       { clip-path: inset(30% 0 50% 0); transform: translate(2px, 0); }
+  50%       { clip-path: inset(65% 0 15% 0); transform: translate(-1px, 0); }
+  75%       { clip-path: inset(10% 0 75% 0); transform: translate(1px, 0); }
+}
+
+@keyframes glitch-2 {
+  0%, 100% { clip-path: inset(80% 0 0 0); transform: translate(2px, 0); }
+  33%       { clip-path: inset(40% 0 40% 0); transform: translate(-2px, 0); }
+  66%       { clip-path: inset(0 0 80% 0); transform: translate(1px, 0); }
+}
+
+@keyframes flicker {
+  0%, 99%   { opacity: 1; }
+  33%       { opacity: 0.97; }
+  66%       { opacity: 0.99; }
+  100%      { opacity: 0.98; }
+}
+
+@keyframes scan-line {
+  0%   { transform: translateY(-100%); }
+  100% { transform: translateY(100vh); }
+}
+
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(24px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes pulse-glow {
+  0%, 100% { box-shadow: var(--glow-cyan-sm); }
+  50%       { box-shadow: var(--glow-cyan); }
+}
+
+/* ============================================================
+   UTILITY CLASSES
+   ============================================================ */
+
+/* Glowing border */
+.glow-border {
+  border: 1px solid var(--color-cyan-dim);
+  box-shadow: var(--glow-cyan-sm);
+  transition: border-color var(--duration-normal) ease,
+              box-shadow var(--duration-normal) ease;
+}
+
+.glow-border:hover {
+  border-color: var(--color-cyan);
+  box-shadow: var(--glow-cyan);
+}
+
+/* Cyan text glow */
+.text-glow {
+  text-shadow: 0 0 20px rgba(0, 212, 255, 0.6),
+               0 0 40px rgba(0, 212, 255, 0.2);
+}
+
+/* Section container */
+.section-container {
+  max-width: var(--max-content);
+  margin: 0 auto;
+  padding: 0 1.5rem;
+}
+
+@media (min-width: 768px) {
+  .section-container {
+    padding: 0 2rem;
+  }
+}
+
+/* Section spacing */
+.section-pad {
+  padding-top: 5rem;
+  padding-bottom: 5rem;
+}
+
+@media (min-width: 1024px) {
+  .section-pad {
+    padding-top: 8rem;
+    padding-bottom: 8rem;
+  }
+}
+
+/* Gradient text */
+.gradient-text {
+  background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 60%, var(--color-cyan-glow) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* Chip / tag */
+.chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.375rem;
+  padding: 0.25rem 0.75rem;
+  border-radius: 9999px;
+  border: 1px solid var(--color-border);
+  background: rgba(0, 212, 255, 0.05);
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.08em;
+  text-transform: uppercase;
+}
+
+/* Button base */
+.btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  padding: 0.75rem 1.75rem;
+  border-radius: 4px;
+  font-family: var(--font-heading);
+  font-weight: 600;
+  font-size: 0.9rem;
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+  cursor: pointer;
+  transition: all var(--duration-normal) ease;
+  text-decoration: none;
+  border: none;
+}
+
+.btn-primary {
+  background: linear-gradient(135deg, var(--color-primary) 0%, var(--color-cyan-dim) 100%);
+  color: #fff;
+  box-shadow: var(--glow-primary);
+}
+
+.btn-primary:hover {
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-1px);
+}
+
+.btn-outline {
+  background: transparent;
+  color: var(--color-cyan);
+  border: 1px solid var(--color-cyan-dim);
+  box-shadow: var(--glow-cyan-sm);
+}
+
+.btn-outline:hover {
+  background: rgba(0, 212, 255, 0.08);
+  border-color: var(--color-cyan);
+  box-shadow: var(--glow-cyan);
+  transform: translateY(-1px);
+}
+
+.btn-red {
+  background: linear-gradient(135deg, var(--color-red-dim) 0%, var(--color-red) 100%);
+  color: #fff;
+  box-shadow: var(--glow-red);
+}
+
+.btn-red:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 0 30px rgba(255, 45, 85, 0.5);
+}
+
+/* Divider with label */
+.section-label {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  color: var(--color-cyan);
+  font-family: var(--font-mono);
+  font-size: 0.75rem;
+  letter-spacing: 0.15em;
+  text-transform: uppercase;
+}
+
+.section-label::before {
+  content: '';
+  flex: 0 0 2rem;
+  height: 1px;
+  background: var(--color-cyan);
+}
+
+.section-label::after {
+  content: '';
+  flex: 1;
+  height: 1px;
+  background: linear-gradient(to right, var(--color-cyan-dim), transparent);
+}
+
+/* Animate on scroll — add class with IntersectionObserver */
+.animate-on-scroll {
+  opacity: 0;
+  transform: translateY(20px);
+  transition: opacity var(--duration-slow) ease, transform var(--duration-slow) ease;
+}
+
+.animate-on-scroll.visible {
+  opacity: 1;
+  transform: translateY(0);
+}
+
+/* ============================================================
+   PROSE — for blog content via EmDash
+   ============================================================ */
+.prose {
+  color: var(--color-text-dim);
+  max-width: 72ch;
+}
+
+.prose h1, .prose h2, .prose h3, .prose h4 {
+  color: var(--color-text);
+  margin-top: 2em;
+  margin-bottom: 0.75em;
+}
+
+.prose p {
+  margin-bottom: 1.25em;
+}
+
+.prose a {
+  color: var(--color-cyan);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+
+.prose a:hover {
+  color: var(--color-cyan-glow);
+}
+
+.prose code {
+  background: rgba(0, 212, 255, 0.08);
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  padding: 0.125em 0.4em;
+  font-size: 0.875em;
+  color: var(--color-cyan);
+}
+
+.prose pre {
+  background: var(--color-surface);
+  border: 1px solid var(--color-border);
+  border-radius: 8px;
+  padding: 1.25rem;
+  overflow-x: auto;
+  margin: 1.5em 0;
+}
+
+.prose pre code {
+  background: none;
+  border: none;
+  padding: 0;
+  color: var(--color-text);
+}
+
+.prose blockquote {
+  border-left: 3px solid var(--color-cyan);
+  padding-left: 1.25rem;
+  color: var(--color-text-dim);
+  font-style: italic;
+  margin: 1.5em 0;
+}
+
+.prose ul, .prose ol {
+  padding-left: 1.5rem;
+  margin-bottom: 1.25em;
+}
+
+.prose li {
+  margin-bottom: 0.375em;
+}
+
+.prose img {
+  border-radius: 8px;
+  border: 1px solid var(--color-border);
+}

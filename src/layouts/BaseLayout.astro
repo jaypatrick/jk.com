@@ -1,0 +1,135 @@
+---
+// BaseLayout.astro — root layout for all pages
+// Injects: fonts (Astro Fonts API), CSP, Cloudflare Analytics, Svelte hydration
+import '../styles/global.css';
+import Header from '../components/layout/Header.svelte';
+import Footer from '../components/layout/Footer.svelte';
+
+interface Props {
+  title?: string;
+  description?: string;
+  ogImage?: string;
+  noIndex?: boolean;
+}
+
+const {
+  title = 'JK.com | Enterprise Cloud Consulting — Jayson Knight',
+  description = 'Jayson Knight — Solutions Architect specializing in Microsoft Azure, Cloudflare, and .NET. 20+ years building enterprise software that scales.',
+  ogImage = '/og-image.jpg',
+  noIndex = false,
+} = Astro.props;
+
+const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
+---
+
+<!doctype html>
+<html lang="en" class="dark">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+
+    <!-- SEO -->
+    <title>{title}</title>
+    <meta name="description" content={description} />
+    <link rel="canonical" href={canonicalUrl.href} />
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content={canonicalUrl.href} />
+    <meta property="og:title" content={title} />
+    <meta property="og:description" content={description} />
+    <meta property="og:image" content={new URL(ogImage, Astro.site).href} />
+    <meta property="og:site_name" content="JK.com" />
+
+    <!-- Twitter -->
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={title} />
+    <meta name="twitter:description" content={description} />
+    <meta name="twitter:image" content={new URL(ogImage, Astro.site).href} />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+
+    <!-- Fonts — injected by Astro Fonts API (Space Grotesk, JetBrains Mono) -->
+    <!-- The <Font> component injects optimized @font-face declarations automatically -->
+
+    <!-- Theme color for browser chrome -->
+    <meta name="theme-color" content="#05050a" />
+
+    <!-- Preconnect for performance -->
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+
+    <!-- Sitemap -->
+    <link rel="sitemap" href="/sitemap-index.xml" />
+
+    <!-- JSON-LD structured data -->
+    <script type="application/ld+json" set:html={JSON.stringify({
+      '@context': 'https://schema.org',
+      '@type': 'ProfessionalService',
+      name: 'JK.com — Jayson Knight Consulting',
+      description: description,
+      url: 'https://jaysonknight.com',
+      telephone: '+19807297877',
+      address: {
+        '@type': 'PostalAddress',
+        addressLocality: 'Charlotte',
+        addressRegion: 'NC',
+        addressCountry: 'US',
+      },
+      founder: {
+        '@type': 'Person',
+        name: 'Jayson Knight',
+        jobTitle: 'Solutions Architect',
+        knowsAbout: ['Microsoft Azure', 'Cloudflare', '.NET', 'Enterprise Software'],
+      },
+    })} />
+  </head>
+
+  <body class="grid-overlay">
+    <!-- Subtle scan-line overlay (CSS only) -->
+    <div
+      class="pointer-events-none fixed inset-0 z-50 opacity-[0.015]"
+      style="background: repeating-linear-gradient(0deg, transparent, transparent 2px, rgba(0,212,255,0.5) 2px, rgba(0,212,255,0.5) 4px);"
+      aria-hidden="true"
+    ></div>
+
+    <Header client:load />
+
+    <main id="main-content">
+      <slot />
+    </main>
+
+    <Footer />
+
+    <!-- Cloudflare Web Analytics -->
+    {cfAnalyticsToken && (
+      <script
+        defer
+        src="https://static.cloudflareinsights.com/beacon.min.js"
+        data-cf-beacon={`{"token": "${cfAnalyticsToken}"}`}
+      ></script>
+    )}
+
+    <!-- Intersection Observer for scroll animations -->
+    <script>
+      const observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        },
+        { threshold: 0.1, rootMargin: '0px 0px -50px 0px' }
+      );
+
+      document.querySelectorAll('.animate-on-scroll').forEach((el) => {
+        observer.observe(el);
+      });
+    </script>
+  </body>
+</html>
