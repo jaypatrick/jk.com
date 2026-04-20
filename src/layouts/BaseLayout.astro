@@ -19,13 +19,21 @@ const {
   noIndex = false,
 } = Astro.props;
 
+const normalizePath = (pagePath: string): string => {
+  if (!pagePath) {
+    return '/';
+  }
+
+  return pagePath.startsWith('/') ? pagePath : `/${pagePath}`;
+};
+
 const buildDynamicOgImagePath = (pageTitle: string, pageDescription: string, pagePath: string): string => {
   const params = new URLSearchParams({
     title: pageTitle,
     description: pageDescription,
   });
 
-  return `/api/og${pagePath}?${params.toString()}`;
+  return `/api/og${normalizePath(pagePath)}?${params.toString()}`;
 };
 
 const resolvedOgImage = ogImageProp ?? buildDynamicOgImagePath(title, description, Astro.url.pathname);

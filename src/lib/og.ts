@@ -5,6 +5,7 @@ const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 const OG_BACKGROUND = '#05050a';
 const OG_ACCENT = '#00d4ff';
+const OG_SITE_LABEL = 'jaysonknight.com';
 
 const SPACE_GROTESK_REGULAR = '/fonts/space-grotesk-400.woff';
 const SPACE_GROTESK_BOLD = '/fonts/space-grotesk-700.woff';
@@ -186,7 +187,7 @@ const createOgTree = ({
                   fontSize: 27,
                   lineHeight: 1.2,
                 },
-                children: `jaysonknight.com${path}`,
+                children: `${OG_SITE_LABEL}${path}`,
               },
             },
           ],
