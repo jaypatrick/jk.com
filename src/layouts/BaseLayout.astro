@@ -19,26 +19,9 @@ const {
   noIndex = false,
 } = Astro.props;
 
-const normalizePath = (pagePath: string): string => {
-  if (!pagePath) {
-    return '/';
-  }
-
-  return pagePath.startsWith('/') ? pagePath : `/${pagePath}`;
-};
-
-const buildDynamicOgImagePath = (pageTitle: string, pageDescription: string, pagePath: string): string => {
-  const params = new URLSearchParams({
-    title: pageTitle,
-    description: pageDescription,
-  });
-  const subPath = pagePath === '/' ? '' : normalizePath(pagePath);
-
-  return `/api/og${subPath}?${params.toString()}`;
-};
-
-const resolvedOgImage = ogImageProp ?? buildDynamicOgImagePath(title, description, Astro.url.pathname);
-const resolvedOgImageUrl = new URL(resolvedOgImage, Astro.site).href;
+const resolvedOgImageUrl = ogImageProp
+  ? new URL(ogImageProp, Astro.site).href
+  : new URL('/og-image.png', Astro.site).href;
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
