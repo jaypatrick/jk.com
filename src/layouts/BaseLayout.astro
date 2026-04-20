@@ -32,8 +32,9 @@ const buildDynamicOgImagePath = (pageTitle: string, pageDescription: string, pag
     title: pageTitle,
     description: pageDescription,
   });
+  const subPath = pagePath === '/' ? '' : normalizePath(pagePath);
 
-  return `/api/og${normalizePath(pagePath)}?${params.toString()}`;
+  return `/api/og${subPath}?${params.toString()}`;
 };
 
 const resolvedOgImage = ogImageProp ?? buildDynamicOgImagePath(title, description, Astro.url.pathname);

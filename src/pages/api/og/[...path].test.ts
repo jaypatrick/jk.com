@@ -28,7 +28,6 @@ describe('GET /api/og/[...path]', () => {
       description:
         'Jayson Knight — Solutions Architect specializing in Microsoft Azure, Cloudflare, and .NET. 20+ years building enterprise software that scales.',
       path: '/',
-      origin: 'https://example.com',
     });
     expect(Array.from(body)).toEqual([1, 2, 3]);
     expect(response.headers.get('Content-Type')).toBe('image/png');
@@ -47,7 +46,19 @@ describe('GET /api/og/[...path]', () => {
       title: 'Custom',
       description: 'Desc',
       path: '/blog/new-post',
-      origin: 'https://example.com',
     });
+  });
+
+  it('returns plain-text 500 response when generation fails', async () => {
+    generateOgImage.mockRejectedValue(new Error('boom'));
+
+    const response = await GET({
+      params: { path: 'blog/new-post' },
+      request: new Request('https://example.com/api/og?title=Custom&description=Desc'),
+    } as unknown as Parameters<typeof GET>[0]);
+
+    expect(response.status).toBe(500);
+    expect(response.headers.get('Content-Type')).toBe('text/plain');
+    await expect(response.text()).resolves.toBe('OG image generation failed');
   });
 });
