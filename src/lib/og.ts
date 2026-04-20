@@ -25,8 +25,8 @@ export interface GenerateOgImageOptions {
   origin?: string;
 }
 
-let wasmInitializationPromise: Promise<void> | undefined;
-let fontDataPromise: Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> | undefined;
+let wasmInitialization: Promise<void> | undefined;
+let fontData: Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> | undefined;
 
 const normalizePath = (path: string): string => {
   if (!path || path === '/') {
@@ -46,8 +46,8 @@ const fetchBinary = async (url: URL, label: string): Promise<ArrayBuffer> => {
 };
 
 const fetchFontData = async (origin?: string): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
-  if (!fontDataPromise) {
-    fontDataPromise = (async () => {
+  if (!fontData) {
+    fontData = (async () => {
       const baseUrl = origin ?? DEFAULT_SITE_ORIGIN;
       const [regular, bold] = await Promise.all([
         fetchBinary(new URL(SPACE_GROTESK_REGULAR, baseUrl), 'Space Grotesk regular font'),
@@ -56,31 +56,31 @@ const fetchFontData = async (origin?: string): Promise<{ regular: ArrayBuffer; b
 
       return { regular, bold };
     })().catch((error: unknown) => {
-      fontDataPromise = undefined;
+      fontData = undefined;
       throw error;
     });
   }
 
-  return fontDataPromise;
+  return fontData;
 };
 
 const ensureResvgInitialized = async (origin?: string): Promise<void> => {
-  if (!wasmInitializationPromise) {
+  if (!wasmInitialization) {
     const baseUrl = origin ?? DEFAULT_SITE_ORIGIN;
     const wasmUrl = new URL('/resvg.wasm', baseUrl);
-    wasmInitializationPromise = (async () => {
+    wasmInitialization = (async () => {
       const wasmResponse = await fetch(wasmUrl);
       if (!wasmResponse.ok) {
         throw new Error(`Failed to fetch resvg wasm from ${wasmUrl.href}: ${wasmResponse.status}`);
       }
       await initWasm(wasmResponse);
     })().catch((error: unknown) => {
-      wasmInitializationPromise = undefined;
+      wasmInitialization = undefined;
       throw error;
     });
   }
 
-  await wasmInitializationPromise;
+  await wasmInitialization;
 };
 
 const createOgTree = ({
