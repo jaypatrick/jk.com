@@ -63,6 +63,22 @@ describe('GET /api/og/[...path]', () => {
     );
   });
 
+  it('returns only the PNG Uint8Array view bytes', async () => {
+    const backingBytes = Uint8Array.from([99, 1, 2, 3, 88]);
+    generateOgImage.mockResolvedValue(backingBytes.subarray(1, 4));
+
+    const response = await GET({
+      params: { path: 'blog/new-post' },
+      request: new Request('https://example.com/api/og?title=Custom&description=Desc'),
+      locals: { runtime: { env: { ASSETS: { fetch: assetsFetch } } } },
+    } as unknown as Parameters<typeof GET>[0]);
+
+    const body = new Uint8Array(await response.arrayBuffer());
+
+    expect(body.byteLength).toBe(3);
+    expect(Array.from(body)).toEqual([1, 2, 3]);
+  });
+
   it('returns plain-text 500 response when generation fails', async () => {
     generateOgImage.mockRejectedValue(new Error('boom'));
 

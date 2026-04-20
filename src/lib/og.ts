@@ -104,11 +104,9 @@ const ensureResvgInitialized = async (
   }
 
   const resvgWasmUrl = `${siteOrigin}/wasm/resvg.wasm`;
-  // Pass the fetch() Promise directly — initWasm() will stream and compile the
-  // WASM via WebAssembly.instantiateStreaming(), which is fully supported in the
-  // Cloudflare Workers runtime and avoids any bundler-level WASM handling.
   const pendingWasmInitialization = (async () => {
-    await initWasm(fetcher(resvgWasmUrl));
+    const wasmBuffer = await fetchBinary(resvgWasmUrl, 'resvg WASM', fetcher);
+    await initWasm(wasmBuffer);
   })();
 
   wasmInitializationByOrigin.set(siteOrigin, pendingWasmInitialization);
@@ -235,7 +233,7 @@ export const generateOgImage = async ({
   path,
   assetOrigin,
   fetchAsset,
-}: GenerateOgImageOptions): Promise<Uint8Array> => {
+}: GenerateOgImageOptions): Promise<Uint8Array<ArrayBuffer>> => {
   const siteOrigin = resolveSiteOrigin(assetOrigin);
   const fetcher = fetchAsset ?? fetch;
 

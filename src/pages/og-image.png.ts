@@ -14,9 +14,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       fetchAsset: (assetUrl) => locals.runtime.env.ASSETS.fetch(new Request(assetUrl)),
     });
 
-    const pngBody = png.buffer instanceof ArrayBuffer ? png.buffer : png.slice().buffer;
-
-    return new Response(pngBody, {
+    return new Response(png, {
       headers: {
         'Content-Type': 'image/png',
         'Cache-Control':
