@@ -5,9 +5,9 @@
 // Run `npm run types` after updating wrangler.jsonc to regenerate this
 interface CloudflareBindings {
   // D1 — EmDash blog database
-  DB: D1Database;
+  jk_emdash: D1Database;
   // R2 — EmDash media bucket
-  MEDIA_BUCKET: R2Bucket;
+  jk_media: R2Bucket;
   // KV — edge cache
   CACHE: KVNamespace;
   // Analytics Engine — custom events

@@ -1,8 +1,9 @@
-import { defineConfig } from 'astro/config';
+import { defineConfig, fontProviders } from 'astro/config';
 import cloudflare from '@astrojs/cloudflare';
 import svelte from '@astrojs/svelte';
 import tailwindcss from '@tailwindcss/vite';
 import emdash from 'emdash/astro';
+import { d1, r2 } from '@emdash-cms/cloudflare';
 
 // https://astro.build/config
 export default defineConfig({
@@ -11,18 +12,13 @@ export default defineConfig({
   adapter: cloudflare({
     // Astro 6 uses workerd runtime natively — no platformProxy config needed
     imageService: 'passthrough',
-    routes: {
-      extend: {
-        exclude: [{ pattern: '/_emdash/*' }],
-      },
-    },
   }),
 
   integrations: [
     svelte(),
     emdash({
-      db: { binding: 'DB' },
-      storage: { binding: 'MEDIA_BUCKET' },
+      database: d1({ binding: 'jk_emdash' }),
+      storage: r2({ binding: 'jk_media' }),
     }),
   ],
 
@@ -30,36 +26,28 @@ export default defineConfig({
   vite: {
     plugins: [tailwindcss()],
     build: {
-      // Rolldown is default in Vite 8; explicitly opt-in to native bundler
       rollupOptions: {},
     },
   },
 
   // Built-in Fonts API (stable in Astro 6)
-  // Fonts are loaded via CSS custom properties and @font-face injection
-  // Using Google Fonts via the built-in provider
-  experimental: {
-    fonts: [
-      {
-        provider: 'google',
-        name: 'Space Grotesk',
-        cssVariable: '--font-heading',
-        weights: [300, 400, 500, 600, 700],
-        styles: ['normal'],
-      },
-      {
-        provider: 'google',
-        name: 'JetBrains Mono',
-        cssVariable: '--font-mono',
-        weights: [400, 500],
-        styles: ['normal'],
-        subsets: ['latin'],
-      },
-    ],
-  },
-
-  // Astro Route Caching — set cache headers per page via middleware
-  // See src/middleware.ts for per-route cache control
+  fonts: [
+    {
+      provider: fontProviders.google(),
+      name: 'Space Grotesk',
+      cssVariable: '--font-heading',
+      weights: [300, 400, 500, 600, 700],
+      styles: ['normal'],
+    },
+    {
+      provider: fontProviders.google(),
+      name: 'JetBrains Mono',
+      cssVariable: '--font-mono',
+      weights: [400, 500],
+      styles: ['normal'],
+      subsets: ['latin'],
+    },
+  ],
 
   // Content Security Policy (stable in Astro 6)
   // NOTE: verify exact API shape with `npx astro check` — the middleware fallback
@@ -80,9 +68,6 @@ export default defineConfig({
   //     'form-action': ["'self'"],
   //   },
   // },
-
-  // Live Content Collections (stable in Astro 6)
-  // Used for dynamic data that updates without a rebuild
 
   site: 'https://jaysonknight.com',
 });
