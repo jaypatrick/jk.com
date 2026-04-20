@@ -5,6 +5,7 @@ const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 const OG_BACKGROUND = '#05050a';
 const OG_ACCENT = '#00d4ff';
+const DEFAULT_SITE_ORIGIN = 'https://jaysonknight.com';
 
 const SPACE_GROTESK_REGULAR =
   'https://unpkg.com/@fontsource/space-grotesk/files/space-grotesk-latin-400-normal.woff';
@@ -64,7 +65,7 @@ const fetchFontData = async (): Promise<{ regular: ArrayBuffer; bold: ArrayBuffe
 
 const ensureResvgInitialized = async (origin?: string): Promise<void> => {
   if (!wasmInitializationPromise) {
-    const baseUrl = origin ?? 'https://jaysonknight.com';
+    const baseUrl = origin ?? DEFAULT_SITE_ORIGIN;
     const wasmUrl = new URL('/resvg.wasm', baseUrl);
     wasmInitializationPromise = initWasm(fetch(wasmUrl));
   }
