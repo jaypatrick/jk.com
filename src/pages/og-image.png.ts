@@ -1,17 +1,14 @@
 import type { APIRoute } from 'astro';
 import { generateOgImage } from '../lib/og';
-
-const DEFAULT_TITLE = 'JK.com | Enterprise Cloud Consulting — Jayson Knight';
-const DEFAULT_DESCRIPTION =
-  'Jayson Knight — Solutions Architect specializing in Microsoft Azure, Cloudflare, and .NET. 20+ years building enterprise software that scales.';
+import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
 export const GET: APIRoute = async ({ request }) => {
   try {
     const url = new URL(request.url);
 
     const png = await generateOgImage({
-      title: DEFAULT_TITLE,
-      description: DEFAULT_DESCRIPTION,
+      title: DEFAULT_OG_TITLE,
+      description: DEFAULT_OG_DESCRIPTION,
       path: '/',
       assetOrigin: url.origin,
     });

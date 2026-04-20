@@ -1,4 +1,5 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
 const { generateOgImage } = vi.hoisted(() => ({
   generateOgImage: vi.fn(),
@@ -24,9 +25,8 @@ describe('GET /og-image.png', () => {
     const body = new Uint8Array(await response.arrayBuffer());
 
     expect(generateOgImage).toHaveBeenCalledWith({
-      title: 'JK.com | Enterprise Cloud Consulting — Jayson Knight',
-      description:
-        'Jayson Knight — Solutions Architect specializing in Microsoft Azure, Cloudflare, and .NET. 20+ years building enterprise software that scales.',
+      title: DEFAULT_OG_TITLE,
+      description: DEFAULT_OG_DESCRIPTION,
       path: '/',
       assetOrigin: 'https://example.com',
     });
@@ -47,5 +47,6 @@ describe('GET /og-image.png', () => {
     expect(response.status).toBe(500);
     expect(response.headers.get('Content-Type')).toBe('text/plain');
     expect(response.headers.get('Cache-Control')).toBe('no-store, no-cache');
+    await expect(response.text()).resolves.toBe('OG image generation failed');
   });
 });

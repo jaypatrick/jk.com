@@ -1,9 +1,6 @@
 import type { APIRoute } from 'astro';
 import { generateOgImage } from '../../../lib/og';
-
-const DEFAULT_TITLE = 'JK.com | Enterprise Cloud Consulting — Jayson Knight';
-const DEFAULT_DESCRIPTION =
-  'Jayson Knight — Solutions Architect specializing in Microsoft Azure, Cloudflare, and .NET. 20+ years building enterprise software that scales.';
+import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../../../lib/og-defaults';
 
 const getPagePath = (pathParam: string | undefined): string => {
   if (!pathParam) {
@@ -16,8 +13,8 @@ const getPagePath = (pathParam: string | undefined): string => {
 export const GET: APIRoute = async ({ params, request }) => {
   try {
     const url = new URL(request.url);
-    const title = url.searchParams.get('title')?.trim() || DEFAULT_TITLE;
-    const description = url.searchParams.get('description')?.trim() || DEFAULT_DESCRIPTION;
+    const title = url.searchParams.get('title')?.trim() || DEFAULT_OG_TITLE;
+    const description = url.searchParams.get('description')?.trim() || DEFAULT_OG_DESCRIPTION;
     const pagePath = getPagePath(params.path);
 
     const png = await generateOgImage({
