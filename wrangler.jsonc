@@ -5,56 +5,65 @@
   "main": "dist/_worker.js",
   "compatibility_date": "2025-01-01",
   "compatibility_flags": ["nodejs_compat"],
-
   // D1 Database — used by EmDash for blog CMS
   "d1_databases": [
+    // {
+    // 	"binding": "DB",
+    // 	"database_name": "jk-emdash",
+    // 	// TODO: Run `npm run db:create` and paste the database_id here
+    // 	"database_id": "YOUR_DATABASE_ID_HERE"
+    // },
     {
-      "binding": "DB",
+      "binding": "jk_emdash",
       "database_name": "jk-emdash",
-      // TODO: Run `npm run db:create` and paste the database_id here
-      "database_id": "YOUR_DATABASE_ID_HERE"
-    }
+      "database_id": "c6beff50-d286-44e0-b6d1-522a102c975c",
+      "remote": true,
+    },
   ],
-
   // R2 Bucket — used by EmDash for media uploads
   "r2_buckets": [
+    // {
+    // 	"binding": "MEDIA_BUCKET",
+    // 	"bucket_name": "jk-media"
+    // },
     {
-      "binding": "MEDIA_BUCKET",
-      "bucket_name": "jk-media"
-    }
+      "bucket_name": "jk-media",
+      "binding": "jk_media",
+      "remote": true,
+    },
   ],
-
   // KV Namespace — for edge caching and session data
   "kv_namespaces": [
+    // {
+    // 	"binding": "CACHE",
+    // 	"id": "YOUR_KV_NAMESPACE_ID_HERE"
+    // },
     {
       "binding": "CACHE",
-      "id": "YOUR_KV_NAMESPACE_ID_HERE"
-    }
+      "id": "7349e21bc5924747a9d405218dc2f162",
+      "remote": true,
+    },
   ],
-
   // Analytics Engine — for custom event tracking
   "analytics_engine_datasets": [
     {
       "binding": "ANALYTICS",
-      "dataset": "jk_analytics"
-    }
+      "dataset": "jk_analytics",
+    },
   ],
-
   // Workers Observability — Cloudflare-native logging and tracing
   "observability": {
     "enabled": true,
-    "head_sampling_rate": 1
+    "head_sampling_rate": 1,
   },
-
   // Environment variables — set secrets via `wrangler secret put`
   "vars": {
     "ENVIRONMENT": "production",
-    "SITE_URL": "https://jaysonknight.com"
+    "SITE_URL": "https://jaysonknight.com",
   },
-
   // Assets — static files served from Cloudflare's edge
   "assets": {
     "directory": "./dist/client",
-    "binding": "ASSETS"
-  }
+    "binding": "ASSETS",
+  },
 }
