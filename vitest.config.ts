@@ -1,7 +1,7 @@
 import { defineConfig } from 'vitest/config';
 import astroConfig from './astro.config';
 
-const site = astroConfig.site ? String(astroConfig.site) : undefined;
+const site = astroConfig.site;
 
 export default defineConfig({
   // Bake in import.meta.env.SITE so og.ts resolves SITE_ORIGIN correctly in tests.

@@ -53,49 +53,54 @@ const resolveSiteOrigin = (assetOrigin: string | undefined): string =>
 
 const fetchFontData = async (siteOrigin: string): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
   const existingFontData = fontDataByOrigin.get(siteOrigin);
-  if (!existingFontData) {
-    const spaceGroteskRegularUrl = `${siteOrigin}/fonts/space-grotesk-400.woff`;
-    const spaceGroteskBoldUrl = `${siteOrigin}/fonts/space-grotesk-700.woff`;
-    const pendingFontData = (async () => {
-      const [regular, bold] = await Promise.all([
-        fetchBinary(spaceGroteskRegularUrl, 'Space Grotesk regular font'),
-        fetchBinary(spaceGroteskBoldUrl, 'Space Grotesk bold font'),
-      ]);
-
-      return { regular, bold };
-    })();
-
-    fontDataByOrigin.set(siteOrigin, pendingFontData);
-    pendingFontData.catch(() => {
-      if (fontDataByOrigin.get(siteOrigin) === pendingFontData) {
-        fontDataByOrigin.delete(siteOrigin);
-      }
-    });
+  if (existingFontData) {
+    return existingFontData;
   }
 
-  return fontDataByOrigin.get(siteOrigin)!;
+  const spaceGroteskRegularUrl = `${siteOrigin}/fonts/space-grotesk-400.woff`;
+  const spaceGroteskBoldUrl = `${siteOrigin}/fonts/space-grotesk-700.woff`;
+  const pendingFontData = (async () => {
+    const [regular, bold] = await Promise.all([
+      fetchBinary(spaceGroteskRegularUrl, 'Space Grotesk regular font'),
+      fetchBinary(spaceGroteskBoldUrl, 'Space Grotesk bold font'),
+    ]);
+
+    return { regular, bold };
+  })();
+
+  fontDataByOrigin.set(siteOrigin, pendingFontData);
+  pendingFontData.catch(() => {
+    if (fontDataByOrigin.get(siteOrigin) === pendingFontData) {
+      fontDataByOrigin.delete(siteOrigin);
+    }
+  });
+
+  return pendingFontData;
 };
 
 const ensureResvgInitialized = async (siteOrigin: string): Promise<void> => {
   const existingWasmInitialization = wasmInitializationByOrigin.get(siteOrigin);
-  if (!existingWasmInitialization) {
-    const resvgWasmUrl = `${siteOrigin}/wasm/resvg.wasm`;
-    // Pass the fetch() Promise directly — initWasm() will stream and compile the
-    // WASM via WebAssembly.instantiateStreaming(), which is fully supported in the
-    // Cloudflare Workers runtime and avoids any bundler-level WASM handling.
-    const pendingWasmInitialization = (async () => {
-      await initWasm(fetch(resvgWasmUrl));
-    })();
-
-    wasmInitializationByOrigin.set(siteOrigin, pendingWasmInitialization);
-    pendingWasmInitialization.catch(() => {
-      if (wasmInitializationByOrigin.get(siteOrigin) === pendingWasmInitialization) {
-        wasmInitializationByOrigin.delete(siteOrigin);
-      }
-    });
+  if (existingWasmInitialization) {
+    await existingWasmInitialization;
+    return;
   }
 
-  await wasmInitializationByOrigin.get(siteOrigin)!;
+  const resvgWasmUrl = `${siteOrigin}/wasm/resvg.wasm`;
+  // Pass the fetch() Promise directly — initWasm() will stream and compile the
+  // WASM via WebAssembly.instantiateStreaming(), which is fully supported in the
+  // Cloudflare Workers runtime and avoids any bundler-level WASM handling.
+  const pendingWasmInitialization = (async () => {
+    await initWasm(fetch(resvgWasmUrl));
+  })();
+
+  wasmInitializationByOrigin.set(siteOrigin, pendingWasmInitialization);
+  pendingWasmInitialization.catch(() => {
+    if (wasmInitializationByOrigin.get(siteOrigin) === pendingWasmInitialization) {
+      wasmInitializationByOrigin.delete(siteOrigin);
+    }
+  });
+
+  await pendingWasmInitialization;
 };
 
 const createOgTree = ({
