@@ -1,0 +1,32 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+---
+
+<BaseLayout
+  title="Blog | JK.com — Jayson Knight"
+  description="Thoughts on Azure, Cloudflare, .NET, compiler theory, and the craft of building software."
+>
+  <section class="section-pad" style="background: var(--color-bg);">
+    <div class="section-container">
+      <div class="section-label animate-on-scroll">BLOG</div>
+      <h1 class="text-4xl font-bold mb-6 lg:text-5xl" style="font-family: var(--font-heading);">
+        What I <span class="gradient-text">Think</span>
+      </h1>
+      <p class="text-lg mb-8" style="color: var(--color-text-dim); max-width: 60ch;">
+        Writing about Azure, Cloudflare Workers, .NET modernization, compiler theory, and the craft
+        of building software that lasts. Long-form posts, short notes, and everything in between.
+      </p>
+      <div class="flex gap-4 flex-wrap">
+        <a
+          href="https://bloqr.jaysonknight.com"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="btn btn-primary"
+        >
+          Read on Bloqr →
+        </a>
+        <a href="/" class="btn btn-outline">← Back Home</a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>

@@ -4,8 +4,10 @@
 
   let isMenuOpen = $state(false);
   let isScrolled = $state(false);
+  let activeHref = $state('');
 
   const navLinks = [
+    { href: '#home', label: 'Home' },
     { href: '#about', label: 'About' },
     { href: '#services', label: 'Services' },
     { href: '#portfolio', label: 'Portfolio' },
@@ -17,12 +19,71 @@
     const onScroll = () => {
       isScrolled = window.scrollY > 20;
     };
+    onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   });
 
+  $effect(() => {
+    const setTopState = () => {
+      if (window.scrollY <= 80) {
+        activeHref = '#home';
+      }
+    };
+
+    if (window.location.pathname.startsWith('/blog')) {
+      activeHref = '/blog';
+      return;
+    }
+
+    setTopState();
+
+    const ids = ['about', 'services', 'portfolio', 'contact'];
+    const sections = ids
+      .map((id) => document.getElementById(id))
+      .filter((section): section is HTMLElement => Boolean(section));
+
+    const observer = new IntersectionObserver(
+      (entries) => {
+        const visibleEntries = entries
+          .filter((entry) => entry.isIntersecting)
+          .sort((a, b) => b.intersectionRatio - a.intersectionRatio);
+
+        if (visibleEntries[0]) {
+          activeHref = `#${(visibleEntries[0].target as HTMLElement).id}`;
+          return;
+        }
+
+        setTopState();
+      },
+      { rootMargin: '-40% 0px -40% 0px', threshold: [0, 0.25, 0.5, 0.75, 1] }
+    );
+
+    sections.forEach((section) => observer.observe(section));
+    window.addEventListener('scroll', setTopState, { passive: true });
+
+    return () => {
+      observer.disconnect();
+      window.removeEventListener('scroll', setTopState);
+    };
+  });
+
   function closeMenu() {
     isMenuOpen = false;
+  }
+
+  function openCalendlyPopup(e: MouseEvent) {
+    e.preventDefault();
+    const calendly = (window as Window & {
+      Calendly?: { initPopupWidget?: (options: { url: string }) => void };
+    }).Calendly;
+
+    if (calendly?.initPopupWidget) {
+      calendly.initPopupWidget({ url: 'https://calendly.com/jaysonknight' });
+      return;
+    }
+
+    window.location.href = 'https://calendly.com/jaysonknight';
   }
 </script>
 
@@ -68,12 +129,16 @@
         <a
           {href}
           class="text-sm font-medium transition-colors duration-200 hover:text-cyan relative group"
-          style="color: var(--color-text-dim); text-decoration: none; font-family: var(--font-heading);"
+          style="color: {activeHref === href ? 'var(--color-text)' : 'var(--color-text-dim)'}; text-decoration: none; font-family: var(--font-heading);"
         >
           {label}
           <span
-            class="absolute -bottom-1 left-0 w-0 h-px transition-all duration-300 group-hover:w-full"
-            style="background: var(--color-cyan);"
+            class="absolute -bottom-1 left-0 h-px transition-all duration-300"
+            style="
+              background: var(--color-cyan);
+              width: {activeHref === href ? '100%' : '0'};
+            "
+            class:group-hover:w-full={activeHref !== href}
             aria-hidden="true"
           ></span>
         </a>
@@ -81,8 +146,7 @@
 
       <a
         href="https://calendly.com/jaysonknight"
-        target="_blank"
-        rel="noopener noreferrer"
+        onclick={openCalendlyPopup}
         class="btn btn-red"
         style="padding: 0.4rem 1rem; font-size: 0.8rem;"
       >
@@ -134,16 +198,17 @@
         {href}
         onclick={closeMenu}
         class="text-lg font-medium py-2 transition-colors"
-        style="color: var(--color-text-dim); text-decoration: none; border-bottom: 1px solid var(--color-border);"
+        style="color: {activeHref === href ? 'var(--color-cyan)' : 'var(--color-text-dim)'}; text-decoration: none; border-bottom: 1px solid var(--color-border);"
       >
         {label}
       </a>
     {/each}
     <a
       href="https://calendly.com/jaysonknight"
-      target="_blank"
-      rel="noopener noreferrer"
-      onclick={closeMenu}
+      onclick={(e) => {
+        closeMenu();
+        openCalendlyPopup(e);
+      }}
       class="btn btn-red mt-2 justify-center"
     >
       📅 Book Me

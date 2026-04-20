@@ -18,6 +18,12 @@
     'Software should anticipate your needs',
     'Infrastructure should anticipate needs',
   ];
+
+  let expandedExpertiseIndex = $state<number | null>(null);
+
+  function toggleExpertise(index: number) {
+    expandedExpertiseIndex = expandedExpertiseIndex === index ? null : index;
+  }
 </script>
 
 <section id="about" class="section-pad" style="background: var(--color-surface);">
@@ -74,16 +80,33 @@
 
         <!-- Expertise cards -->
         <div class="grid grid-cols-1 gap-3 mb-12 sm:grid-cols-2">
-          {#each expertise as { label, detail }}
+          {#each expertise as { label, detail }, i}
+            {@const isExpanded = expandedExpertiseIndex === i}
             <div
-              class="glow-border rounded-lg p-4"
-              style="background: var(--color-card);"
+              class="glow-border rounded-lg p-4 cursor-pointer"
+              style="background: var(--color-card); border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
+              role="button"
+              tabindex="0"
+              onclick={() => toggleExpertise(i)}
+              onkeydown={(e) => {
+                if (e.key === 'Enter' || e.key === ' ') {
+                  e.preventDefault();
+                  toggleExpertise(i);
+                }
+              }}
             >
-              <h3
-                class="text-sm font-semibold mb-1"
-                style="color: var(--color-cyan); font-family: var(--font-mono);"
-              >{label}</h3>
-              <p class="text-xs leading-relaxed" style="color: var(--color-text-ghost);">{detail}</p>
+              <div class="flex items-center justify-between gap-3">
+                <h3
+                  class="text-sm font-semibold mb-1"
+                  style="color: var(--color-cyan); font-family: var(--font-mono);"
+                >{label}</h3>
+                <span aria-hidden="true" style="color: var(--color-cyan);">{isExpanded ? '▴' : '▾'}</span>
+              </div>
+              <div
+                style="max-height: {isExpanded ? '120px' : '0px'}; opacity: {isExpanded ? 1 : 0}; overflow: hidden; transition: max-height 0.25s ease, opacity 0.25s ease;"
+              >
+                <p class="text-xs leading-relaxed pt-2" style="color: var(--color-text-dim);">{detail}</p>
+              </div>
             </div>
           {/each}
         </div>

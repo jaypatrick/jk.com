@@ -18,6 +18,22 @@
   });
 
   let fieldErrors = $state<Partial<Record<keyof ContactFormData, string>>>({});
+  let isCalendlyReady = $state(false);
+  let calendlyInlineContainer: HTMLDivElement | null = null;
+
+  function openCalendlyPopup(e: MouseEvent) {
+    e.preventDefault();
+    const calendly = (window as Window & {
+      Calendly?: { initPopupWidget?: (options: { url: string }) => void };
+    }).Calendly;
+
+    if (calendly?.initPopupWidget) {
+      calendly.initPopupWidget({ url: 'https://calendly.com/jaysonknight' });
+      return;
+    }
+
+    window.location.href = 'https://calendly.com/jaysonknight';
+  }
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -56,6 +72,46 @@
       state = 'error';
     }
   }
+
+  $effect(() => {
+    const calendly = (window as Window & { Calendly?: unknown }).Calendly;
+    isCalendlyReady = Boolean(calendly);
+
+    if (isCalendlyReady) {
+      return;
+    }
+
+    const interval = window.setInterval(() => {
+      isCalendlyReady = Boolean((window as Window & { Calendly?: unknown }).Calendly);
+      if (isCalendlyReady) {
+        window.clearInterval(interval);
+      }
+    }, 400);
+
+    return () => window.clearInterval(interval);
+  });
+
+  $effect(() => {
+    if (!isCalendlyReady || !calendlyInlineContainer) {
+      return;
+    }
+
+    const calendly = (window as Window & {
+      Calendly?: {
+        initInlineWidget?: (options: { url: string; parentElement: HTMLDivElement }) => void;
+      };
+    }).Calendly;
+
+    if (!calendly?.initInlineWidget) {
+      return;
+    }
+
+    calendlyInlineContainer.innerHTML = '';
+    calendly.initInlineWidget({
+      url: 'https://calendly.com/jaysonknight',
+      parentElement: calendlyInlineContainer,
+    });
+  });
 </script>
 
 <section id="contact" class="section-pad" style="background: var(--color-bg);">
@@ -118,8 +174,7 @@
           >GitHub</a>
           <a
             href="https://calendly.com/jaysonknight"
-            target="_blank"
-            rel="noopener noreferrer"
+            onclick={openCalendlyPopup}
             class="btn btn-red"
             style="padding: 0.5rem 1.25rem; font-size: 0.8rem;"
           >📅 Book Me</a>
@@ -279,5 +334,17 @@
         {/if}
       </div>
     </div>
+
+    {#if isCalendlyReady}
+      <div class="mt-16 animate-on-scroll visible">
+        <div class="section-label mb-6" style="color: var(--color-cyan);">BOOK DIRECTLY</div>
+        <div
+          bind:this={calendlyInlineContainer}
+          class="calendly-inline-widget rounded-xl"
+          data-url="https://calendly.com/jaysonknight"
+          style="min-width:320px;height:630px;background: var(--color-card); border: 1px solid var(--color-border);"
+        ></div>
+      </div>
+    {/if}
   </div>
 </section>
