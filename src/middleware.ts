@@ -75,7 +75,10 @@ const routeCache = defineMiddleware(async ({ request, url }, next) => {
   }
 
   // API routes — no caching (except OG images which have their own cache headers)
-  if (url.pathname.startsWith('/api/') && !url.pathname.startsWith('/api/og')) {
+  if (
+    url.pathname.startsWith('/api/') &&
+    !(url.pathname === '/api/og' || url.pathname.startsWith('/api/og/'))
+  ) {
     const nocache = new Response(response.body, response);
     nocache.headers.set('Cache-Control', 'no-store, no-cache');
     return nocache;

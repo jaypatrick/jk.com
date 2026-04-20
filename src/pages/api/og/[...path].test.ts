@@ -59,6 +59,7 @@ describe('GET /api/og/[...path]', () => {
 
     expect(response.status).toBe(500);
     expect(response.headers.get('Content-Type')).toBe('text/plain');
+    expect(response.headers.get('Cache-Control')).toBe('no-store, no-cache');
     await expect(response.text()).resolves.toBe('OG image generation failed');
   });
 });

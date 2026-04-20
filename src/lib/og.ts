@@ -90,7 +90,7 @@ const createOgTree = ({
   title,
   description,
   path,
-}: Omit<GenerateOgImageOptions, 'origin'>): SatoriLikeElement => ({
+}: GenerateOgImageOptions): SatoriLikeElement => ({
   type: 'div',
   props: {
     style: {

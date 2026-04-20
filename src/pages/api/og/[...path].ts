@@ -25,8 +25,10 @@ export const GET: APIRoute = async ({ params, request }) => {
       description,
       path: pagePath,
     });
+    const pngBody = new ArrayBuffer(png.byteLength);
+    new Uint8Array(pngBody).set(png);
 
-    return new Response(png as BodyInit, {
+    return new Response(pngBody, {
       headers: {
         'Content-Type': 'image/png',
         'Cache-Control':
@@ -37,7 +39,10 @@ export const GET: APIRoute = async ({ params, request }) => {
     console.error('[og] generateOgImage failed:', err);
     return new Response('OG image generation failed', {
       status: 500,
-      headers: { 'Content-Type': 'text/plain' },
+      headers: {
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'no-store, no-cache',
+      },
     });
   }
 };
