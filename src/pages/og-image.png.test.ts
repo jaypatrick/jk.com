@@ -46,5 +46,6 @@ describe('GET /og-image.png', () => {
 
     expect(response.status).toBe(500);
     expect(response.headers.get('Content-Type')).toBe('text/plain');
+    expect(response.headers.get('Cache-Control')).toBe('no-store, no-cache');
   });
 });
