@@ -1,28 +1,18 @@
 import type { APIRoute } from 'astro';
-import { generateOgImage } from '../../../lib/og';
-import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../../../lib/og-defaults';
+import { generateOgImage } from '../lib/og';
+import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
-const getPagePath = (pathParam: string | undefined): string => {
-  if (!pathParam) {
-    return '/';
-  }
-
-  return `/${pathParam}`;
-};
-
-export const GET: APIRoute = async ({ params, request }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
     const url = new URL(request.url);
-    const title = url.searchParams.get('title')?.trim() || DEFAULT_OG_TITLE;
-    const description = url.searchParams.get('description')?.trim() || DEFAULT_OG_DESCRIPTION;
-    const pagePath = getPagePath(params.path);
 
     const png = await generateOgImage({
-      title,
-      description,
-      path: pagePath,
+      title: DEFAULT_OG_TITLE,
+      description: DEFAULT_OG_DESCRIPTION,
+      path: '/',
       assetOrigin: url.origin,
     });
+
     const pngBody = png.buffer instanceof ArrayBuffer ? png.buffer : png.slice().buffer;
 
     return new Response(pngBody, {
@@ -33,7 +23,7 @@ export const GET: APIRoute = async ({ params, request }) => {
       },
     });
   } catch (err) {
-    console.error('[og] generateOgImage failed:', err);
+    console.error('[og-image.png] generateOgImage failed:', err);
     return new Response('OG image generation failed', {
       status: 500,
       headers: {

@@ -4,6 +4,7 @@
 import '../styles/global.css';
 import Header from '../components/layout/Header.svelte';
 import Footer from '../components/layout/Footer.svelte';
+import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
 interface Props {
   title?: string;
@@ -13,32 +14,15 @@ interface Props {
 }
 
 const {
-  title = 'JK.com | Enterprise Cloud Consulting — Jayson Knight',
-  description = 'Jayson Knight — Solutions Architect specializing in Microsoft Azure, Cloudflare, and .NET. 20+ years building enterprise software that scales.',
+  title = DEFAULT_OG_TITLE,
+  description = DEFAULT_OG_DESCRIPTION,
   ogImage: ogImageProp,
   noIndex = false,
 } = Astro.props;
 
-const normalizePath = (pagePath: string): string => {
-  if (!pagePath) {
-    return '/';
-  }
-
-  return pagePath.startsWith('/') ? pagePath : `/${pagePath}`;
-};
-
-const buildDynamicOgImagePath = (pageTitle: string, pageDescription: string, pagePath: string): string => {
-  const params = new URLSearchParams({
-    title: pageTitle,
-    description: pageDescription,
-  });
-  const subPath = pagePath === '/' ? '' : normalizePath(pagePath);
-
-  return `/api/og${subPath}?${params.toString()}`;
-};
-
-const resolvedOgImage = ogImageProp ?? buildDynamicOgImagePath(title, description, Astro.url.pathname);
-const resolvedOgImageUrl = new URL(resolvedOgImage, Astro.site).href;
+const resolvedOgImageUrl = ogImageProp
+  ? new URL(ogImageProp, Astro.site).href
+  : new URL('/og-image.png', Astro.site).href;
 
 const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
 const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;

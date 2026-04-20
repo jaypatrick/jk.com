@@ -1,27 +1,27 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
-import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../../../lib/og-defaults';
+import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
 const { generateOgImage } = vi.hoisted(() => ({
   generateOgImage: vi.fn(),
 }));
 
-vi.mock('../../../lib/og', () => ({
+vi.mock('../lib/og', () => ({
   generateOgImage,
 }));
 
-import { GET } from './[...path]';
+import { GET } from './og-image.png';
 
-describe('GET /api/og/[...path]', () => {
+describe('GET /og-image.png', () => {
   beforeEach(() => {
     generateOgImage.mockReset();
     generateOgImage.mockResolvedValue(Uint8Array.from([1, 2, 3]));
   });
 
-  it('uses defaults when query params are missing', async () => {
+  it('generates the default OG image with correct defaults', async () => {
     const response = await GET({
-      params: {},
-      request: new Request('https://example.com/api/og'),
+      request: new Request('https://example.com/og-image.png'),
     } as unknown as Parameters<typeof GET>[0]);
+
     const body = new Uint8Array(await response.arrayBuffer());
 
     expect(generateOgImage).toHaveBeenCalledWith({
@@ -37,26 +37,11 @@ describe('GET /api/og/[...path]', () => {
     );
   });
 
-  it('trims custom query params and builds prefixed paths', async () => {
-    await GET({
-      params: { path: 'blog/new-post' },
-      request: new Request('https://example.com/api/og?title=%20Custom%20&description=%20Desc%20'),
-    } as unknown as Parameters<typeof GET>[0]);
-
-    expect(generateOgImage).toHaveBeenCalledWith({
-      title: 'Custom',
-      description: 'Desc',
-      path: '/blog/new-post',
-      assetOrigin: 'https://example.com',
-    });
-  });
-
   it('returns plain-text 500 response when generation fails', async () => {
     generateOgImage.mockRejectedValue(new Error('boom'));
 
     const response = await GET({
-      params: { path: 'blog/new-post' },
-      request: new Request('https://example.com/api/og?title=Custom&description=Desc'),
+      request: new Request('https://example.com/og-image.png'),
     } as unknown as Parameters<typeof GET>[0]);
 
     expect(response.status).toBe(500);
