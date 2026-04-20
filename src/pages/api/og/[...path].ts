@@ -10,7 +10,7 @@ const getPagePath = (pathParam: string | undefined): string => {
   return `/${pathParam}`;
 };
 
-export const GET: APIRoute = async ({ params, request }) => {
+export const GET: APIRoute = async ({ params, request, locals }) => {
   try {
     const url = new URL(request.url);
     const title = url.searchParams.get('title')?.trim() || DEFAULT_OG_TITLE;
@@ -22,6 +22,7 @@ export const GET: APIRoute = async ({ params, request }) => {
       description,
       path: pagePath,
       assetOrigin: url.origin,
+      fetchAsset: (assetUrl) => locals.runtime.env.ASSETS.fetch(new Request(assetUrl)),
     });
     const pngBody = png.buffer instanceof ArrayBuffer ? png.buffer : png.slice().buffer;
 

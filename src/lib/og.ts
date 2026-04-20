@@ -26,6 +26,7 @@ export interface GenerateOgImageOptions {
   description: string;
   path: string;
   assetOrigin?: string;
+  fetchAsset?: (url: string) => Promise<Response>;
 }
 
 const wasmInitializationByOrigin = new Map<string, Promise<void>>();
@@ -39,8 +40,12 @@ const normalizePath = (path: string): string => {
   return path.startsWith('/') ? path : `/${path}`;
 };
 
-const fetchBinary = async (url: string, label: string): Promise<ArrayBuffer> => {
-  const response = await fetch(url);
+const fetchBinary = async (
+  url: string,
+  label: string,
+  fetcher: (url: string) => Promise<Response>
+): Promise<ArrayBuffer> => {
+  const response = await fetcher(url);
   if (!response.ok) {
     throw new Error(`Failed to fetch ${label}: ${response.status} ${response.statusText}`);
   }
@@ -58,7 +63,10 @@ const resolveSiteOrigin = (assetOrigin: string | undefined): string => {
   }
 };
 
-const fetchFontData = async (siteOrigin: string): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
+const fetchFontData = async (
+  siteOrigin: string,
+  fetcher: (url: string) => Promise<Response>
+): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
   const existingFontData = fontDataByOrigin.get(siteOrigin);
   if (existingFontData) {
     return existingFontData;
@@ -68,8 +76,8 @@ const fetchFontData = async (siteOrigin: string): Promise<{ regular: ArrayBuffer
   const spaceGroteskBoldUrl = `${siteOrigin}/fonts/space-grotesk-700.woff`;
   const pendingFontData = (async () => {
     const [regular, bold] = await Promise.all([
-      fetchBinary(spaceGroteskRegularUrl, 'Space Grotesk regular font'),
-      fetchBinary(spaceGroteskBoldUrl, 'Space Grotesk bold font'),
+      fetchBinary(spaceGroteskRegularUrl, 'Space Grotesk regular font', fetcher),
+      fetchBinary(spaceGroteskBoldUrl, 'Space Grotesk bold font', fetcher),
     ]);
 
     return { regular, bold };
@@ -85,7 +93,10 @@ const fetchFontData = async (siteOrigin: string): Promise<{ regular: ArrayBuffer
   return pendingFontData;
 };
 
-const ensureResvgInitialized = async (siteOrigin: string): Promise<void> => {
+const ensureResvgInitialized = async (
+  siteOrigin: string,
+  fetcher: (url: string) => Promise<Response>
+): Promise<void> => {
   const existingWasmInitialization = wasmInitializationByOrigin.get(siteOrigin);
   if (existingWasmInitialization) {
     await existingWasmInitialization;
@@ -97,7 +108,7 @@ const ensureResvgInitialized = async (siteOrigin: string): Promise<void> => {
   // WASM via WebAssembly.instantiateStreaming(), which is fully supported in the
   // Cloudflare Workers runtime and avoids any bundler-level WASM handling.
   const pendingWasmInitialization = (async () => {
-    await initWasm(fetch(resvgWasmUrl));
+    await initWasm(fetcher(resvgWasmUrl));
   })();
 
   wasmInitializationByOrigin.set(siteOrigin, pendingWasmInitialization);
@@ -223,11 +234,13 @@ export const generateOgImage = async ({
   description,
   path,
   assetOrigin,
+  fetchAsset,
 }: GenerateOgImageOptions): Promise<Uint8Array> => {
   const siteOrigin = resolveSiteOrigin(assetOrigin);
+  const fetcher = fetchAsset ?? fetch;
 
-  await ensureResvgInitialized(siteOrigin);
-  const fonts = await fetchFontData(siteOrigin);
+  await ensureResvgInitialized(siteOrigin, fetcher);
+  const fonts = await fetchFontData(siteOrigin, fetcher);
   const tree = createOgTree({ title, description, path: normalizePath(path) });
 
   const svg = await satori(tree as Parameters<typeof satori>[0], {

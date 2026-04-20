@@ -2,7 +2,7 @@ import type { APIRoute } from 'astro';
 import { generateOgImage } from '../lib/og';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
-export const GET: APIRoute = async ({ request }) => {
+export const GET: APIRoute = async ({ request, locals }) => {
   try {
     const url = new URL(request.url);
 
@@ -11,6 +11,7 @@ export const GET: APIRoute = async ({ request }) => {
       description: DEFAULT_OG_DESCRIPTION,
       path: '/',
       assetOrigin: url.origin,
+      fetchAsset: (assetUrl) => locals.runtime.env.ASSETS.fetch(new Request(assetUrl)),
     });
 
     const pngBody = png.buffer instanceof ArrayBuffer ? png.buffer : png.slice().buffer;
