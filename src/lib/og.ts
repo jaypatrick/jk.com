@@ -49,7 +49,7 @@ const fetchBinary = async (url: string, label: string): Promise<ArrayBuffer> => 
 };
 
 const resolveSiteOrigin = (assetOrigin: string | undefined): string => {
-  const candidateOrigin = (assetOrigin || DEFAULT_SITE_ORIGIN).trim().replace(/\/+$/, '');
+  const candidateOrigin = assetOrigin || DEFAULT_SITE_ORIGIN;
 
   try {
     return new URL(candidateOrigin).origin;
