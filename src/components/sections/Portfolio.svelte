@@ -44,8 +44,13 @@
   ];
 
   const clients = [
-    'Microsoft', 'Cloudflare', 'Enterprise ISVs', 'Finance & Banking',
-    'Healthcare', 'Professional Services', 'Manufacturing', 'SaaS Startups',
+    'Paycom',
+    'Microsoft',
+    'Paylocity',
+    'AvidXchange',
+    'Care Innovations',
+    'Sogeti',
+    'Deloitte Consulting',
   ];
 </script>
 
@@ -124,17 +129,64 @@
 
     <!-- Clients I Adore -->
     <div class="animate-on-scroll">
-      <div class="section-label mb-8">CLIENTS I ADORE</div>
-      <div class="flex flex-wrap gap-3 justify-center">
-        {#each clients as client}
-          <div
-            class="rounded-lg px-5 py-2.5 text-sm"
-            style="background: var(--color-card); border: 1px solid var(--color-border); color: var(--color-text-dim);"
-          >
-            {client}
-          </div>
-        {/each}
+      <div class="section-label mb-8" style="color: var(--color-cyan);">CLIENTS I ADORE</div>
+      <div class="clients-marquee">
+        <div class="clients-track">
+          {#each [...clients, ...clients] as client}
+            <div
+              class="client-tile rounded-lg px-5 py-2.5 text-sm"
+              style="background: var(--color-card); border: 1px solid var(--color-border); color: var(--color-cyan);"
+            >
+              {client}
+            </div>
+          {/each}
+        </div>
       </div>
     </div>
   </div>
 </section>
+
+<style>
+  .clients-marquee {
+    overflow: hidden;
+    border-radius: 0.85rem;
+    padding: 1rem;
+    background:
+      radial-gradient(circle at 50% 0%, rgba(0, 212, 255, 0.12), transparent 55%),
+      rgba(0, 212, 255, 0.03);
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    box-shadow: inset 0 0 0 1px rgba(0, 212, 255, 0.08), 0 0 18px rgba(0, 212, 255, 0.08);
+  }
+
+  .clients-track {
+    display: flex;
+    width: max-content;
+    gap: 0.75rem;
+    animation: marquee-left 24s linear infinite;
+    will-change: transform;
+  }
+
+  .clients-marquee:hover .clients-track {
+    animation-play-state: paused;
+  }
+
+  .client-tile {
+    flex: 0 0 auto;
+    transition: filter 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
+  }
+
+  .client-tile:hover {
+    border-color: rgba(0, 212, 255, 0.55);
+    filter: brightness(1.08);
+    box-shadow: 0 0 14px rgba(0, 212, 255, 0.2);
+  }
+
+  @keyframes marquee-left {
+    from {
+      transform: translateX(0);
+    }
+    to {
+      transform: translateX(calc(-50% - 0.375rem));
+    }
+  }
+</style>

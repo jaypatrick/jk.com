@@ -4,6 +4,20 @@
 
   let mounted = $state(false);
 
+  function openCalendlyPopup(e: MouseEvent) {
+    e.preventDefault();
+    const calendly = (window as Window & {
+      Calendly?: { initPopupWidget?: (options: { url: string }) => void };
+    }).Calendly;
+
+    if (calendly?.initPopupWidget) {
+      calendly.initPopupWidget({ url: 'https://calendly.com/jaysonknight' });
+      return;
+    }
+
+    window.location.href = 'https://calendly.com/jaysonknight';
+  }
+
   $effect(() => {
     // Small delay so CSS animation reads as intentional
     const t = setTimeout(() => { mounted = true; }, 100);
@@ -118,7 +132,7 @@
       {#each ['Azure Architect', '.NET Expert', 'Cloudflare Specialist', 'Privacy & Security'] as tag}
         <span
           class="chip"
-          style="background: rgba(0,120,212,0.08); border-color: rgba(0,120,212,0.3); color: var(--color-text-dim);"
+          style="background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.3); color: var(--color-cyan);"
         >
           {tag}
         </span>
@@ -132,8 +146,7 @@
     >
       <a
         href="https://calendly.com/jaysonknight"
-        target="_blank"
-        rel="noopener noreferrer"
+        onclick={openCalendlyPopup}
         class="btn btn-red"
       >
         <span>📅</span>

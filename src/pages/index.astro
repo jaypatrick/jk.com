@@ -6,6 +6,7 @@ import Hero from '../components/sections/Hero.svelte';
 import About from '../components/sections/About.svelte';
 import Services from '../components/sections/Services.svelte';
 import Portfolio from '../components/sections/Portfolio.svelte';
+import RssFeed from '../components/sections/RssFeed.svelte';
 import Contact from '../components/sections/Contact.svelte';
 
 // Cloudflare runtime locals — available in SSR
@@ -28,6 +29,8 @@ const { runtime } = Astro.locals;
 
   <!-- Portfolio: case studies + clients -->
   <Portfolio client:visible />
+
+  <RssFeed client:visible feedUrl="https://bloqr.jaysonknight.com/rss.xml" maxItems={5} />
 
   <!-- Contact: form + phone + location -->
   <Contact client:visible />

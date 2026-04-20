@@ -1,14 +1,28 @@
 <script lang="ts">
   // Services.svelte — consulting services grid
   // Svelte 5 + TailwindCSS v4
+  import { tick } from 'svelte';
 
-  const technicalServices = [
+  type Service = {
+    icon: string;
+    title: string;
+    description: string;
+    tags: string[];
+    bullets: string[];
+  };
+
+  const technicalServices: Service[] = [
     {
       icon: '☁️',
       title: 'Azure Solutions Architecture',
       description:
         'End-to-end Azure platform design: landing zones, AKS clusters, networking, identity (Entra ID / AAD), cost optimization, and FinOps. I speak fluent ARM, Bicep, and Terraform.',
       tags: ['Azure', 'AKS', 'Bicep', 'FinOps'],
+      bullets: [
+        'Landing zone design & implementation',
+        'AKS cluster & node pool sizing',
+        'FinOps dashboards & budget alerts',
+      ],
     },
     {
       icon: '⚡',
@@ -16,6 +30,11 @@
       description:
         'Migrate legacy .NET Framework apps to .NET 9/10. Architect minimal APIs, Blazor frontends, Orleans distributed systems, and cloud-native patterns on Azure.',
       tags: ['.NET 9', 'C#', 'Blazor', 'Orleans'],
+      bullets: [
+        'Incremental migration planning for legacy workloads',
+        'Performance tuning and observability instrumentation',
+        'Modern CI/CD pipelines for .NET services',
+      ],
     },
     {
       icon: '🔶',
@@ -23,6 +42,11 @@
       description:
         'Full Cloudflare stack implementation: Workers, D1, R2, KV, Queues, Zero Trust / SASE. I\'m an expert-level practitioner — this entire site runs on Cloudflare.',
       tags: ['Workers', 'D1', 'R2', 'Zero Trust'],
+      bullets: [
+        'Workers and Durable architecture design',
+        'Zero Trust rollout with staged policy enforcement',
+        'Edge data patterns across D1, R2, and KV',
+      ],
     },
     {
       icon: '🔒',
@@ -30,6 +54,11 @@
       description:
         'Zero-trust architectures, DNS encryption (DoH/DoT), SASE deployment, security-first SDLC practices, and compliance-ready infrastructure design.',
       tags: ['Zero Trust', 'SASE', 'DNS', 'DoH/DoT'],
+      bullets: [
+        'Zero-trust policy modeling and implementation',
+        'Security hardening with practical compliance controls',
+        'Threat-informed architecture and segmentation',
+      ],
     },
     {
       icon: '🌐',
@@ -37,6 +66,11 @@
       description:
         'Hardware and software network architecture at enterprise scale — SD-WAN, BGP, UniFi/Ubiquiti deployments, Cloudflare Tunnel, and secure remote access.',
       tags: ['SD-WAN', 'UniFi', 'BGP', 'Tunnels'],
+      bullets: [
+        'SD-WAN and edge routing strategy',
+        'BGP design for resilient hybrid connectivity',
+        'Secure remote access with Cloudflare Tunnel',
+      ],
     },
     {
       icon: '🛠️',
@@ -44,25 +78,98 @@
       description:
         'Architecture reviews, technology selection, team enablement, and fractional CTO services. I help engineering orgs ship better software, faster.',
       tags: ['Advisory', 'CTO', 'Code Review', 'Team'],
+      bullets: [
+        'Architecture reviews and modernization roadmaps',
+        'Team enablement through pairing and standards',
+        'Pragmatic technology selection for product velocity',
+      ],
     },
   ];
 
-  const creativeServices = [
+  const creativeServices: Service[] = [
     {
       icon: '🎨',
       title: 'Digital Media & Web Design',
       description: 'Modern, performant web experiences with a strong visual identity. From brand design to full-stack Astro/Svelte builds.',
       tags: ['Astro', 'Svelte', 'Design', 'Brand'],
+      bullets: [
+        'Brand-aligned design systems and visual direction',
+        'Performance-first Astro and Svelte implementation',
+        'Conversion-focused UX and content structure',
+      ],
     },
     {
       icon: '🔗',
       title: 'Microsoft 365 & Teams',
       description: 'M365 tenant architecture, Teams customization, SharePoint, and OneDrive deployment with governance best practices.',
       tags: ['M365', 'Teams', 'SharePoint'],
+      bullets: [
+        'Tenant architecture and governance guardrails',
+        'Teams and SharePoint collaboration patterns',
+        'Adoption and enablement plans for business teams',
+      ],
     },
   ];
 
   let activeTab = $state<'technical' | 'creative'>('technical');
+  let expandedTechnicalIndex = $state<number | null>(null);
+  let expandedCreativeIndex = $state<number | null>(null);
+
+  function toggleService(tab: 'technical' | 'creative', index: number) {
+    if (tab === 'technical') {
+      expandedTechnicalIndex = expandedTechnicalIndex === index ? null : index;
+      return;
+    }
+
+    expandedCreativeIndex = expandedCreativeIndex === index ? null : index;
+  }
+
+  function openCalendlyPopup(e: MouseEvent) {
+    e.preventDefault();
+    const calendly = (window as Window & {
+      Calendly?: { initPopupWidget?: (options: { url: string }) => void };
+    }).Calendly;
+
+    if (calendly?.initPopupWidget) {
+      calendly.initPopupWidget({ url: 'https://calendly.com/jaysonknight' });
+      return;
+    }
+
+    window.location.href = 'https://calendly.com/jaysonknight';
+  }
+
+  $effect(() => {
+    activeTab;
+
+    let cancelled = false;
+    let observer: IntersectionObserver | undefined;
+
+    tick().then(() => {
+      if (cancelled) {
+        return;
+      }
+
+      observer = new IntersectionObserver(
+        (entries) => {
+          entries.forEach((entry) => {
+            if (entry.isIntersecting) {
+              entry.target.classList.add('visible');
+            }
+          });
+        },
+        { threshold: 0.05, rootMargin: '0px 0px -20px 0px' }
+      );
+
+      document.querySelectorAll('#services .animate-on-scroll:not(.visible)').forEach((el) => {
+        observer?.observe(el);
+      });
+    });
+
+    return () => {
+      cancelled = true;
+      observer?.disconnect();
+    };
+  });
 </script>
 
 <section id="services" class="section-pad" style="background: var(--color-bg);">
@@ -104,9 +211,19 @@
     {#if activeTab === 'technical'}
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {#each technicalServices as service, i}
+          {@const isExpanded = expandedTechnicalIndex === i}
           <div
-            class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll"
-            style="background: var(--color-card); transition-delay: {i * 0.07}s;"
+            class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
+            style="background: var(--color-card); transition-delay: {i * 0.07}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
+            role="button"
+            tabindex="0"
+            onclick={() => toggleService('technical', i)}
+            onkeydown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleService('technical', i);
+              }
+            }}
           >
             <div class="text-3xl mb-4" aria-hidden="true">{service.icon}</div>
             <h3 class="text-lg font-semibold mb-3" style="font-family: var(--font-heading); color: var(--color-text);">
@@ -123,15 +240,46 @@
                 >{tag}</span>
               {/each}
             </div>
+            <div class="mt-4 text-xs" style="color: var(--color-cyan); font-family: var(--font-mono);">
+              {isExpanded ? '▴ Details' : '▾ Details'}
+            </div>
+            {#if isExpanded}
+              <div
+                class="mt-4 rounded-lg p-4"
+                style="background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25);"
+              >
+                <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--color-cyan); font-family: var(--font-mono);">
+                  Learn More
+                </div>
+                <ul class="space-y-1.5">
+                  {#each service.bullets as bullet}
+                    <li class="text-sm flex gap-2" style="color: var(--color-text-dim);">
+                      <span style="color: var(--color-cyan);">•</span>
+                      <span>{bullet}</span>
+                    </li>
+                  {/each}
+                </ul>
+              </div>
+            {/if}
           </div>
         {/each}
       </div>
     {:else}
       <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {#each creativeServices as service, i}
+          {@const isExpanded = expandedCreativeIndex === i}
           <div
-            class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll"
-            style="background: var(--color-card); transition-delay: {i * 0.1}s;"
+            class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
+            style="background: var(--color-card); transition-delay: {i * 0.1}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
+            role="button"
+            tabindex="0"
+            onclick={() => toggleService('creative', i)}
+            onkeydown={(e) => {
+              if (e.key === 'Enter' || e.key === ' ') {
+                e.preventDefault();
+                toggleService('creative', i);
+              }
+            }}
           >
             <div class="text-3xl mb-4" aria-hidden="true">{service.icon}</div>
             <h3 class="text-lg font-semibold mb-3" style="font-family: var(--font-heading); color: var(--color-text);">
@@ -148,6 +296,27 @@
                 >{tag}</span>
               {/each}
             </div>
+            <div class="mt-4 text-xs" style="color: var(--color-cyan); font-family: var(--font-mono);">
+              {isExpanded ? '▴ Details' : '▾ Details'}
+            </div>
+            {#if isExpanded}
+              <div
+                class="mt-4 rounded-lg p-4"
+                style="background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25);"
+              >
+                <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--color-cyan); font-family: var(--font-mono);">
+                  Learn More
+                </div>
+                <ul class="space-y-1.5">
+                  {#each service.bullets as bullet}
+                    <li class="text-sm flex gap-2" style="color: var(--color-text-dim);">
+                      <span style="color: var(--color-cyan);">•</span>
+                      <span>{bullet}</span>
+                    </li>
+                  {/each}
+                </ul>
+              </div>
+            {/if}
           </div>
         {/each}
 
@@ -181,8 +350,7 @@
       </p>
       <a
         href="https://calendly.com/jaysonknight"
-        target="_blank"
-        rel="noopener noreferrer"
+        onclick={openCalendlyPopup}
         class="btn btn-red"
       >
         📅 Book a Consultation
