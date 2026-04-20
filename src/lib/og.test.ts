@@ -26,10 +26,6 @@ vi.mock('@resvg/resvg-wasm', () => ({
   },
 }));
 
-vi.mock('@resvg/resvg-wasm/index_bg.wasm?module', () => ({
-  default: {},
-}));
-
 const createFontResponse = (ok: boolean, bytes: number[] = [1, 2, 3]) => ({
   ok,
   status: ok ? 200 : 503,
@@ -55,6 +51,8 @@ describe('generateOgImage retry guards', () => {
 
   it('retries resvg initialization after a transient failure', async () => {
     initWasm.mockRejectedValueOnce(new Error('init failed')).mockResolvedValue(undefined);
+    // mockResolvedValue (not Once) covers the WASM fetch and all font fetches for
+    // both generateOgImage calls without needing exact ordering.
     vi.stubGlobal(
       'fetch',
       vi
@@ -72,12 +70,21 @@ describe('generateOgImage retry guards', () => {
 
   it('retries font fetch after a transient failure', async () => {
     initWasm.mockResolvedValue(undefined);
+    // Fetch call ordering with the new same-origin asset approach:
+    //   #1  WASM URL       — fetched once on first ensureResvgInitialized(); initWasm() is
+    //                         mocked so it does not await this response, but fetch() is called.
+    //   #2  regular font   — fails (triggers fontData retry guard)
+    //   #3  bold font      — runs in parallel with #2 via Promise.all(); consumes a slot even
+    //                         though Promise.all rejects on the regular-font failure
+    //   #4  regular font   — second generateOgImage call, fontData cleared, retry succeeds
+    //   #5  bold font      — second generateOgImage call, succeeds
     const fetchMock = vi
       .fn()
-      .mockResolvedValueOnce(createFontResponse(false))
-      .mockResolvedValueOnce(createFontResponse(true, [10]))
-      .mockResolvedValueOnce(createFontResponse(true, [11]))
-      .mockResolvedValueOnce(createFontResponse(true, [12]));
+      .mockResolvedValueOnce(createFontResponse(true))         // #1 WASM
+      .mockResolvedValueOnce(createFontResponse(false))        // #2 regular font → fails
+      .mockResolvedValueOnce(createFontResponse(true, [10]))   // #3 bold font (parallel)
+      .mockResolvedValueOnce(createFontResponse(true, [11]))   // #4 regular font (retry)
+      .mockResolvedValueOnce(createFontResponse(true, [12]));  // #5 bold font (retry)
     vi.stubGlobal('fetch', fetchMock);
 
     const { generateOgImage } = await import('./og');
@@ -87,6 +94,6 @@ describe('generateOgImage retry guards', () => {
     );
     await expect(generateOgImage(imageOptions)).resolves.toEqual(Uint8Array.from([1, 2, 3]));
 
-    expect(fetchMock).toHaveBeenCalledTimes(4);
+    expect(fetchMock).toHaveBeenCalledTimes(5);
   });
 });

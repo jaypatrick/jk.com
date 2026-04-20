@@ -1,17 +1,21 @@
 import satori from 'satori';
 import { Resvg, initWasm } from '@resvg/resvg-wasm';
-import resvgWasmModule from '@resvg/resvg-wasm/index_bg.wasm?module';
+
+// Serve the WASM binary and fonts from the same Cloudflare ASSETS origin rather
+// than bundling WASM into the Worker script.  Bundling via the ?module Vite hint
+// fails silently under Rolldown (Astro 6 / Vite 8), causing initWasm() to throw
+// and the endpoint to return text/plain instead of image/png.
+const SITE_ORIGIN = import.meta.env.SITE ?? 'https://jaysonknight.com';
+
+const SPACE_GROTESK_REGULAR = `${SITE_ORIGIN}/fonts/space-grotesk-400.woff`;
+const SPACE_GROTESK_BOLD = `${SITE_ORIGIN}/fonts/space-grotesk-700.woff`;
+const RESVG_WASM_URL = `${SITE_ORIGIN}/wasm/resvg.wasm`;
 
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 const OG_BACKGROUND = '#05050a';
 const OG_ACCENT = '#00d4ff';
 const OG_SITE_LABEL = 'jaysonknight.com';
-
-const SPACE_GROTESK_REGULAR =
-  'https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.2.10/files/space-grotesk-latin-400-normal.woff';
-const SPACE_GROTESK_BOLD =
-  'https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.2.10/files/space-grotesk-latin-700-normal.woff';
 
 interface SatoriLikeElement {
   type: string;
@@ -71,8 +75,11 @@ const fetchFontData = async (): Promise<{ regular: ArrayBuffer; bold: ArrayBuffe
 
 const ensureResvgInitialized = async (): Promise<void> => {
   if (!wasmInitialization) {
+    // Pass the fetch() Promise directly — initWasm() will stream and compile the
+    // WASM via WebAssembly.instantiateStreaming(), which is fully supported in the
+    // Cloudflare Workers runtime and avoids any bundler-level WASM handling.
     const pendingWasmInitialization = (async () => {
-      await initWasm(resvgWasmModule);
+      await initWasm(fetch(RESVG_WASM_URL));
     })();
 
     wasmInitialization = pendingWasmInitialization;
