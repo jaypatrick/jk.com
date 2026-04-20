@@ -1,17 +1,17 @@
 import satori from 'satori';
 import { Resvg, initWasm } from '@resvg/resvg-wasm';
-import resvgWasmModule from '@resvg/resvg-wasm/index_bg.wasm?module';
+
+// Serve the WASM binary and fonts from the same Cloudflare ASSETS origin rather
+// than bundling WASM into the Worker script.  Bundling via the ?module Vite hint
+// fails silently under Rolldown (Astro 6 / Vite 8), causing initWasm() to throw
+// and the endpoint to return text/plain instead of image/png.
+const DEFAULT_SITE_ORIGIN = import.meta.env.SITE ?? 'https://jaysonknight.com';
 
 const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 const OG_BACKGROUND = '#05050a';
 const OG_ACCENT = '#00d4ff';
 const OG_SITE_LABEL = 'jaysonknight.com';
-
-const SPACE_GROTESK_REGULAR =
-  'https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.2.10/files/space-grotesk-latin-400-normal.woff';
-const SPACE_GROTESK_BOLD =
-  'https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.2.10/files/space-grotesk-latin-700-normal.woff';
 
 interface SatoriLikeElement {
   type: string;
@@ -25,10 +25,11 @@ export interface GenerateOgImageOptions {
   title: string;
   description: string;
   path: string;
+  assetOrigin?: string;
 }
 
-let wasmInitialization: Promise<void> | undefined;
-let fontData: Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> | undefined;
+const wasmInitializationByOrigin = new Map<string, Promise<void>>();
+const fontDataByOrigin = new Map<string, Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }>>();
 
 const normalizePath = (path: string): string => {
   if (!path || path === '/') {
@@ -47,43 +48,66 @@ const fetchBinary = async (url: string, label: string): Promise<ArrayBuffer> => 
   return response.arrayBuffer();
 };
 
-const fetchFontData = async (): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
-  if (!fontData) {
-    const pendingFontData = (async () => {
-      const [regular, bold] = await Promise.all([
-        fetchBinary(SPACE_GROTESK_REGULAR, 'Space Grotesk regular font'),
-        fetchBinary(SPACE_GROTESK_BOLD, 'Space Grotesk bold font'),
-      ]);
+const resolveSiteOrigin = (assetOrigin: string | undefined): string => {
+  const candidateOrigin = assetOrigin || DEFAULT_SITE_ORIGIN;
 
-      return { regular, bold };
-    })();
-
-    fontData = pendingFontData;
-    pendingFontData.catch(() => {
-      if (fontData === pendingFontData) {
-        fontData = undefined;
-      }
-    });
+  try {
+    return new URL(candidateOrigin).origin;
+  } catch {
+    throw new Error(`Invalid OG asset origin: ${candidateOrigin}`);
   }
-
-  return fontData;
 };
 
-const ensureResvgInitialized = async (): Promise<void> => {
-  if (!wasmInitialization) {
-    const pendingWasmInitialization = (async () => {
-      await initWasm(resvgWasmModule);
-    })();
-
-    wasmInitialization = pendingWasmInitialization;
-    pendingWasmInitialization.catch(() => {
-      if (wasmInitialization === pendingWasmInitialization) {
-        wasmInitialization = undefined;
-      }
-    });
+const fetchFontData = async (siteOrigin: string): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
+  const existingFontData = fontDataByOrigin.get(siteOrigin);
+  if (existingFontData) {
+    return existingFontData;
   }
 
-  await wasmInitialization;
+  const spaceGroteskRegularUrl = `${siteOrigin}/fonts/space-grotesk-400.woff`;
+  const spaceGroteskBoldUrl = `${siteOrigin}/fonts/space-grotesk-700.woff`;
+  const pendingFontData = (async () => {
+    const [regular, bold] = await Promise.all([
+      fetchBinary(spaceGroteskRegularUrl, 'Space Grotesk regular font'),
+      fetchBinary(spaceGroteskBoldUrl, 'Space Grotesk bold font'),
+    ]);
+
+    return { regular, bold };
+  })();
+
+  fontDataByOrigin.set(siteOrigin, pendingFontData);
+  pendingFontData.catch(() => {
+    if (fontDataByOrigin.get(siteOrigin) === pendingFontData) {
+      fontDataByOrigin.delete(siteOrigin);
+    }
+  });
+
+  return pendingFontData;
+};
+
+const ensureResvgInitialized = async (siteOrigin: string): Promise<void> => {
+  const existingWasmInitialization = wasmInitializationByOrigin.get(siteOrigin);
+  if (existingWasmInitialization) {
+    await existingWasmInitialization;
+    return;
+  }
+
+  const resvgWasmUrl = `${siteOrigin}/wasm/resvg.wasm`;
+  // Pass the fetch() Promise directly — initWasm() will stream and compile the
+  // WASM via WebAssembly.instantiateStreaming(), which is fully supported in the
+  // Cloudflare Workers runtime and avoids any bundler-level WASM handling.
+  const pendingWasmInitialization = (async () => {
+    await initWasm(fetch(resvgWasmUrl));
+  })();
+
+  wasmInitializationByOrigin.set(siteOrigin, pendingWasmInitialization);
+  pendingWasmInitialization.catch(() => {
+    if (wasmInitializationByOrigin.get(siteOrigin) === pendingWasmInitialization) {
+      wasmInitializationByOrigin.delete(siteOrigin);
+    }
+  });
+
+  await pendingWasmInitialization;
 };
 
 const createOgTree = ({
@@ -198,9 +222,12 @@ export const generateOgImage = async ({
   title,
   description,
   path,
+  assetOrigin,
 }: GenerateOgImageOptions): Promise<Uint8Array> => {
-  await ensureResvgInitialized();
-  const fonts = await fetchFontData();
+  const siteOrigin = resolveSiteOrigin(assetOrigin);
+
+  await ensureResvgInitialized(siteOrigin);
+  const fonts = await fetchFontData(siteOrigin);
   const tree = createOgTree({ title, description, path: normalizePath(path) });
 
   const svg = await satori(tree as Parameters<typeof satori>[0], {
