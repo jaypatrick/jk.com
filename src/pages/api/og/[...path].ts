@@ -25,8 +25,7 @@ export const GET: APIRoute = async ({ params, request }) => {
       description,
       path: pagePath,
     });
-    const pngBody = new ArrayBuffer(png.byteLength);
-    new Uint8Array(pngBody).set(png);
+    const pngBody = png.buffer instanceof ArrayBuffer ? png.buffer : png.slice().buffer;
 
     return new Response(pngBody, {
       headers: {
