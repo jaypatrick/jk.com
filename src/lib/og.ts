@@ -233,7 +233,7 @@ export const generateOgImage = async ({
   path,
   assetOrigin,
   fetchAsset,
-}: GenerateOgImageOptions): Promise<Uint8Array<ArrayBuffer>> => {
+}: GenerateOgImageOptions): Promise<Uint8Array> => {
   const siteOrigin = resolveSiteOrigin(assetOrigin);
   const fetcher = fetchAsset ?? fetch;
 
