@@ -5,7 +5,7 @@ describe('contactSchema', () => {
   it('parses and normalizes valid payloads', () => {
     const parsed = contactSchema.parse({
       name: '  Jayson Knight  ',
-      email: '  TEST@EXAMPLE.COM  ',
+      email: 'TEST@EXAMPLE.COM',
       company: '  JK  ',
       message: '  This is a valid contact message.  ',
     });

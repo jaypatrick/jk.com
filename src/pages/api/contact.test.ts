@@ -14,7 +14,7 @@ const getContext = (request: Request, env?: Partial<CloudflareBindings>) =>
 describe('POST /api/contact', () => {
   it('returns 400 for invalid JSON body', async () => {
     const response = await POST(
-      getContext(new Request('https://example.com/api/contact', { method: 'POST', body: '{invalid' }))
+      getContext(new Request('https://example.com/', { method: 'POST', body: '{invalid' }))
     );
     const payload = await response.json();
 
@@ -25,7 +25,7 @@ describe('POST /api/contact', () => {
   it('returns 422 for validation errors', async () => {
     const response = await POST(
       getContext(
-        new Request('https://example.com/api/contact', {
+        new Request('https://example.com/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({ name: 'A', email: 'invalid', message: 'short' }),
@@ -45,7 +45,7 @@ describe('POST /api/contact', () => {
 
     const response = await POST(
       getContext(
-        new Request('https://example.com/api/contact', {
+        new Request('https://example.com/', {
           method: 'POST',
           headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
@@ -77,7 +77,7 @@ describe('POST /api/contact', () => {
 
 describe('ALL /api/contact', () => {
   it('returns 405 for unsupported methods', async () => {
-    const response = await ALL(getContext(new Request('https://example.com/api/contact', { method: 'GET' })));
+    const response = await ALL(getContext(new Request('https://example.com/', { method: 'GET' })));
     const payload = await response.json();
 
     expect(response.status).toBe(405);

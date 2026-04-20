@@ -1,6 +1,8 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 
-const generateOgImage = vi.fn();
+const { generateOgImage } = vi.hoisted(() => ({
+  generateOgImage: vi.fn(),
+}));
 
 vi.mock('../../../lib/og', () => ({
   generateOgImage,
