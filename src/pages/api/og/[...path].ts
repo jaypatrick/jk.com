@@ -24,6 +24,7 @@ export const GET: APIRoute = async ({ params, request }) => {
       title,
       description,
       path: pagePath,
+      assetOrigin: url.origin,
     });
     const pngBody = png.buffer instanceof ArrayBuffer ? png.buffer : png.slice().buffer;
 

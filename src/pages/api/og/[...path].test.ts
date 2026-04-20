@@ -28,6 +28,7 @@ describe('GET /api/og/[...path]', () => {
       description:
         'Jayson Knight — Solutions Architect specializing in Microsoft Azure, Cloudflare, and .NET. 20+ years building enterprise software that scales.',
       path: '/',
+      assetOrigin: 'https://example.com',
     });
     expect(Array.from(body)).toEqual([1, 2, 3]);
     expect(response.headers.get('Content-Type')).toBe('image/png');
@@ -46,6 +47,7 @@ describe('GET /api/og/[...path]', () => {
       title: 'Custom',
       description: 'Desc',
       path: '/blog/new-post',
+      assetOrigin: 'https://example.com',
     });
   });
 
