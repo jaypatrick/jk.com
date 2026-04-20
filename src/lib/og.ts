@@ -5,7 +5,6 @@ const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 const OG_BACKGROUND = '#05050a';
 const OG_ACCENT = '#00d4ff';
-const DEFAULT_SITE_ORIGIN = 'https://jaysonknight.com';
 
 const SPACE_GROTESK_REGULAR = '/fonts/space-grotesk-400.woff';
 const SPACE_GROTESK_BOLD = '/fonts/space-grotesk-700.woff';
@@ -22,7 +21,7 @@ export interface GenerateOgImageOptions {
   title: string;
   description: string;
   path: string;
-  origin?: string;
+  origin: string;
 }
 
 let wasmInitialization: Promise<void> | undefined;
@@ -45,18 +44,21 @@ const fetchBinary = async (url: URL, label: string): Promise<ArrayBuffer> => {
   return response.arrayBuffer();
 };
 
-const fetchFontData = async (origin?: string): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
+const fetchFontData = async (origin: string): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
   if (!fontData) {
-    fontData = (async () => {
-      const baseUrl = origin ?? DEFAULT_SITE_ORIGIN;
+    const pendingFontData = (async () => {
       const [regular, bold] = await Promise.all([
-        fetchBinary(new URL(SPACE_GROTESK_REGULAR, baseUrl), 'Space Grotesk regular font'),
-        fetchBinary(new URL(SPACE_GROTESK_BOLD, baseUrl), 'Space Grotesk bold font'),
+        fetchBinary(new URL(SPACE_GROTESK_REGULAR, origin), 'Space Grotesk regular font'),
+        fetchBinary(new URL(SPACE_GROTESK_BOLD, origin), 'Space Grotesk bold font'),
       ]);
 
       return { regular, bold };
-    })().catch((error: unknown) => {
-      fontData = undefined;
+    })();
+
+    fontData = pendingFontData.catch((error: unknown) => {
+      if (fontData === pendingFontData) {
+        fontData = undefined;
+      }
       throw error;
     });
   }
@@ -64,18 +66,21 @@ const fetchFontData = async (origin?: string): Promise<{ regular: ArrayBuffer; b
   return fontData;
 };
 
-const ensureResvgInitialized = async (origin?: string): Promise<void> => {
+const ensureResvgInitialized = async (origin: string): Promise<void> => {
   if (!wasmInitialization) {
-    const baseUrl = origin ?? DEFAULT_SITE_ORIGIN;
-    const wasmUrl = new URL('/resvg.wasm', baseUrl);
-    wasmInitialization = (async () => {
+    const wasmUrl = new URL('/resvg.wasm', origin);
+    const pendingWasmInitialization = (async () => {
       const wasmResponse = await fetch(wasmUrl);
       if (!wasmResponse.ok) {
         throw new Error(`Failed to fetch resvg wasm from ${wasmUrl.href}: ${wasmResponse.status}`);
       }
       await initWasm(wasmResponse);
-    })().catch((error: unknown) => {
-      wasmInitialization = undefined;
+    })();
+
+    wasmInitialization = pendingWasmInitialization.catch((error: unknown) => {
+      if (wasmInitialization === pendingWasmInitialization) {
+        wasmInitialization = undefined;
+      }
       throw error;
     });
   }
