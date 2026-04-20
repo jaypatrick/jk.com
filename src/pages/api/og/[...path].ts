@@ -25,8 +25,9 @@ export const GET: APIRoute = async ({ params, request }) => {
     path: pagePath,
     origin: url.origin,
   });
+  const pngBody = new Uint8Array(png);
 
-  return new Response(png, {
+  return new Response(pngBody, {
     headers: {
       'Content-Type': 'image/png',
       'Cache-Control':

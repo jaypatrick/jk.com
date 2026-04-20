@@ -205,8 +205,9 @@ export const generateOgImage = async ({
 }: GenerateOgImageOptions): Promise<Uint8Array> => {
   await ensureResvgInitialized(origin);
   const fonts = await fetchFontData(origin);
+  const tree = createOgTree({ title, description, path: normalizePath(path) });
 
-  const svg = await satori(createOgTree({ title, description, path: normalizePath(path) }), {
+  const svg = await satori(tree as Parameters<typeof satori>[0], {
     width: OG_WIDTH,
     height: OG_HEIGHT,
     fonts: [
