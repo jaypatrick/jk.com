@@ -48,8 +48,15 @@ const fetchBinary = async (url: string, label: string): Promise<ArrayBuffer> => 
   return response.arrayBuffer();
 };
 
-const resolveSiteOrigin = (assetOrigin: string | undefined): string =>
-  (assetOrigin || DEFAULT_SITE_ORIGIN).replace(/\/+$/, '');
+const resolveSiteOrigin = (assetOrigin: string | undefined): string => {
+  const candidateOrigin = (assetOrigin || DEFAULT_SITE_ORIGIN).trim().replace(/\/+$/, '');
+
+  try {
+    return new URL(candidateOrigin).origin;
+  } catch {
+    throw new Error(`Invalid OG asset origin: ${candidateOrigin}`);
+  }
+};
 
 const fetchFontData = async (siteOrigin: string): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
   const existingFontData = fontDataByOrigin.get(siteOrigin);
