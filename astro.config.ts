@@ -5,7 +5,9 @@ import tailwindcss from '@tailwindcss/vite';
 import emdash from 'emdash/astro';
 import { d1, r2 } from '@emdash-cms/cloudflare';
 
-const cloudflareAdapterOptions = {
+const cloudflareAdapterOptions: Parameters<typeof cloudflare>[0] & { compatibilityDate: string } = {
+  // Keep this date in sync with `wrangler.jsonc`'s `compatibility_date`.
+  // Both are currently pinned intentionally until deployment config is consolidated.
   compatibilityDate: '2025-01-01',
   imageService: 'passthrough',
 };
@@ -15,7 +17,7 @@ export default defineConfig({
   output: 'server',
 
   // Astro 6 uses workerd runtime natively — no platformProxy config needed
-  adapter: cloudflare(cloudflareAdapterOptions as Parameters<typeof cloudflare>[0]),
+  adapter: cloudflare(cloudflareAdapterOptions),
 
   integrations: [
     svelte(),
