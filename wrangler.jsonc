@@ -66,6 +66,5 @@
 	// Assets — static files served from Cloudflare's edge
 	"assets": {
 		"directory": "./dist/client",
-		"binding": "ASSETS",
 	},
 }

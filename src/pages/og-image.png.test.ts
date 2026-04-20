@@ -12,24 +12,32 @@ vi.mock('../lib/og', () => ({
 import { GET } from './og-image.png';
 
 describe('GET /og-image.png', () => {
+  const assetsFetch = vi.fn();
+
   beforeEach(() => {
     generateOgImage.mockReset();
     generateOgImage.mockResolvedValue(Uint8Array.from([1, 2, 3]));
+    assetsFetch.mockReset();
+    assetsFetch.mockResolvedValue(new Response(''));
   });
 
   it('generates the default OG image with correct defaults', async () => {
     const response = await GET({
       request: new Request('https://example.com/og-image.png'),
+      locals: { runtime: { env: { ASSETS: { fetch: assetsFetch } } } },
     } as unknown as Parameters<typeof GET>[0]);
 
     const body = new Uint8Array(await response.arrayBuffer());
 
-    expect(generateOgImage).toHaveBeenCalledWith({
-      title: DEFAULT_OG_TITLE,
-      description: DEFAULT_OG_DESCRIPTION,
-      path: '/',
-      assetOrigin: 'https://example.com',
-    });
+    expect(generateOgImage).toHaveBeenCalledWith(
+      expect.objectContaining({
+        title: DEFAULT_OG_TITLE,
+        description: DEFAULT_OG_DESCRIPTION,
+        path: '/',
+        assetOrigin: 'https://example.com',
+        fetchAsset: expect.any(Function),
+      })
+    );
     expect(Array.from(body)).toEqual([1, 2, 3]);
     expect(response.headers.get('Content-Type')).toBe('image/png');
     expect(response.headers.get('Cache-Control')).toBe(
@@ -42,6 +50,7 @@ describe('GET /og-image.png', () => {
 
     const response = await GET({
       request: new Request('https://example.com/og-image.png'),
+      locals: { runtime: { env: { ASSETS: { fetch: assetsFetch } } } },
     } as unknown as Parameters<typeof GET>[0]);
 
     expect(response.status).toBe(500);
