@@ -14,24 +14,34 @@ const getPagePath = (pathParam: string | undefined): string => {
 };
 
 export const GET: APIRoute = async ({ params, request }) => {
-  const url = new URL(request.url);
-  const title = url.searchParams.get('title')?.trim() || DEFAULT_TITLE;
-  const description = url.searchParams.get('description')?.trim() || DEFAULT_DESCRIPTION;
-  const pagePath = getPagePath(params.path);
+  try {
+    const url = new URL(request.url);
+    const title = url.searchParams.get('title')?.trim() || DEFAULT_TITLE;
+    const description = url.searchParams.get('description')?.trim() || DEFAULT_DESCRIPTION;
+    const pagePath = getPagePath(params.path);
 
-  const png = await generateOgImage({
-    title,
-    description,
-    path: pagePath,
-    origin: url.origin,
-  });
-  const pngBody = new Uint8Array(png);
+    const png = await generateOgImage({
+      title,
+      description,
+      path: pagePath,
+    });
+    const pngBody = png.buffer instanceof ArrayBuffer ? png.buffer : png.slice().buffer;
 
-  return new Response(pngBody, {
-    headers: {
-      'Content-Type': 'image/png',
-      'Cache-Control':
-        'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
-    },
-  });
+    return new Response(pngBody, {
+      headers: {
+        'Content-Type': 'image/png',
+        'Cache-Control':
+          'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+      },
+    });
+  } catch (err) {
+    console.error('[og] generateOgImage failed:', err);
+    return new Response('OG image generation failed', {
+      status: 500,
+      headers: {
+        'Content-Type': 'text/plain',
+        'Cache-Control': 'no-store, no-cache',
+      },
+    });
+  }
 };

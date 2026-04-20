@@ -8,8 +8,10 @@ const OG_BACKGROUND = '#05050a';
 const OG_ACCENT = '#00d4ff';
 const OG_SITE_LABEL = 'jaysonknight.com';
 
-const SPACE_GROTESK_REGULAR = '/fonts/space-grotesk-400.woff';
-const SPACE_GROTESK_BOLD = '/fonts/space-grotesk-700.woff';
+const SPACE_GROTESK_REGULAR =
+  'https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.2.10/files/space-grotesk-latin-400-normal.woff';
+const SPACE_GROTESK_BOLD =
+  'https://cdn.jsdelivr.net/npm/@fontsource/space-grotesk@5.2.10/files/space-grotesk-latin-700-normal.woff';
 
 interface SatoriLikeElement {
   type: string;
@@ -23,7 +25,6 @@ export interface GenerateOgImageOptions {
   title: string;
   description: string;
   path: string;
-  origin: string;
 }
 
 let wasmInitialization: Promise<void> | undefined;
@@ -37,7 +38,7 @@ const normalizePath = (path: string): string => {
   return path.startsWith('/') ? path : `/${path}`;
 };
 
-const fetchBinary = async (url: URL, label: string): Promise<ArrayBuffer> => {
+const fetchBinary = async (url: string, label: string): Promise<ArrayBuffer> => {
   const response = await fetch(url);
   if (!response.ok) {
     throw new Error(`Failed to fetch ${label}: ${response.status} ${response.statusText}`);
@@ -46,12 +47,12 @@ const fetchBinary = async (url: URL, label: string): Promise<ArrayBuffer> => {
   return response.arrayBuffer();
 };
 
-const fetchFontData = async (origin: string): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
+const fetchFontData = async (): Promise<{ regular: ArrayBuffer; bold: ArrayBuffer }> => {
   if (!fontData) {
     const pendingFontData = (async () => {
       const [regular, bold] = await Promise.all([
-        fetchBinary(new URL(SPACE_GROTESK_REGULAR, origin), 'Space Grotesk regular font'),
-        fetchBinary(new URL(SPACE_GROTESK_BOLD, origin), 'Space Grotesk bold font'),
+        fetchBinary(SPACE_GROTESK_REGULAR, 'Space Grotesk regular font'),
+        fetchBinary(SPACE_GROTESK_BOLD, 'Space Grotesk bold font'),
       ]);
 
       return { regular, bold };
@@ -89,7 +90,7 @@ const createOgTree = ({
   title,
   description,
   path,
-}: Omit<GenerateOgImageOptions, 'origin'>): SatoriLikeElement => ({
+}: GenerateOgImageOptions): SatoriLikeElement => ({
   type: 'div',
   props: {
     style: {
@@ -197,10 +198,9 @@ export const generateOgImage = async ({
   title,
   description,
   path,
-  origin,
 }: GenerateOgImageOptions): Promise<Uint8Array> => {
   await ensureResvgInitialized();
-  const fonts = await fetchFontData(origin);
+  const fonts = await fetchFontData();
   const tree = createOgTree({ title, description, path: normalizePath(path) });
 
   const svg = await satori(tree as Parameters<typeof satori>[0], {
@@ -220,7 +220,7 @@ export const generateOgImage = async ({
   });
 
   try {
-    return resvg.render().asPng();
+    return Uint8Array.from(resvg.render().asPng());
   } finally {
     resvg.free();
   }
