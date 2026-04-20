@@ -2,9 +2,10 @@
 // Run `wrangler types` after editing to regenerate TypeScript bindings
 {
 	"name": "jk-dot-com",
-	// main is intentionally omitted here — passing it at build time causes
-	// @cloudflare/vite-plugin to fail because dist/_worker.js doesn't exist yet.
-	// Instead, the script is passed as a positional arg to `wrangler deploy`.
+	// main is intentionally omitted here — the adapter generates
+	// `dist/server/wrangler.json` during build, pointing at the built worker
+	// entry file (typically `entry.mjs`). For local deploys, use
+	// `wrangler deploy --config dist/server/wrangler.json`.
 	"compatibility_date": "2025-01-01",
 	"compatibility_flags": [
 		"nodejs_compat"
