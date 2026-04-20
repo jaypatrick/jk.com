@@ -28,3 +28,8 @@ declare namespace App {
     };
   }
 }
+
+declare module '*.wasm?module' {
+  const module: WebAssembly.Module;
+  export default module;
+}
