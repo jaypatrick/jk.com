@@ -2,22 +2,12 @@
 // Run `wrangler types` after editing to regenerate TypeScript bindings
 {
 	"name": "jk-dot-com",
-	// main is intentionally omitted here — the adapter generates
-	// `dist/server/wrangler.json` during build, pointing at the built worker
-	// entry file (typically `entry.mjs`). For local deploys, use
-	// `wrangler deploy --config dist/server/wrangler.json`.
-	"compatibility_date": "2025-01-01",
+	"compatibility_date": "2026-04-01",
 	"compatibility_flags": [
 		"nodejs_compat"
 	],
 	// D1 Database — used by EmDash for blog CMS
 	"d1_databases": [
-		// {
-		// 	"binding": "DB",
-		// 	"database_name": "jk-emdash",
-		// 	// TODO: Run `npm run db:create` and paste the database_id here
-		// 	"database_id": "YOUR_DATABASE_ID_HERE"
-		// },
 		{
 			"binding": "jk_emdash",
 			"database_name": "jk-emdash",
@@ -26,10 +16,6 @@
 	],
 	// R2 Bucket — used by EmDash for media uploads
 	"r2_buckets": [
-		// {
-		// 	"binding": "MEDIA_BUCKET",
-		// 	"bucket_name": "jk-media"
-		// },
 		{
 			"bucket_name": "jk-media",
 			"binding": "jk_media",
@@ -37,10 +23,6 @@
 	],
 	// KV Namespace — for edge caching and session data
 	"kv_namespaces": [
-		// {
-		// 	"binding": "CACHE",
-		// 	"id": "YOUR_KV_NAMESPACE_ID_HERE"
-		// },
 		{
 			"binding": "CACHE",
 			"id": "7349e21bc5924747a9d405218dc2f162",
@@ -54,10 +36,23 @@
 		},
 	],
 	// Workers Observability — Cloudflare-native logging and tracing
-	"observability": {
-		"enabled": true,
-		"head_sampling_rate": 1,
-	},
+	{
+  	"observability": {
+    	"enabled": true,
+    	"head_sampling_rate": 1,
+    	"logs": {
+      		"enabled": true,
+      		"head_sampling_rate": 1,
+      		"persist": true,
+      		"invocation_logs": true
+    },
+    "traces": {
+      "enabled": true,
+      "persist": true,
+      "head_sampling_rate": 1
+    }
+  }
+}
 	// Environment variables — set secrets via `wrangler secret put`
 	"vars": {
 		"ENVIRONMENT": "production",
