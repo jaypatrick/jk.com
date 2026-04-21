@@ -17,13 +17,17 @@ export const GET: APIRoute = async ({ params, request }) => {
     const title = url.searchParams.get('title')?.trim() || DEFAULT_OG_TITLE;
     const description = url.searchParams.get('description')?.trim() || DEFAULT_OG_DESCRIPTION;
     const pagePath = getPagePath(params.path);
+    const fetchAsset =
+      typeof env?.ASSETS?.fetch === 'function'
+        ? (assetUrl: string) => env.ASSETS.fetch(new Request(assetUrl))
+        : undefined;
 
     const png = await generateOgImage({
       title,
       description,
       path: pagePath,
       assetOrigin: url.origin,
-      fetchAsset: (assetUrl) => env.ASSETS.fetch(new Request(assetUrl)),
+      fetchAsset,
     });
     return new Response(png as BodyInit, {
       headers: {
