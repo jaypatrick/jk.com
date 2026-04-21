@@ -4,7 +4,7 @@
 import '../styles/global.css';
 import Header from '../components/layout/Header.svelte';
 import Footer from '../components/layout/Footer.svelte';
-import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
+import { buildSeoMetadata } from '../lib/seo';
 
 interface Props {
   title?: string;
@@ -14,17 +14,20 @@ interface Props {
 }
 
 const {
-  title = DEFAULT_OG_TITLE,
-  description = DEFAULT_OG_DESCRIPTION,
+  title,
+  description,
   ogImage: ogImageProp,
   noIndex = false,
 } = Astro.props;
 
-const resolvedOgImageUrl = ogImageProp
-  ? new URL(ogImageProp, Astro.site).href
-  : new URL('/og-image.png', Astro.site).href;
-
-const canonicalUrl = new URL(Astro.url.pathname, Astro.site);
+const site = Astro.site ?? new URL(Astro.url.origin);
+const seo = buildSeoMetadata({
+  site,
+  pathname: Astro.url.pathname,
+  title,
+  description,
+  ogImage: ogImageProp,
+});
 const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
 ---
 
@@ -36,24 +39,24 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
     <meta http-equiv="X-UA-Compatible" content="IE=edge" />
 
     <!-- SEO -->
-    <title>{title}</title>
-    <meta name="description" content={description} />
-    <link rel="canonical" href={canonicalUrl.href} />
+    <title>{seo.title}</title>
+    <meta name="description" content={seo.description} />
+    <link rel="canonical" href={seo.canonicalUrl} />
     {noIndex && <meta name="robots" content="noindex, nofollow" />}
 
     <!-- Open Graph -->
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={canonicalUrl.href} />
-    <meta property="og:title" content={title} />
-    <meta property="og:description" content={description} />
-    <meta property="og:image" content={resolvedOgImageUrl} />
-    <meta property="og:site_name" content="JK.com" />
+    <meta property="og:type" content={seo.ogType} />
+    <meta property="og:url" content={seo.canonicalUrl} />
+    <meta property="og:title" content={seo.title} />
+    <meta property="og:description" content={seo.description} />
+    <meta property="og:image" content={seo.ogImageUrl} />
+    <meta property="og:site_name" content={seo.ogSiteName} />
 
     <!-- Twitter -->
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content={title} />
-    <meta name="twitter:description" content={description} />
-    <meta name="twitter:image" content={resolvedOgImageUrl} />
+    <meta name="twitter:card" content={seo.twitterCard} />
+    <meta name="twitter:title" content={seo.title} />
+    <meta name="twitter:description" content={seo.description} />
+    <meta name="twitter:image" content={seo.ogImageUrl} />
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -78,8 +81,8 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
       '@context': 'https://schema.org',
       '@type': 'ProfessionalService',
       name: 'JK.com — Jayson Knight Consulting',
-      description: description,
-      url: 'https://jaysonknight.com',
+      description: seo.description,
+      url: seo.canonicalUrl,
       telephone: '+19807297877',
       address: {
         '@type': 'PostalAddress',

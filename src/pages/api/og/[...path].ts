@@ -1,7 +1,14 @@
 import type { APIRoute } from 'astro';
 import { env } from 'cloudflare:workers';
 import { generateOgImage } from '../../../lib/og';
+import { generateFallbackOgPng } from '../../../lib/og-fallback';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../../../lib/og-defaults';
+
+const STATIC_OG_FALLBACK_PATH = '/og-fallback.png';
+const OG_IMAGE_CACHE_CONTROL =
+  'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800';
+const OG_GENERATED_FALLBACK_CACHE_CONTROL =
+  'public, max-age=60, s-maxage=300, stale-while-revalidate=600';
 
 const getPagePath = (pathParam: string | undefined): string => {
   if (!pathParam) {
@@ -32,17 +39,36 @@ export const GET: APIRoute = async ({ params, request }) => {
     return new Response(png as BodyInit, {
       headers: {
         'Content-Type': 'image/png',
-        'Cache-Control':
-          'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+        'Cache-Control': OG_IMAGE_CACHE_CONTROL,
       },
     });
   } catch (err) {
     console.error('[og] generateOgImage failed:', err);
-    return new Response('OG image generation failed', {
-      status: 500,
+
+    try {
+      if (typeof env?.ASSETS?.fetch === 'function') {
+        const fallbackUrl = new URL(STATIC_OG_FALLBACK_PATH, request.url).toString();
+        const staticFallbackResponse = await env.ASSETS.fetch(new Request(fallbackUrl));
+
+        if (staticFallbackResponse.ok) {
+          return new Response(staticFallbackResponse.body, {
+            status: 200,
+            headers: {
+              'Content-Type': 'image/png',
+              'Cache-Control': OG_IMAGE_CACHE_CONTROL,
+            },
+          });
+        }
+      }
+    } catch (fallbackErr) {
+      console.error('[og] static fallback failed:', fallbackErr);
+    }
+
+    return new Response(await generateFallbackOgPng(), {
+      status: 200,
       headers: {
-        'Content-Type': 'text/plain',
-        'Cache-Control': 'no-store, no-cache',
+        'Content-Type': 'image/png',
+        'Cache-Control': OG_GENERATED_FALLBACK_CACHE_CONTROL,
       },
     });
   }

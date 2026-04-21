@@ -1,14 +1,18 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../../../lib/og-defaults';
 
-const { generateOgImage, assetsFetch, workersEnv } = vi.hoisted(() => ({
+const { generateOgImage, generateFallbackOgPng, assetsFetch, workersEnv } = vi.hoisted(() => ({
   generateOgImage: vi.fn(),
+  generateFallbackOgPng: vi.fn(),
   assetsFetch: vi.fn(),
   workersEnv: {} as { ASSETS?: { fetch: (...args: unknown[]) => unknown } },
 }));
 
 vi.mock('../../../lib/og', () => ({
   generateOgImage,
+}));
+vi.mock('../../../lib/og-fallback', () => ({
+  generateFallbackOgPng,
 }));
 vi.mock('cloudflare:workers', () => ({
   env: workersEnv,
@@ -20,8 +24,14 @@ describe('GET /api/og/[...path]', () => {
   beforeEach(() => {
     generateOgImage.mockReset();
     generateOgImage.mockResolvedValue(Uint8Array.from([1, 2, 3]));
+    generateFallbackOgPng.mockReset();
+    generateFallbackOgPng.mockResolvedValue(Uint8Array.from([7, 8, 9]));
     assetsFetch.mockReset();
-    assetsFetch.mockResolvedValue(new Response(''));
+    assetsFetch.mockResolvedValue(
+      new Response(Uint8Array.from([4, 5, 6]), {
+        headers: { 'Content-Type': 'image/png' },
+      })
+    );
     workersEnv.ASSETS = { fetch: assetsFetch };
   });
 
@@ -80,18 +90,41 @@ describe('GET /api/og/[...path]', () => {
     expect(Array.from(body)).toEqual([1, 2, 3]);
   });
 
-  it('returns plain-text 500 response when generation fails', async () => {
+  it('returns static fallback PNG when generation fails', async () => {
     generateOgImage.mockRejectedValue(new Error('boom'));
 
     const response = await GET({
       params: { path: 'blog/new-post' },
       request: new Request('https://example.com/api/og?title=Custom&description=Desc'),
     } as unknown as Parameters<typeof GET>[0]);
+    const body = new Uint8Array(await response.arrayBuffer());
 
-    expect(response.status).toBe(500);
-    expect(response.headers.get('Content-Type')).toBe('text/plain');
-    expect(response.headers.get('Cache-Control')).toBe('no-store, no-cache');
-    await expect(response.text()).resolves.toBe('OG image generation failed');
+    expect(response.status).toBe(200);
+    expect(Array.from(body)).toEqual([4, 5, 6]);
+    expect(response.headers.get('Content-Type')).toBe('image/png');
+    expect(response.headers.get('Cache-Control')).toBe(
+      'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800'
+    );
+    expect(generateFallbackOgPng).not.toHaveBeenCalled();
+  });
+
+  it('returns generated fallback PNG when generation and static fallback fail', async () => {
+    generateOgImage.mockRejectedValue(new Error('boom'));
+    assetsFetch.mockResolvedValue(new Response('missing', { status: 404 }));
+
+    const response = await GET({
+      params: { path: 'blog/new-post' },
+      request: new Request('https://example.com/api/og?title=Custom&description=Desc'),
+    } as unknown as Parameters<typeof GET>[0]);
+    const body = new Uint8Array(await response.arrayBuffer());
+
+    expect(response.status).toBe(200);
+    expect(Array.from(body)).toEqual([7, 8, 9]);
+    expect(response.headers.get('Content-Type')).toBe('image/png');
+    expect(response.headers.get('Cache-Control')).toBe(
+      'public, max-age=60, s-maxage=300, stale-while-revalidate=600'
+    );
+    expect(generateFallbackOgPng).toHaveBeenCalledTimes(1);
   });
 
   it('falls back to internal asset fetch when ASSETS binding is unavailable', async () => {
