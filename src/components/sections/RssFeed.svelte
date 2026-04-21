@@ -113,34 +113,49 @@
         {error}
       </div>
     {:else}
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {#each formattedItems as item, i}
-          <article
-            class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll"
-            style="background: var(--color-card); transition-delay: {i * 0.05}s;"
-          >
-            <p class="text-xs mb-3 uppercase tracking-widest" style="color: var(--color-text-ghost); font-family: var(--font-mono);">
-              {item.formattedDate}
-            </p>
-            <h3 class="text-xl font-bold mb-3" style="font-family: var(--font-heading);">
-              <a href={item.link} target="_blank" rel="noopener noreferrer" style="color: var(--color-text); text-decoration: none;">
-                {item.title}
-              </a>
-            </h3>
-            <p class="text-sm leading-relaxed mb-5" style="color: var(--color-text-dim);">{item.description}</p>
-            <a
-              href={item.link}
-              target="_blank"
-              rel="noopener noreferrer"
-              class="mt-auto"
-              style="color: var(--color-cyan); text-decoration: none; font-family: var(--font-heading);"
-              aria-label={'Read more: ' + item.title}
+      {#if formattedItems.length > 0}
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {#each formattedItems as item, i}
+            <article
+              class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll"
+              style="background: var(--color-card); transition-delay: {i * 0.05}s;"
             >
-              Read More →
-            </a>
-          </article>
-        {/each}
-      </div>
+              <p class="text-xs mb-3 uppercase tracking-widest" style="color: var(--color-text-ghost); font-family: var(--font-mono);">
+                {item.formattedDate}
+              </p>
+              <h3 class="text-xl font-bold mb-3" style="font-family: var(--font-heading);">
+                <a href={item.link} target="_blank" rel="noopener noreferrer" style="color: var(--color-text); text-decoration: none;">
+                  {item.title}
+                </a>
+              </h3>
+              <p class="text-sm leading-relaxed mb-5" style="color: var(--color-text-dim);">{item.description}</p>
+              <a
+                href={item.link}
+                target="_blank"
+                rel="noopener noreferrer"
+                class="mt-auto"
+                style="color: var(--color-cyan); text-decoration: none; font-family: var(--font-heading);"
+                aria-label={'Read more: ' + item.title}
+              >
+                Read More →
+              </a>
+            </article>
+          {/each}
+        </div>
+      {:else}
+        <p class="animate-on-scroll text-sm md:text-base" style="color: var(--color-text-dim);">
+          No posts available right now. Check back soon or visit
+          <a
+            href="https://blog.jaysonknight.com/"
+            target="_blank"
+            rel="noopener noreferrer"
+            style="color: var(--color-cyan); text-decoration: none; font-family: var(--font-heading);"
+          >
+            the blog directly
+          </a>
+          .
+        </p>
+      {/if}
     {/if}
   </div>
 </section>

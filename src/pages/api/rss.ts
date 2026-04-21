@@ -109,6 +109,7 @@ export const GET: APIRoute = async ({ request }) => {
     const response = await fetch(feedUrl, {
       headers: {
         Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml',
+        'User-Agent': 'Mozilla/5.0 (compatible; JKcom-RSSBot/1.0; +https://jaysonknight.com)',
       },
     });
 
@@ -120,6 +121,19 @@ export const GET: APIRoute = async ({ request }) => {
     }
 
     const xml = await response.text();
+    const contentType = response.headers.get('Content-Type')?.toLowerCase() ?? '';
+    const isXmlLike = contentType.includes('xml');
+    const isTextLike = contentType.startsWith('text/') && !contentType.includes('html');
+    if (contentType && !isXmlLike && !isTextLike) {
+      return new Response(
+        JSON.stringify({ error: 'Feed returned non-XML response (possible bot challenge or redirect)' }),
+        {
+          status: 502,
+          headers: { 'Content-Type': 'application/json' },
+        }
+      );
+    }
+
     const items = parseRssOrAtom(xml, max);
 
     return new Response(JSON.stringify({ items }), {
