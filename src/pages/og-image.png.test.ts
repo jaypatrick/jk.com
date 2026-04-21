@@ -9,17 +9,13 @@ const { generateOgImage, assetsFetch } = vi.hoisted(() => ({
 vi.mock('../lib/og', () => ({
   generateOgImage,
 }));
-(vi.mock as any)(
-  'cloudflare:workers',
-  () => ({
-    env: {
-      ASSETS: {
-        fetch: assetsFetch,
-      },
+vi.mock('cloudflare:workers', () => ({
+  env: {
+    ASSETS: {
+      fetch: assetsFetch,
     },
-  }),
-  { virtual: true }
-);
+  },
+}));
 
 import { GET } from './og-image.png';
 
