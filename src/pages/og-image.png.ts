@@ -6,13 +6,17 @@ import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 export const GET: APIRoute = async ({ request }) => {
   try {
     const url = new URL(request.url);
+    const fetchAsset =
+      typeof env?.ASSETS?.fetch === 'function'
+        ? (assetUrl: string) => env.ASSETS.fetch(new Request(assetUrl))
+        : undefined;
 
     const png = await generateOgImage({
       title: DEFAULT_OG_TITLE,
       description: DEFAULT_OG_DESCRIPTION,
       path: '/',
       assetOrigin: url.origin,
-      fetchAsset: (assetUrl) => env.ASSETS.fetch(new Request(assetUrl)),
+      fetchAsset,
     });
 
     return new Response(png as BodyInit, {
