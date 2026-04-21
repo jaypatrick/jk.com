@@ -5,6 +5,8 @@ import { generateFallbackOgPng } from '../lib/og-fallback';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
 const STATIC_OG_FALLBACK_PATH = '/og-fallback.png';
+const OG_IMAGE_CACHE_CONTROL =
+  'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800';
 
 let fallbackOgPngPromise: Promise<Uint8Array<ArrayBuffer>> | undefined;
 
@@ -37,12 +39,11 @@ export const GET: APIRoute = async ({ request }) => {
     return new Response(png as BodyInit, {
       headers: {
         'Content-Type': 'image/png',
-        'Cache-Control':
-          'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+        'Cache-Control': OG_IMAGE_CACHE_CONTROL,
       },
     });
   } catch (err) {
-    console.error('[og-image.png] generateOgImage failed — serving solid-color fallback:', err);
+    console.error('[og-image.png] generateOgImage failed — attempting fallback image:', err);
 
     try {
       if (typeof env?.ASSETS?.fetch === 'function') {
@@ -54,8 +55,7 @@ export const GET: APIRoute = async ({ request }) => {
             status: 200,
             headers: {
               'Content-Type': 'image/png',
-              'Cache-Control':
-                'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+              'Cache-Control': OG_IMAGE_CACHE_CONTROL,
             },
           });
         }
