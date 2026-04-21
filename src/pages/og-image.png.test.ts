@@ -21,7 +21,11 @@ describe('GET /og-image.png', () => {
     generateOgImage.mockReset();
     generateOgImage.mockResolvedValue(Uint8Array.from([1, 2, 3]));
     assetsFetch.mockReset();
-    assetsFetch.mockResolvedValue(new Response(''));
+    assetsFetch.mockResolvedValue(
+      new Response(Uint8Array.from([4, 5, 6]), {
+        headers: { 'Content-Type': 'image/png' },
+      })
+    );
     workersEnv.ASSETS = { fetch: assetsFetch };
   });
 
@@ -62,8 +66,26 @@ describe('GET /og-image.png', () => {
     expect(Array.from(body)).toEqual([1, 2, 3]);
   });
 
-  it('returns fallback PNG response when generation fails', async () => {
+  it('returns static fallback PNG response when generation fails', async () => {
     generateOgImage.mockRejectedValue(new Error('boom'));
+
+    const response = await GET({
+      request: new Request('https://example.com/og-image.png'),
+    } as unknown as Parameters<typeof GET>[0]);
+
+    const body = new Uint8Array(await response.arrayBuffer());
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('image/png');
+    expect(response.headers.get('Cache-Control')).toBe(
+      'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800'
+    );
+    expect(Array.from(body)).toEqual([4, 5, 6]);
+  });
+
+  it('returns generated binary fallback when static fallback fetch fails', async () => {
+    generateOgImage.mockRejectedValue(new Error('boom'));
+    assetsFetch.mockResolvedValueOnce(new Response(null, { status: 500 }));
 
     const response = await GET({
       request: new Request('https://example.com/og-image.png'),
