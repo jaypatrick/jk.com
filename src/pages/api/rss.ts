@@ -91,6 +91,7 @@ const sanitizeUrlForLog = (url: URL): string => {
   const safeUrl = new URL(url.toString());
   safeUrl.username = '';
   safeUrl.password = '';
+  // Intentionally exclude query/hash values from logs to avoid leaking tokens.
   return `${safeUrl.origin}${safeUrl.pathname}`;
 };
 
@@ -174,7 +175,12 @@ export const GET: APIRoute = async ({ request }) => {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('[api/rss] Unable to fetch RSS feed for URL:', sanitizedFeedUrl, error);
+    const errorName = error instanceof Error ? error.name : 'UnknownError';
+    const errorMessage =
+      error instanceof Error
+        ? error.message.replaceAll(parsedFeedUrl.href, sanitizedFeedUrl).replaceAll(feedUrl, sanitizedFeedUrl)
+        : '';
+    console.error('[api/rss] Unable to fetch RSS feed for URL:', sanitizedFeedUrl, 'error type:', errorName, errorMessage);
     return new Response(JSON.stringify({ error: 'Unable to fetch RSS feed.' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
