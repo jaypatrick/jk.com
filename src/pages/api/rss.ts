@@ -80,11 +80,18 @@ export const isValidFeedDocument = (xml: string): boolean => {
     return false;
   }
 
-  if (/<html[\s>]/i.test(normalized)) {
+  if (/^\s*(?:<\?xml[\s\S]*?\?>\s*)?(?:<!doctype\s+html|<html[\s>])/i.test(normalized)) {
     return false;
   }
 
   return /<rss[\s>]/i.test(normalized) || /<feed[\s>]/i.test(normalized) || /<channel[\s>]/i.test(normalized);
+};
+
+const sanitizeUrlForLog = (url: URL): string => {
+  const safeUrl = new URL(url.toString());
+  safeUrl.username = '';
+  safeUrl.password = '';
+  return `${safeUrl.origin}${safeUrl.pathname}`;
 };
 
 const getMax = (value: string | null): number => {
@@ -101,6 +108,7 @@ export const GET: APIRoute = async ({ request }) => {
   const urlParam = requestUrl.searchParams.get('url')?.trim() ?? '';
   const feedUrl = urlParam || (import.meta.env.RSS_FEED_URL ?? '');
   const max = getMax(requestUrl.searchParams.get('max'));
+  let parsedFeedUrl: URL;
 
   if (!feedUrl) {
     return new Response(JSON.stringify({ error: 'Missing RSS feed URL.' }), {
@@ -110,13 +118,14 @@ export const GET: APIRoute = async ({ request }) => {
   }
 
   try {
-    new URL(feedUrl);
+    parsedFeedUrl = new URL(feedUrl);
   } catch {
     return new Response(JSON.stringify({ error: 'Invalid RSS feed URL.' }), {
       status: 400,
       headers: { 'Content-Type': 'application/json' },
     });
   }
+  const sanitizedFeedUrl = sanitizeUrlForLog(parsedFeedUrl);
 
   try {
     const response = await fetch(feedUrl, {
@@ -129,7 +138,7 @@ export const GET: APIRoute = async ({ request }) => {
     });
 
     if (!response.ok) {
-      console.error('[api/rss] Failed to fetch feed with non-OK status:', response.status, 'for URL:', feedUrl);
+      console.error('[api/rss] Failed to fetch feed with non-OK status:', response.status, 'for URL:', sanitizedFeedUrl);
       return new Response(JSON.stringify({ error: `Failed to fetch feed (${response.status}).` }), {
         status: 502,
         headers: { 'Content-Type': 'application/json' },
@@ -139,7 +148,7 @@ export const GET: APIRoute = async ({ request }) => {
     const contentType = response.headers.get('Content-Type')?.toLowerCase() ?? '';
     const mimeType = contentType.split(';', 1)[0]?.trim() ?? '';
     if (mimeType === 'text/html') {
-      console.error('[api/rss] Feed returned text/html — likely bot challenge for URL:', feedUrl);
+      console.error('[api/rss] Feed returned text/html — likely bot challenge for URL:', sanitizedFeedUrl);
       return new Response(
         JSON.stringify({ error: 'Feed returned an HTML page instead of XML (possible bot challenge or redirect)' }),
         {
@@ -151,7 +160,7 @@ export const GET: APIRoute = async ({ request }) => {
 
     const xml = await response.text();
     if (!isValidFeedDocument(xml)) {
-      console.error('[api/rss] Response body is not a valid RSS/Atom document for URL:', feedUrl);
+      console.error('[api/rss] Response body is not a valid RSS/Atom document for URL:', sanitizedFeedUrl);
       return new Response(JSON.stringify({ error: 'Feed URL did not return a valid RSS or Atom document' }), {
         status: 502,
         headers: { 'Content-Type': 'application/json' },
@@ -165,7 +174,7 @@ export const GET: APIRoute = async ({ request }) => {
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
-    console.error('[api/rss] Unable to fetch RSS feed for URL:', feedUrl, error);
+    console.error('[api/rss] Unable to fetch RSS feed for URL:', sanitizedFeedUrl, error);
     return new Response(JSON.stringify({ error: 'Unable to fetch RSS feed.' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },

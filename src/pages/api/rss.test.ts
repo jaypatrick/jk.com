@@ -49,6 +49,18 @@ describe('isValidFeedDocument', () => {
     expect(isValidFeedDocument('<html><body>challenge</body></html>')).toBe(false);
   });
 
+  it('returns false for doctype html content', () => {
+    expect(isValidFeedDocument('<!doctype html><html><body>challenge</body></html>')).toBe(false);
+  });
+
+  it('returns true for feed documents that include html within item content', () => {
+    expect(
+      isValidFeedDocument(
+        '<rss><channel><item><description><![CDATA[<p>has <html>inline</html> markup</p>]]></description></item></channel></rss>'
+      )
+    ).toBe(true);
+  });
+
   it('returns false for empty content', () => {
     expect(isValidFeedDocument('')).toBe(false);
   });
@@ -259,15 +271,24 @@ describe('GET /api/rss', () => {
   });
 
   it('returns 502 when upstream returns non-200', async () => {
+    const errorSpy = vi.spyOn(console, 'error').mockImplementation(() => {});
     vi.spyOn(globalThis, 'fetch').mockResolvedValue(new Response('nope', { status: 503 }));
 
     const response = await GET({
-      request: new Request('https://example.com/api/rss?url=https%3A%2F%2Fexample.com%2Frss.xml'),
+      request: new Request(
+        'https://example.com/api/rss?url=https%3A%2F%2Fuser%3Apass%40example.com%2Frss.xml%3Ftoken%3Dsecret'
+      ),
     } as Parameters<typeof GET>[0]);
     const payload = await response.json();
 
     expect(response.status).toBe(502);
     expect(payload).toEqual({ error: 'Failed to fetch feed (503).' });
+    expect(errorSpy).toHaveBeenCalledWith(
+      '[api/rss] Failed to fetch feed with non-OK status:',
+      503,
+      'for URL:',
+      'https://example.com/rss.xml'
+    );
   });
 
   it('handles AbortError from upstream fetch timeout', async () => {
