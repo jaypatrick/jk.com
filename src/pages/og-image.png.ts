@@ -3,6 +3,7 @@ import { env } from 'cloudflare:workers';
 import { generateOgImage } from '../lib/og';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
+// 1x1 transparent PNG fallback to preserve a valid image response for crawlers.
 const FALLBACK_OG_PNG = Uint8Array.from([
   137, 80, 78, 71, 13, 10, 26, 10, 0, 0, 0, 13, 73, 72, 68, 82, 0, 0, 0, 1, 0, 0, 0, 1, 8,
   6, 0, 0, 0, 31, 21, 196, 137, 0, 0, 0, 13, 73, 68, 65, 84, 120, 156, 99, 248, 255, 255, 63,
