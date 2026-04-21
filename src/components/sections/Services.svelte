@@ -233,7 +233,6 @@
       aria-labelledby="tab-technical"
       class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
       hidden={activeTab !== 'technical'}
-      aria-hidden={activeTab !== 'technical'}
     >
       {#each technicalServices as service, i}
         {@const isExpanded = expandedTechnicalIndex === i}
@@ -241,7 +240,7 @@
           class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
           style="background: var(--color-card); transition-delay: {i * 0.07}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
           role="button"
-          tabindex="0"
+          tabindex={activeTab === 'technical' ? 0 : -1}
           aria-expanded={isExpanded}
           aria-label={service.title}
           onclick={() => toggleService('technical', i)}
@@ -298,7 +297,6 @@
       aria-labelledby="tab-creative"
       class="grid grid-cols-1 gap-6 sm:grid-cols-2"
       hidden={activeTab !== 'creative'}
-      aria-hidden={activeTab !== 'creative'}
     >
       {#each creativeServices as service, i}
         {@const isExpanded = expandedCreativeIndex === i}
@@ -306,7 +304,7 @@
           class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
           style="background: var(--color-card); transition-delay: {i * 0.1}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
           role="button"
-          tabindex="0"
+          tabindex={activeTab === 'creative' ? 0 : -1}
           aria-expanded={isExpanded}
           aria-label={service.title}
           onclick={() => toggleService('creative', i)}
@@ -368,10 +366,22 @@
           privacy tooling, and experiments in compiler theory. Check the blog and GitHub.
         </p>
         <div class="flex flex-wrap gap-3">
-          <a href="https://github.com/jaypatrick" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding: 0.5rem 1.25rem;">
+          <a
+            href="https://github.com/jaypatrick"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-outline"
+            style="padding: 0.5rem 1.25rem;"
+            tabindex={activeTab === 'creative' ? 0 : -1}
+          >
             GitHub Repos →
           </a>
-          <a href="/blog" class="btn btn-outline" style="padding: 0.5rem 1.25rem;">
+          <a
+            href="/blog"
+            class="btn btn-outline"
+            style="padding: 0.5rem 1.25rem;"
+            tabindex={activeTab === 'creative' ? 0 : -1}
+          >
             Blog →
           </a>
         </div>
