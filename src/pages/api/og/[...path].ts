@@ -8,9 +8,9 @@ const STATIC_OG_FALLBACK_PATH = '/og-fallback.png';
 const OG_IMAGE_CACHE_CONTROL =
   'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800';
 
-let fallbackOgPngPromise: Promise<Uint8Array<ArrayBuffer>> | undefined;
+let fallbackOgPngPromise: Promise<Uint8Array> | undefined;
 
-const getFallbackOgPng = (): Promise<Uint8Array<ArrayBuffer>> => {
+const getFallbackOgPng = (): Promise<Uint8Array> => {
   if (!fallbackOgPngPromise) {
     fallbackOgPngPromise = generateFallbackOgPng().catch((error) => {
       fallbackOgPngPromise = undefined;
