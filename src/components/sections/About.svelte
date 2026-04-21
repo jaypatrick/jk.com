@@ -3,10 +3,13 @@
   // Svelte 5, TailwindCSS v4
 
   const expertise = [
-    { label: 'Azure Solutions Architecture', detail: 'Landing zones, AKS, App Services, Azure Networking & VWAN' },
-    { label: '.NET Development', detail: '.NET 9/10, C#, ASP.NET Core, Blazor, Minimal APIs, Orleans' },
-    { label: 'Cloudflare Platform', detail: 'Workers, D1, R2, KV, Zero Trust / SASE, Tunnels, Pages' },
-    { label: 'Enterprise Networking', detail: 'SD-WAN, BGP, UniFi, Zero Trust network architecture' },
+    { label: 'AI Engineering', detail: 'Anthropic Claude (primary), LLM integration, prompt engineering, agentic systems & orchestration agents, Agentic Development Environments (ADE)' },
+    { label: 'AI Platforms on Cloudflare', detail: 'AI gateways, MCP servers, Workers AI, Vectorize, and full agentic pipeline deployment on the Cloudflare edge' },
+    { label: 'Cloud Solutions Architecture', detail: 'Native cloud architecture, multi-cloud strategy, cloud-native patterns, and landing zone design across Azure and Cloudflare' },
+    { label: 'Azure Solutions Architecture', detail: 'Landing zones, AKS, App Services, Azure Networking & VWAN, Entra ID, FinOps' },
+    { label: '.NET & TypeScript/Deno', detail: '.NET 9/10, C#, ASP.NET Core, Blazor, Orleans — plus TypeScript-first development with Deno runtime and Deno Deploy' },
+    { label: 'Rust & WebAssembly', detail: 'Deep Rust expertise: standalone systems, server-side WASM (WASI/WASM components), and client-side WASM with both Rust and TypeScript' },
+    { label: 'Cloudflare Platform', detail: 'Workers, D1, R2, KV, Queues, Zero Trust / SASE, Tunnels, Pages, MCP servers, AI Gateway' },
     { label: 'Privacy & Security', detail: 'DNS encryption, ad-block compiler, zero-trust architectures, SASE' },
     { label: 'Compiler Theory', detail: 'LLVM, filter list DSLs, custom parsers & IR pipelines — it\'s a passion' },
   ];
@@ -43,16 +46,14 @@
         </h2>
 
         <p class="text-lg mb-8" style="color: var(--color-text-dim); line-height: 1.8;">
-          Twenty-plus years of building software across enterprise stacks — from
-          legacy monoliths to bleeding-edge Cloudflare Workers. I specialize in
-          translating complex business requirements into elegant, scalable architectures
-          on Microsoft Azure and the Cloudflare platform.
+          Twenty-plus years of building software across enterprise stacks — from legacy monoliths to bleeding-edge Cloudflare Workers and AI-native platforms. I specialize in translating complex business requirements into elegant, scalable architectures on Microsoft Azure, the Cloudflare platform, and agentic AI systems powered by Anthropic Claude.
         </p>
 
         <!-- What I Do list -->
         <div class="space-y-3 mb-10">
           {#each [
             'Enterprise Solutions Architecture & Implementation',
+            'AI Engineering, Agentic Systems & Platform Design',
             'Software Design, Development & Deployment',
             'Technology & Cloud Consulting',
             'Enterprise Network Architecture',

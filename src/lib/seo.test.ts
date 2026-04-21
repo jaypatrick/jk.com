@@ -28,7 +28,7 @@ describe('buildSeoMetadata', () => {
     expect(seo.title).toBe(DEFAULT_OG_TITLE);
     expect(seo.description).toBe(DEFAULT_OG_DESCRIPTION);
     expect(seo.ogImageUrl).toBe(
-      'https://jaysonknight.com/api/og/privacy?title=JK.com+%7C+Enterprise+Cloud+Consulting+%E2%80%94+Jayson+Knight&description=Jayson+Knight+%E2%80%94+Solutions+Architect+specializing+in+Microsoft+Azure%2C+Cloudflare%2C+and+.NET.+20%2B+years+building+enterprise+software+that+scales.'
+      'https://jaysonknight.com/api/og/privacy?title=JK.com+%7C+Enterprise+Cloud+Consulting+%E2%80%94+Jayson+Knight&description=Jayson+Knight+%E2%80%94+Solutions+Architect+%26+AI+Engineer+specializing+in+Anthropic+Claude%2C+Microsoft+Azure%2C+Cloudflare+AI+platforms%2C+Rust%2FWASM%2C+TypeScript%2FDeno%2C+and+.NET.+20%2B+years+building+enterprise+software+that+scales.'
     );
   });
 

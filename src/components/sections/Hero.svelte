@@ -129,7 +129,7 @@
       class="mt-8 flex flex-wrap justify-center gap-3"
       style="opacity: {mounted ? 1 : 0}; transition: opacity 0.8s ease 0.6s;"
     >
-      {#each ['Azure Architect', '.NET Expert', 'Cloudflare Specialist', 'Privacy & Security'] as tag}
+      {#each ['Azure Architect', 'AI Engineer', 'Cloudflare Specialist', 'Rust & WASM', 'Privacy & Security'] as tag}
         <span
           class="chip"
           style="background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.3); color: var(--color-cyan);"
