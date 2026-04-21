@@ -75,6 +75,7 @@ describe('GET /og-image.png', () => {
     expect(response.headers.get('Content-Type')).toBe('image/png');
     expect(response.headers.get('Cache-Control')).toBe('no-store');
     expect(Array.from(body.slice(0, 8))).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
+    expect(body.byteLength).toBeGreaterThan(200);
   });
 
   it('falls back to internal asset fetch when ASSETS binding is unavailable', async () => {
