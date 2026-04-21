@@ -53,6 +53,7 @@
           items = payload.items ?? [];
         }
       } catch (err) {
+        console.error('[RssFeed] Failed to load feed:', err);
         if (!cancelled) {
           error = err instanceof Error ? err.message : 'Failed to load feed.';
         }
@@ -108,7 +109,7 @@
       <div
         role="alert"
         class="rounded-xl p-6 animate-on-scroll"
-        style="background: rgba(255,45,85,0.08); border: 1px solid rgba(255,45,85,0.3); color: var(--color-red);"
+        style="background: rgba(255,45,85,0.08); border: 1px solid rgba(255,45,85,0.3); color: var(--color-red, #ff2d55); font-weight: 700;"
       >
         {error}
       </div>
@@ -143,17 +144,20 @@
           {/each}
         </div>
       {:else}
-        <p class="animate-on-scroll text-sm md:text-base" style="color: var(--color-text-dim);">
-          No posts available right now. Check back soon or
-          <a
-            href="https://blog.jaysonknight.com/"
-            target="_blank"
-            rel="noopener noreferrer"
-            style="color: var(--color-cyan); text-decoration: none; font-family: var(--font-heading);"
-          >
-            visit the blog directly.
-          </a>
-        </p>
+        <div class="animate-on-scroll flex flex-col gap-4">
+          <p class="text-sm md:text-base" style="color: var(--color-text-dim);">
+            No posts available right now. Check back soon or
+            <a
+              href="https://blog.jaysonknight.com/"
+              target="_blank"
+              rel="noopener noreferrer"
+              style="color: var(--color-cyan); text-decoration: underline;"
+            >
+              visit the blog directly
+            </a>
+            .
+          </p>
+        </div>
       {/if}
     {/if}
   </div>

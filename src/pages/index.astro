@@ -31,7 +31,7 @@ const { runtime } = Astro.locals;
   <!-- Portfolio: case studies + clients -->
   <Portfolio client:visible />
 
-  <RssFeed client:visible feedUrl="https://blog.jaysonknight.com/feed/" maxItems={5} />
+  <RssFeed client:load feedUrl="https://blog.jaysonknight.com/feed/" maxItems={5} />
 
   <!-- Contact: form + phone + location -->
   <Contact client:visible />

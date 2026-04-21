@@ -74,6 +74,19 @@ export const parseRssOrAtom = (xml: string, max: number): FeedItem[] => {
   });
 };
 
+export const isValidFeedDocument = (xml: string): boolean => {
+  const normalized = xml.trim();
+  if (!normalized) {
+    return false;
+  }
+
+  if (/<html[\s>]/i.test(normalized)) {
+    return false;
+  }
+
+  return /<rss[\s>]/i.test(normalized) || /<feed[\s>]/i.test(normalized) || /<channel[\s>]/i.test(normalized);
+};
+
 const getMax = (value: string | null): number => {
   const parsed = Number.parseInt(value ?? '5', 10);
   if (!Number.isFinite(parsed)) {
@@ -108,12 +121,15 @@ export const GET: APIRoute = async ({ request }) => {
   try {
     const response = await fetch(feedUrl, {
       headers: {
-        Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml',
+        Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
         'User-Agent': 'Mozilla/5.0 (compatible; JKcom-RSSBot/1.0; +https://jaysonknight.com)',
       },
+      cache: 'no-store',
+      signal: AbortSignal.timeout(8000),
     });
 
     if (!response.ok) {
+      console.error('[api/rss] Failed to fetch feed with non-OK status:', response.status, 'for URL:', feedUrl);
       return new Response(JSON.stringify({ error: `Failed to fetch feed (${response.status}).` }), {
         status: 502,
         headers: { 'Content-Type': 'application/json' },
@@ -122,11 +138,10 @@ export const GET: APIRoute = async ({ request }) => {
 
     const contentType = response.headers.get('Content-Type')?.toLowerCase() ?? '';
     const mimeType = contentType.split(';', 1)[0]?.trim() ?? '';
-    const isXmlLike = mimeType.includes('xml');
-    const isAllowedTextFallback = mimeType === 'text/plain';
-    if (mimeType && !isXmlLike && !isAllowedTextFallback) {
+    if (mimeType === 'text/html') {
+      console.error('[api/rss] Feed returned text/html — likely bot challenge for URL:', feedUrl);
       return new Response(
-        JSON.stringify({ error: 'Feed returned non-XML response (possible bot challenge or redirect)' }),
+        JSON.stringify({ error: 'Feed returned an HTML page instead of XML (possible bot challenge or redirect)' }),
         {
           status: 502,
           headers: { 'Content-Type': 'application/json' },
@@ -135,13 +150,22 @@ export const GET: APIRoute = async ({ request }) => {
     }
 
     const xml = await response.text();
+    if (!isValidFeedDocument(xml)) {
+      console.error('[api/rss] Response body is not a valid RSS/Atom document for URL:', feedUrl);
+      return new Response(JSON.stringify({ error: 'Feed URL did not return a valid RSS or Atom document' }), {
+        status: 502,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
+
     const items = parseRssOrAtom(xml, max);
 
     return new Response(JSON.stringify({ items }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
-  } catch {
+  } catch (error) {
+    console.error('[api/rss] Unable to fetch RSS feed for URL:', feedUrl, error);
     return new Response(JSON.stringify({ error: 'Unable to fetch RSS feed.' }), {
       status: 500,
       headers: { 'Content-Type': 'application/json' },
