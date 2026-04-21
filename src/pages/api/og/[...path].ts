@@ -1,4 +1,5 @@
 import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 import { generateOgImage } from '../../../lib/og';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../../../lib/og-defaults';
 
@@ -10,7 +11,7 @@ const getPagePath = (pathParam: string | undefined): string => {
   return `/${pathParam}`;
 };
 
-export const GET: APIRoute = async ({ params, request, locals }) => {
+export const GET: APIRoute = async ({ params, request }) => {
   try {
     const url = new URL(request.url);
     const title = url.searchParams.get('title')?.trim() || DEFAULT_OG_TITLE;
@@ -22,7 +23,7 @@ export const GET: APIRoute = async ({ params, request, locals }) => {
       description,
       path: pagePath,
       assetOrigin: url.origin,
-      fetchAsset: (assetUrl) => locals.runtime.env.ASSETS.fetch(new Request(assetUrl)),
+      fetchAsset: (assetUrl) => env.ASSETS.fetch(new Request(assetUrl)),
     });
     return new Response(png as BodyInit, {
       headers: {

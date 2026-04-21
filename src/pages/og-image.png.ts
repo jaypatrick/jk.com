@@ -1,8 +1,9 @@
 import type { APIRoute } from 'astro';
+import { env } from 'cloudflare:workers';
 import { generateOgImage } from '../lib/og';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
-export const GET: APIRoute = async ({ request, locals }) => {
+export const GET: APIRoute = async ({ request }) => {
   try {
     const url = new URL(request.url);
 
@@ -11,7 +12,7 @@ export const GET: APIRoute = async ({ request, locals }) => {
       description: DEFAULT_OG_DESCRIPTION,
       path: '/',
       assetOrigin: url.origin,
-      fetchAsset: (assetUrl) => locals.runtime.env.ASSETS.fetch(new Request(assetUrl)),
+      fetchAsset: (assetUrl) => env.ASSETS.fetch(new Request(assetUrl)),
     });
 
     return new Response(png as BodyInit, {

@@ -33,3 +33,7 @@ declare module '*.wasm?module' {
   const module: WebAssembly.Module;
   export default module;
 }
+
+declare module 'cloudflare:workers' {
+  export const env: CloudflareBindings;
+}
