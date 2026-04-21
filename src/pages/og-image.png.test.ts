@@ -62,17 +62,19 @@ describe('GET /og-image.png', () => {
     expect(Array.from(body)).toEqual([1, 2, 3]);
   });
 
-  it('returns plain-text 500 response when generation fails', async () => {
+  it('returns fallback PNG response when generation fails', async () => {
     generateOgImage.mockRejectedValue(new Error('boom'));
 
     const response = await GET({
       request: new Request('https://example.com/og-image.png'),
     } as unknown as Parameters<typeof GET>[0]);
 
-    expect(response.status).toBe(500);
-    expect(response.headers.get('Content-Type')).toBe('text/plain');
-    expect(response.headers.get('Cache-Control')).toBe('no-store, no-cache');
-    await expect(response.text()).resolves.toBe('OG image generation failed');
+    const body = new Uint8Array(await response.arrayBuffer());
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('image/png');
+    expect(response.headers.get('Cache-Control')).toBe('no-store');
+    expect(Array.from(body.slice(0, 8))).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
   });
 
   it('falls back to internal asset fetch when ASSETS binding is unavailable', async () => {
