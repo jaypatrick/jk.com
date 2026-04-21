@@ -41,4 +41,32 @@ describe('buildSeoMetadata', () => {
 
     expect(seo.ogImageUrl).toBe('https://jaysonknight.com/custom-og.png');
   });
+
+  it('builds root OG image URLs without a route segment for the home page', () => {
+    const seo = buildSeoMetadata({
+      site,
+      pathname: '/',
+      title: 'JK.com — Jayson Knight',
+      description: 'Home page overview.',
+    });
+
+    expect(seo.canonicalUrl).toBe('https://jaysonknight.com/');
+    expect(seo.ogImageUrl).toBe(
+      'https://jaysonknight.com/api/og?title=JK.com+%E2%80%94+Jayson+Knight&description=Home+page+overview.'
+    );
+  });
+
+  it('builds nested route OG image URLs using the full pathname', () => {
+    const seo = buildSeoMetadata({
+      site,
+      pathname: '/blog/new-post',
+      title: 'New Post | JK.com — Jayson Knight',
+      description: 'Deep dive into nested route metadata.',
+    });
+
+    expect(seo.canonicalUrl).toBe('https://jaysonknight.com/blog/new-post');
+    expect(seo.ogImageUrl).toBe(
+      'https://jaysonknight.com/api/og/blog/new-post?title=New+Post+%7C+JK.com+%E2%80%94+Jayson+Knight&description=Deep+dive+into+nested+route+metadata.'
+    );
+  });
 });
