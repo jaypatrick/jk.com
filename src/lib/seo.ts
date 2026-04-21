@@ -19,7 +19,9 @@ export interface SeoMetadata {
   ogType: string;
   ogSiteName: string;
   ogImageUrl: string;
+  ogImageAlt: string;
   twitterCard: string;
+  author: string;
 }
 
 export const buildSeoMetadata = ({
@@ -51,6 +53,8 @@ export const buildSeoMetadata = ({
     ogType: DEFAULT_OG_TYPE,
     ogSiteName: DEFAULT_OG_SITE_NAME,
     ogImageUrl,
+    ogImageAlt: `${resolvedTitle} — social preview image`,
     twitterCard: DEFAULT_TWITTER_CARD,
+    author: 'Jayson Knight',
   };
 };

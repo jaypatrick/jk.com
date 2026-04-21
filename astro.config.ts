@@ -1,4 +1,5 @@
 import { defineConfig, fontProviders } from 'astro/config';
+import { fileURLToPath } from 'node:url';
 import cloudflare from '@astrojs/cloudflare';
 import svelte from '@astrojs/svelte';
 import tailwindcss from '@tailwindcss/vite';
@@ -30,6 +31,11 @@ export default defineConfig({
   // Vite 8 with Rolldown (Rust compiler) — enabled by default in Astro 6
   vite: {
     plugins: [tailwindcss()],
+    resolve: {
+      alias: {
+        $lib: fileURLToPath(new URL('./src/lib', import.meta.url)),
+      },
+    },
     build: {
       rollupOptions: {},
     },

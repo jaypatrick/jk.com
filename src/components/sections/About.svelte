@@ -88,6 +88,8 @@
               style="background: var(--color-card); border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
               role="button"
               tabindex="0"
+              aria-expanded={isExpanded}
+              aria-label={label}
               onclick={() => toggleExpertise(i)}
               onkeydown={(e) => {
                 if (e.key === 'Enter' || e.key === ' ') {
@@ -123,7 +125,7 @@
           >
             Why I Do It
           </h3>
-          <ul class="space-y-2">
+          <ul class="space-y-2" aria-label="Core philosophy">
             {#each philosophy as item}
               <li class="flex items-center gap-3 text-sm" style="color: var(--color-text-dim);">
                 <span class="w-1.5 h-1.5 rounded-full flex-shrink-0" style="background: var(--color-cyan);"></span>

@@ -71,11 +71,11 @@
   });
 </script>
 
-<section class="section-pad" style="background: var(--color-surface);">
+<section id="blog-feed" class="section-pad" aria-labelledby="blog-feed-heading" style="background: var(--color-surface);">
   <div class="section-container">
     <div class="section-label animate-on-scroll">WHAT I THINK</div>
     <div class="mb-10 animate-on-scroll flex items-end justify-between gap-4 flex-wrap">
-      <h2 class="text-4xl font-bold mb-0 lg:text-5xl" style="font-family: var(--font-heading);">
+      <h2 id="blog-feed-heading" class="text-4xl font-bold mb-0 lg:text-5xl" style="font-family: var(--font-heading);">
         Latest <span class="gradient-text">Thoughts</span>
       </h2>
       <a
@@ -89,21 +89,24 @@
     </div>
 
     {#if loading}
-      <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
-        {#each Array.from({ length: 3 }) as _, i}
-          <div
-            class="rounded-xl p-6 animate-pulse animate-on-scroll"
-            style="background: var(--color-card); border: 1px solid var(--color-border); transition-delay: {i * 0.05}s;"
-          >
-            <div class="h-3 w-24 rounded mb-4" style="background: rgba(148,163,184,0.2);"></div>
-            <div class="h-5 w-11/12 rounded mb-3" style="background: rgba(148,163,184,0.18);"></div>
-            <div class="h-4 w-full rounded mb-2" style="background: rgba(148,163,184,0.15);"></div>
-            <div class="h-4 w-10/12 rounded" style="background: rgba(148,163,184,0.15);"></div>
-          </div>
-        {/each}
+      <div role="status" aria-label="Loading blog posts" aria-live="polite">
+        <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {#each Array.from({ length: 3 }) as _, i}
+            <div
+              class="rounded-xl p-6 animate-pulse animate-on-scroll"
+              style="background: var(--color-card); border: 1px solid var(--color-border); transition-delay: {i * 0.05}s;"
+            >
+              <div class="h-3 w-24 rounded mb-4" style="background: rgba(148,163,184,0.2);"></div>
+              <div class="h-5 w-11/12 rounded mb-3" style="background: rgba(148,163,184,0.18);"></div>
+              <div class="h-4 w-full rounded mb-2" style="background: rgba(148,163,184,0.15);"></div>
+              <div class="h-4 w-10/12 rounded" style="background: rgba(148,163,184,0.15);"></div>
+            </div>
+          {/each}
+        </div>
       </div>
     {:else if error}
       <div
+        role="alert"
         class="rounded-xl p-6 animate-on-scroll"
         style="background: rgba(255,45,85,0.08); border: 1px solid rgba(255,45,85,0.3); color: var(--color-red);"
       >
@@ -131,6 +134,7 @@
               rel="noopener noreferrer"
               class="mt-auto"
               style="color: var(--color-cyan); text-decoration: none; font-family: var(--font-heading);"
+              aria-label={'Read more: ' + item.title}
             >
               Read More →
             </a>
