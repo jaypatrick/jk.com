@@ -4,6 +4,10 @@ import { generateOgImage } from '../lib/og';
 import { generateFallbackOgPng } from '../lib/og-fallback';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
+const STATIC_OG_FALLBACK_PATH = '/og-fallback.png';
+const OG_IMAGE_CACHE_CONTROL =
+  'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800';
+
 let fallbackOgPngPromise: Promise<Uint8Array<ArrayBuffer>> | undefined;
 
 const getFallbackOgPng = (): Promise<Uint8Array<ArrayBuffer>> => {
@@ -35,12 +39,31 @@ export const GET: APIRoute = async ({ request }) => {
     return new Response(png as BodyInit, {
       headers: {
         'Content-Type': 'image/png',
-        'Cache-Control':
-          'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+        'Cache-Control': OG_IMAGE_CACHE_CONTROL,
       },
     });
   } catch (err) {
-    console.error('[og-image.png] generateOgImage failed — serving solid-color fallback:', err);
+    console.error('[og-image.png] generateOgImage failed — attempting fallback image:', err);
+
+    try {
+      if (typeof env?.ASSETS?.fetch === 'function') {
+        const fallbackUrl = new URL(STATIC_OG_FALLBACK_PATH, request.url).toString();
+        const staticFallbackResponse = await env.ASSETS.fetch(new Request(fallbackUrl));
+
+        if (staticFallbackResponse.ok) {
+          return new Response(staticFallbackResponse.body, {
+            status: 200,
+            headers: {
+              'Content-Type': 'image/png',
+              'Cache-Control': OG_IMAGE_CACHE_CONTROL,
+            },
+          });
+        }
+      }
+    } catch (staticFallbackError) {
+      console.error('[og-image.png] static fallback failed:', staticFallbackError);
+    }
+
     return new Response(await getFallbackOgPng(), {
       status: 200,
       headers: {
