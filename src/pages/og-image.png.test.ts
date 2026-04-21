@@ -100,6 +100,23 @@ describe('GET /og-image.png', () => {
     expect(body.byteLength).toBeGreaterThan(200);
   });
 
+  it('returns generated binary fallback when ASSETS binding is unavailable and generation fails', async () => {
+    generateOgImage.mockRejectedValue(new Error('boom'));
+    delete workersEnv.ASSETS;
+
+    const response = await GET({
+      request: new Request('https://example.com/og-image.png'),
+    } as unknown as Parameters<typeof GET>[0]);
+
+    const body = new Uint8Array(await response.arrayBuffer());
+
+    expect(response.status).toBe(200);
+    expect(response.headers.get('Content-Type')).toBe('image/png');
+    expect(response.headers.get('Cache-Control')).toBe('no-store');
+    expect(Array.from(body.slice(0, 8))).toEqual([137, 80, 78, 71, 13, 10, 26, 10]);
+    expect(body.byteLength).toBeGreaterThan(200);
+  });
+
   it('falls back to internal asset fetch when ASSETS binding is unavailable', async () => {
     delete workersEnv.ASSETS;
 

@@ -45,21 +45,20 @@ export const GET: APIRoute = async ({ request }) => {
     console.error('[og-image.png] generateOgImage failed — serving solid-color fallback:', err);
 
     try {
-      const fallbackUrl = new URL(STATIC_OG_FALLBACK_PATH, request.url).toString();
-      const staticFallbackResponse =
-        typeof env?.ASSETS?.fetch === 'function'
-          ? await env.ASSETS.fetch(new Request(fallbackUrl))
-          : await fetch(fallbackUrl);
+      if (typeof env?.ASSETS?.fetch === 'function') {
+        const fallbackUrl = new URL(STATIC_OG_FALLBACK_PATH, request.url).toString();
+        const staticFallbackResponse = await env.ASSETS.fetch(new Request(fallbackUrl));
 
-      if (staticFallbackResponse.ok) {
-        return new Response(staticFallbackResponse.body, {
-          status: 200,
-          headers: {
-            'Content-Type': 'image/png',
-            'Cache-Control':
-              'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
-          },
-        });
+        if (staticFallbackResponse.ok) {
+          return new Response(staticFallbackResponse.body, {
+            status: 200,
+            headers: {
+              'Content-Type': 'image/png',
+              'Cache-Control':
+                'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800',
+            },
+          });
+        }
       }
     } catch (staticFallbackError) {
       console.error('[og-image.png] static fallback failed:', staticFallbackError);
