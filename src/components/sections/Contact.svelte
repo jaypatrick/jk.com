@@ -2,6 +2,7 @@
   // Contact.svelte — "TALK TO ME" section
   // Svelte 5 runes, form with client-side Zod validation + fetch to Hono API
 
+  import { openCalendlyPopup } from '$lib/calendly.ts';
   import { contactSchema, type ContactFormData } from '../../lib/schemas';
 
   type FormState = 'idle' | 'submitting' | 'success' | 'error';
@@ -20,20 +21,6 @@
   let fieldErrors = $state<Partial<Record<keyof ContactFormData, string>>>({});
   let isCalendlyReady = $state(false);
   let calendlyInlineContainer: HTMLDivElement | null = null;
-
-  function openCalendlyPopup(e: MouseEvent) {
-    e.preventDefault();
-    const calendly = (window as Window & {
-      Calendly?: { initPopupWidget?: (options: { url: string }) => void };
-    }).Calendly;
-
-    if (calendly?.initPopupWidget) {
-      calendly.initPopupWidget({ url: 'https://calendly.com/jaysonknight' });
-      return;
-    }
-
-    window.location.href = 'https://calendly.com/jaysonknight';
-  }
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -190,6 +177,9 @@
       <div class="animate-on-scroll" style="transition-delay: 0.15s;">
         {#if state === 'success'}
           <div
+            role="status"
+            aria-live="polite"
+            aria-atomic="true"
             class="rounded-xl p-8 text-center"
             style="background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.3);"
           >
@@ -204,10 +194,15 @@
             </button>
           </div>
         {:else}
+          <p id="contact-form-description" class="mb-4 text-sm" style="color: var(--color-text-dim);">
+            Fill out the form below and I&apos;ll get back to you shortly.
+          </p>
           <form
             onsubmit={handleSubmit}
             class="glow-border rounded-xl p-8 space-y-6"
             style="background: var(--color-card);"
+            aria-describedby="contact-form-description"
+            aria-label="Contact form"
             novalidate
           >
             <!-- Honeypot — hidden from real users -->
@@ -218,6 +213,7 @@
               tabindex="-1"
               autocomplete="off"
               aria-hidden="true"
+              aria-label="Leave this field blank"
               style="position: absolute; left: -9999px; opacity: 0; height: 0;"
             />
 
@@ -241,7 +237,7 @@
                   onblur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = fieldErrors.name ? 'var(--color-red)' : 'var(--color-border)'; }}
                 />
                 {#if fieldErrors.name}
-                  <p class="mt-1 text-xs" style="color: var(--color-red);">{fieldErrors.name}</p>
+                  <p role="alert" class="mt-1 text-xs" style="color: var(--color-red);">{fieldErrors.name}</p>
                 {/if}
               </div>
 
@@ -282,7 +278,7 @@
                 onblur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = fieldErrors.email ? 'var(--color-red)' : 'var(--color-border)'; }}
               />
               {#if fieldErrors.email}
-                <p class="mt-1 text-xs" style="color: var(--color-red);">{fieldErrors.email}</p>
+                <p role="alert" class="mt-1 text-xs" style="color: var(--color-red);">{fieldErrors.email}</p>
               {/if}
             </div>
 
@@ -303,13 +299,14 @@
                 onblur={(e) => { (e.currentTarget as HTMLTextAreaElement).style.borderColor = fieldErrors.message ? 'var(--color-red)' : 'var(--color-border)'; }}
               ></textarea>
               {#if fieldErrors.message}
-                <p class="mt-1 text-xs" style="color: var(--color-red);">{fieldErrors.message}</p>
+                <p role="alert" class="mt-1 text-xs" style="color: var(--color-red);">{fieldErrors.message}</p>
               {/if}
             </div>
 
             <!-- Error message -->
             {#if state === 'error'}
               <div
+                role="alert"
                 class="rounded-lg p-3 text-sm"
                 style="background: rgba(255,45,85,0.08); border: 1px solid rgba(255,45,85,0.3); color: var(--color-red);"
               >
@@ -323,6 +320,7 @@
               disabled={state === 'submitting'}
               class="btn btn-primary w-full justify-center"
               style="opacity: {state === 'submitting' ? 0.7 : 1}; cursor: {state === 'submitting' ? 'not-allowed' : 'pointer'};"
+              aria-busy={state === 'submitting'}
             >
               {#if state === 'submitting'}
                 <span class="animate-spin">⟳</span> Sending...

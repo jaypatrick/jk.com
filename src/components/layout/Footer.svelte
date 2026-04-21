@@ -17,13 +17,13 @@
   ];
 </script>
 
-<footer style="background: var(--color-surface); border-top: 1px solid var(--color-border);">
+<footer role="contentinfo" style="background: var(--color-surface); border-top: 1px solid var(--color-border);">
   <div class="section-container py-12">
     <div class="grid grid-cols-1 gap-10 md:grid-cols-3 items-start mb-10">
 
       <!-- Brand column -->
       <div>
-        <a href="/" style="text-decoration: none;">
+        <a href="/" aria-label="JK.com — home" style="text-decoration: none;">
           <div
             class="font-black text-2xl mb-3"
             style="font-family: var(--font-heading);"
@@ -53,17 +53,19 @@
           class="text-xs font-mono uppercase tracking-widest mb-4"
           style="color: var(--color-text-ghost);"
         >Navigation</h3>
-        <ul class="space-y-2">
-          {#each links as { href, label }}
-            <li>
-              <a
-                {href}
-                class="text-sm transition-colors hover:text-cyan"
-                style="color: var(--color-text-dim); text-decoration: none;"
-              >{label}</a>
-            </li>
-          {/each}
-        </ul>
+        <nav aria-label="Footer navigation">
+          <ul class="space-y-2">
+            {#each links as { href, label }}
+              <li>
+                <a
+                  {href}
+                  class="text-sm transition-colors hover:text-cyan"
+                  style="color: var(--color-text-dim); text-decoration: none;"
+                >{label}</a>
+              </li>
+            {/each}
+          </ul>
+        </nav>
       </div>
 
       <!-- Contact / social -->

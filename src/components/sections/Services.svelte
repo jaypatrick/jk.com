@@ -2,6 +2,7 @@
   // Services.svelte — consulting services grid
   // Svelte 5 + TailwindCSS v4
   import { tick } from 'svelte';
+  import { openCalendlyPopup } from '$lib/calendly.ts';
 
   type Service = {
     icon: string;
@@ -124,20 +125,6 @@
     expandedCreativeIndex = expandedCreativeIndex === index ? null : index;
   }
 
-  function openCalendlyPopup(e: MouseEvent) {
-    e.preventDefault();
-    const calendly = (window as Window & {
-      Calendly?: { initPopupWidget?: (options: { url: string }) => void };
-    }).Calendly;
-
-    if (calendly?.initPopupWidget) {
-      calendly.initPopupWidget({ url: 'https://calendly.com/jaysonknight' });
-      return;
-    }
-
-    window.location.href = 'https://calendly.com/jaysonknight';
-  }
-
   $effect(() => {
     activeTab;
 
@@ -190,18 +177,24 @@
     </div>
 
     <!-- Tab switcher -->
-    <div class="flex gap-2 mb-10 animate-on-scroll">
+    <div class="flex gap-2 mb-10 animate-on-scroll" role="tablist" aria-label="Services categories">
       <button
+        id="tab-technical"
         class="btn {activeTab === 'technical' ? 'btn-primary' : 'btn-outline'}"
         onclick={() => { activeTab = 'technical'; }}
-        aria-pressed={activeTab === 'technical'}
+        role="tab"
+        aria-selected={activeTab === 'technical'}
+        aria-controls="panel-technical"
       >
         Technical
       </button>
       <button
+        id="tab-creative"
         class="btn {activeTab === 'creative' ? 'btn-primary' : 'btn-outline'}"
         onclick={() => { activeTab = 'creative'; }}
-        aria-pressed={activeTab === 'creative'}
+        role="tab"
+        aria-selected={activeTab === 'creative'}
+        aria-controls="panel-creative"
       >
         Creative &amp; Advisory
       </button>
@@ -209,7 +202,7 @@
 
     <!-- Service cards -->
     {#if activeTab === 'technical'}
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+      <div role="tabpanel" id="panel-technical" aria-labelledby="tab-technical" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
         {#each technicalServices as service, i}
           {@const isExpanded = expandedTechnicalIndex === i}
           <div
@@ -217,6 +210,8 @@
             style="background: var(--color-card); transition-delay: {i * 0.07}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
             role="button"
             tabindex="0"
+            aria-expanded={isExpanded}
+            aria-label={service.title}
             onclick={() => toggleService('technical', i)}
             onkeydown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -265,7 +260,7 @@
         {/each}
       </div>
     {:else}
-      <div class="grid grid-cols-1 gap-6 sm:grid-cols-2">
+      <div role="tabpanel" id="panel-creative" aria-labelledby="tab-creative" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
         {#each creativeServices as service, i}
           {@const isExpanded = expandedCreativeIndex === i}
           <div
@@ -273,6 +268,8 @@
             style="background: var(--color-card); transition-delay: {i * 0.1}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
             role="button"
             tabindex="0"
+            aria-expanded={isExpanded}
+            aria-label={service.title}
             onclick={() => toggleService('creative', i)}
             onkeydown={(e) => {
               if (e.key === 'Enter' || e.key === ' ') {
@@ -352,6 +349,7 @@
         href="https://calendly.com/jaysonknight"
         onclick={openCalendlyPopup}
         class="btn btn-red"
+        aria-label="Book a consultation via Calendly"
       >
         📅 Book a Consultation
       </a>

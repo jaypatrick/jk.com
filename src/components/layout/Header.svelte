@@ -1,6 +1,7 @@
 <script lang="ts">
   // Header.svelte — site navigation
   // Svelte 5 runes: $state, $effect
+  import { openCalendlyPopup } from '$lib/calendly.ts';
 
   let isMenuOpen = $state(false);
   let isScrolled = $state(false);
@@ -72,19 +73,6 @@
     isMenuOpen = false;
   }
 
-  function openCalendlyPopup(e: MouseEvent) {
-    e.preventDefault();
-    const calendly = (window as Window & {
-      Calendly?: { initPopupWidget?: (options: { url: string }) => void };
-    }).Calendly;
-
-    if (calendly?.initPopupWidget) {
-      calendly.initPopupWidget({ url: 'https://calendly.com/jaysonknight' });
-      return;
-    }
-
-    window.location.href = 'https://calendly.com/jaysonknight';
-  }
 </script>
 
 <header
@@ -130,6 +118,7 @@
           {href}
           class="text-sm font-medium transition-colors duration-200 hover:text-cyan relative group"
           style="color: {activeHref === href ? 'var(--color-text)' : 'var(--color-text-dim)'}; text-decoration: none; font-family: var(--font-heading);"
+          aria-current={activeHref === href ? 'page' : undefined}
         >
           {label}
           <span
@@ -149,6 +138,7 @@
         onclick={openCalendlyPopup}
         class="btn btn-red"
         style="padding: 0.4rem 1rem; font-size: 0.8rem;"
+        aria-label="Book a meeting via Calendly"
       >
         Book Me
       </a>
@@ -199,6 +189,7 @@
         onclick={closeMenu}
         class="text-lg font-medium py-2 transition-colors"
         style="color: {activeHref === href ? 'var(--color-cyan)' : 'var(--color-text-dim)'}; text-decoration: none; border-bottom: 1px solid var(--color-border);"
+        aria-current={activeHref === href ? 'page' : undefined}
       >
         {label}
       </a>
@@ -210,6 +201,7 @@
         openCalendlyPopup(e);
       }}
       class="btn btn-red mt-2 justify-center"
+      aria-label="Book a meeting via Calendly"
     >
       📅 Book Me
     </a>

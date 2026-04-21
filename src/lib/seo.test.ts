@@ -17,6 +17,8 @@ describe('buildSeoMetadata', () => {
     expect(seo.ogImageUrl).toBe(
       'https://jaysonknight.com/api/og/blog?title=Blog+%7C+JK.com+%E2%80%94+Jayson+Knight&description=Thoughts+on+Azure+and+Cloudflare.'
     );
+    expect(seo.ogImageAlt).toBe('Blog | JK.com — Jayson Knight — social preview image');
+    expect(seo.author).toBe('Jayson Knight');
   });
 
   it('uses defaults when title and description are not provided', () => {
@@ -30,6 +32,8 @@ describe('buildSeoMetadata', () => {
     expect(seo.ogImageUrl).toBe(
       'https://jaysonknight.com/api/og/privacy?title=JK.com+%7C+Enterprise+Cloud+Consulting+%E2%80%94+Jayson+Knight&description=Jayson+Knight+%E2%80%94+Solutions+Architect+specializing+in+Microsoft+Azure%2C+Cloudflare%2C+and+.NET.+20%2B+years+building+enterprise+software+that+scales.'
     );
+    expect(seo.ogImageAlt).toBe('JK.com | Enterprise Cloud Consulting — Jayson Knight — social preview image');
+    expect(seo.author).toBe('Jayson Knight');
   });
 
   it('uses explicit OG image when provided', () => {

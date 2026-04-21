@@ -74,9 +74,10 @@
     <!-- Case study cards -->
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-20">
       {#each caseStudies as study, i}
-        <div
+        <article
           class="glow-border rounded-xl p-7 flex flex-col gap-4 animate-on-scroll"
           style="background: var(--color-card); transition-delay: {i * 0.1}s;"
+          aria-label={study.title}
         >
           <!-- Label / stat row -->
           <div class="flex items-start justify-between">
@@ -123,19 +124,28 @@
               </a>
             {/if}
           </div>
-        </div>
+        </article>
       {/each}
     </div>
 
     <!-- Clients I Adore -->
     <div class="animate-on-scroll">
       <div class="section-label mb-8" style="color: var(--color-cyan);">CLIENTS I ADORE</div>
-      <div class="clients-marquee">
+      <div class="clients-marquee" aria-label="Marquee of past clients">
         <div class="clients-track">
-          {#each [...clients, ...clients] as client}
+          {#each clients as client}
             <div
               class="client-tile rounded-lg px-5 py-2.5 text-sm"
               style="background: var(--color-card); border: 1px solid var(--color-border); color: var(--color-cyan);"
+            >
+              {client}
+            </div>
+          {/each}
+          {#each clients as client}
+            <div
+              class="client-tile rounded-lg px-5 py-2.5 text-sm"
+              style="background: var(--color-card); border: 1px solid var(--color-border); color: var(--color-cyan);"
+              aria-hidden="true"
             >
               {client}
             </div>

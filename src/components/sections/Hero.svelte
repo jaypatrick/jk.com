@@ -1,22 +1,9 @@
 <script lang="ts">
   // Hero.svelte — "THIS. IS. JK.com" — full-screen hero with cyberpunk glitch
   // Svelte 5 runes API
+  import { openCalendlyPopup } from '$lib/calendly.ts';
 
   let mounted = $state(false);
-
-  function openCalendlyPopup(e: MouseEvent) {
-    e.preventDefault();
-    const calendly = (window as Window & {
-      Calendly?: { initPopupWidget?: (options: { url: string }) => void };
-    }).Calendly;
-
-    if (calendly?.initPopupWidget) {
-      calendly.initPopupWidget({ url: 'https://calendly.com/jaysonknight' });
-      return;
-    }
-
-    window.location.href = 'https://calendly.com/jaysonknight';
-  }
 
   $effect(() => {
     // Small delay so CSS animation reads as intentional
@@ -82,11 +69,12 @@
     </div>
 
     <!-- Main heading — "THIS. IS. JK.com" with glitch treatment -->
-    <div class="relative mb-4" aria-label="This is JK.com">
+    <div class="relative mb-4">
       <!-- Glitch layers (CSS only) -->
       <h1
         class="glitch-text relative text-7xl font-black tracking-tight text-white select-none sm:text-8xl lg:text-9xl"
         data-text="THIS. IS."
+        aria-label="This. Is. JK.com"
         style="
           font-family: var(--font-heading);
           opacity: {mounted ? 1 : 0};
@@ -125,19 +113,21 @@
     </p>
 
     <!-- Role tags -->
-    <div
+    <ul
       class="mt-8 flex flex-wrap justify-center gap-3"
+      role="list"
+      aria-label="Specializations"
       style="opacity: {mounted ? 1 : 0}; transition: opacity 0.8s ease 0.6s;"
     >
       {#each ['Azure Architect', '.NET Expert', 'Cloudflare Specialist', 'Privacy & Security'] as tag}
-        <span
+        <li
           class="chip"
           style="background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.3); color: var(--color-cyan);"
         >
           {tag}
-        </span>
+        </li>
       {/each}
-    </div>
+    </ul>
 
     <!-- CTA buttons -->
     <div
@@ -148,6 +138,7 @@
         href="https://calendly.com/jaysonknight"
         onclick={openCalendlyPopup}
         class="btn btn-red"
+        aria-label="Book a meeting via Calendly"
       >
         <span>📅</span>
         Book Me

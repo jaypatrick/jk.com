@@ -57,6 +57,15 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
     <meta name="twitter:title" content={seo.title} />
     <meta name="twitter:description" content={seo.description} />
     <meta name="twitter:image" content={seo.ogImageUrl} />
+    <!-- Locale & author -->
+    <meta property="og:locale" content="en_US" />
+    <meta property="og:image:alt" content={seo.ogImageAlt} />
+    <meta name="twitter:site" content="@jaysonknight" />
+    <meta name="twitter:creator" content="@jaysonknight" />
+    <meta name="twitter:image:alt" content={seo.ogImageAlt} />
+    <meta name="author" content={seo.author} />
+    <!-- Default robots for indexed pages -->
+    {!noIndex && <meta name="robots" content="index, follow, max-snippet:-1, max-image-preview:large" />}
 
     <!-- Favicon -->
     <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
@@ -73,6 +82,8 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
 
     <!-- Sitemap -->
     <link rel="sitemap" href="/sitemap-index.xml" />
+    <link rel="me" href="https://github.com/jaypatrick" />
+    <link rel="me" href="https://www.linkedin.com/in/jaysonknight" />
     <link href="https://assets.calendly.com/assets/external/widget.css" rel="stylesheet" />
     <script src="https://assets.calendly.com/assets/external/widget.js" type="text/javascript" async></script>
 
@@ -80,9 +91,16 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
     <script type="application/ld+json" set:html={JSON.stringify({
       '@context': 'https://schema.org',
       '@type': 'ProfessionalService',
+      '@id': seo.canonicalUrl,
       name: 'JK.com — Jayson Knight Consulting',
       description: seo.description,
       url: seo.canonicalUrl,
+      image: new URL('/apple-touch-icon.png', site).href,
+      sameAs: [
+        'https://github.com/jaypatrick',
+        'https://www.linkedin.com/in/jaysonknight',
+        'https://calendly.com/jaysonknight',
+      ],
       telephone: '+19807297877',
       address: {
         '@type': 'PostalAddress',
@@ -92,8 +110,11 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
       },
       founder: {
         '@type': 'Person',
+        '@id': new URL('/#founder', site).href,
         name: 'Jayson Knight',
         jobTitle: 'Solutions Architect',
+        url: 'https://jaysonknight.com',
+        sameAs: ['https://github.com/jaypatrick', 'https://www.linkedin.com/in/jaysonknight'],
         knowsAbout: ['Microsoft Azure', 'Cloudflare', '.NET', 'Enterprise Software'],
       },
     })} />
