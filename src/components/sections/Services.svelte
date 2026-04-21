@@ -209,6 +209,7 @@
         role="tab"
         aria-selected={activeTab === 'technical'}
         aria-controls="panel-technical"
+        tabindex={activeTab === 'technical' ? 0 : -1}
       >
         Technical
       </button>
@@ -219,150 +220,163 @@
         role="tab"
         aria-selected={activeTab === 'creative'}
         aria-controls="panel-creative"
+        tabindex={activeTab === 'creative' ? 0 : -1}
       >
         Creative &amp; Advisory
       </button>
     </div>
 
     <!-- Service cards -->
-    {#if activeTab === 'technical'}
-      <div role="tabpanel" id="panel-technical" aria-labelledby="tab-technical" class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-        {#each technicalServices as service, i}
-          {@const isExpanded = expandedTechnicalIndex === i}
-          <div
-            class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
-            style="background: var(--color-card); transition-delay: {i * 0.07}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
-            role="button"
-            tabindex="0"
-            aria-expanded={isExpanded}
-            aria-label={service.title}
-            onclick={() => toggleService('technical', i)}
-            onkeydown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleService('technical', i);
-              }
-            }}
-          >
-            <div class="text-3xl mb-4" aria-hidden="true">{service.icon}</div>
-            <h3 class="text-lg font-semibold mb-3" style="font-family: var(--font-heading); color: var(--color-text);">
-              {service.title}
-            </h3>
-            <p class="text-sm leading-relaxed flex-1 mb-4" style="color: var(--color-text-dim);">
-              {service.description}
-            </p>
-            <div class="flex flex-wrap gap-2 mt-auto">
-              {#each service.tags as tag}
-                <span
-                  class="text-xs px-2 py-0.5 rounded"
-                  style="background: rgba(0,212,255,0.08); color: var(--color-cyan-dim); border: 1px solid rgba(0,212,255,0.15); font-family: var(--font-mono);"
-                >{tag}</span>
-              {/each}
-            </div>
-            <div class="mt-4 text-xs" style="color: var(--color-cyan); font-family: var(--font-mono);">
-              {isExpanded ? '▴ Details' : '▾ Details'}
-            </div>
-            {#if isExpanded}
-              <div
-                class="mt-4 rounded-lg p-4"
-                style="background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25);"
-              >
-                <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--color-cyan); font-family: var(--font-mono);">
-                  Learn More
-                </div>
-                <ul class="space-y-1.5">
-                  {#each service.bullets as bullet}
-                    <li class="text-sm flex gap-2" style="color: var(--color-text-dim);">
-                      <span style="color: var(--color-cyan);">•</span>
-                      <span>{bullet}</span>
-                    </li>
-                  {/each}
-                </ul>
-              </div>
-            {/if}
-          </div>
-        {/each}
-      </div>
-    {:else}
-      <div role="tabpanel" id="panel-creative" aria-labelledby="tab-creative" class="grid grid-cols-1 gap-6 sm:grid-cols-2">
-        {#each creativeServices as service, i}
-          {@const isExpanded = expandedCreativeIndex === i}
-          <div
-            class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
-            style="background: var(--color-card); transition-delay: {i * 0.1}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
-            role="button"
-            tabindex="0"
-            aria-expanded={isExpanded}
-            aria-label={service.title}
-            onclick={() => toggleService('creative', i)}
-            onkeydown={(e) => {
-              if (e.key === 'Enter' || e.key === ' ') {
-                e.preventDefault();
-                toggleService('creative', i);
-              }
-            }}
-          >
-            <div class="text-3xl mb-4" aria-hidden="true">{service.icon}</div>
-            <h3 class="text-lg font-semibold mb-3" style="font-family: var(--font-heading); color: var(--color-text);">
-              {service.title}
-            </h3>
-            <p class="text-sm leading-relaxed flex-1 mb-4" style="color: var(--color-text-dim);">
-              {service.description}
-            </p>
-            <div class="flex flex-wrap gap-2 mt-auto">
-              {#each service.tags as tag}
-                <span
-                  class="text-xs px-2 py-0.5 rounded"
-                  style="background: rgba(0,212,255,0.08); color: var(--color-cyan-dim); border: 1px solid rgba(0,212,255,0.15); font-family: var(--font-mono);"
-                >{tag}</span>
-              {/each}
-            </div>
-            <div class="mt-4 text-xs" style="color: var(--color-cyan); font-family: var(--font-mono);">
-              {isExpanded ? '▴ Details' : '▾ Details'}
-            </div>
-            {#if isExpanded}
-              <div
-                class="mt-4 rounded-lg p-4"
-                style="background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25);"
-              >
-                <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--color-cyan); font-family: var(--font-mono);">
-                  Learn More
-                </div>
-                <ul class="space-y-1.5">
-                  {#each service.bullets as bullet}
-                    <li class="text-sm flex gap-2" style="color: var(--color-text-dim);">
-                      <span style="color: var(--color-cyan);">•</span>
-                      <span>{bullet}</span>
-                    </li>
-                  {/each}
-                </ul>
-              </div>
-            {/if}
-          </div>
-        {/each}
-
-        <!-- Labs callout -->
+    <div
+      role="tabpanel"
+      id="panel-technical"
+      aria-labelledby="tab-technical"
+      class="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3"
+      hidden={activeTab !== 'technical'}
+      aria-hidden={activeTab !== 'technical'}
+    >
+      {#each technicalServices as service, i}
+        {@const isExpanded = expandedTechnicalIndex === i}
         <div
-          class="rounded-xl p-6 sm:col-span-2 animate-on-scroll"
-          style="background: linear-gradient(135deg, rgba(0,120,212,0.1) 0%, rgba(0,212,255,0.05) 100%); border: 1px solid rgba(0,120,212,0.25);"
+          class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
+          style="background: var(--color-card); transition-delay: {i * 0.07}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
+          role="button"
+          tabindex="0"
+          aria-expanded={isExpanded}
+          aria-label={service.title}
+          onclick={() => toggleService('technical', i)}
+          onkeydown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleService('technical', i);
+            }
+          }}
         >
-          <div class="text-3xl mb-3" aria-hidden="true">🧪</div>
-          <h3 class="text-lg font-semibold mb-2" style="font-family: var(--font-heading);">Labs & Open Source</h3>
-          <p class="text-sm mb-4" style="color: var(--color-text-dim);">
-            Side projects include an Adblock Compiler (compiler-as-a-service for filter lists),
-            privacy tooling, and experiments in compiler theory. Check the blog and GitHub.
+          <div class="text-3xl mb-4" aria-hidden="true">{service.icon}</div>
+          <h3 class="text-lg font-semibold mb-3" style="font-family: var(--font-heading); color: var(--color-text);">
+            {service.title}
+          </h3>
+          <p class="text-sm leading-relaxed flex-1 mb-4" style="color: var(--color-text-dim);">
+            {service.description}
           </p>
-          <div class="flex flex-wrap gap-3">
-            <a href="https://github.com/jaypatrick" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding: 0.5rem 1.25rem;">
-              GitHub Repos →
-            </a>
-            <a href="/blog" class="btn btn-outline" style="padding: 0.5rem 1.25rem;">
-              Blog →
-            </a>
+          <div class="flex flex-wrap gap-2 mt-auto">
+            {#each service.tags as tag}
+              <span
+                class="text-xs px-2 py-0.5 rounded"
+                style="background: rgba(0,212,255,0.08); color: var(--color-cyan-dim); border: 1px solid rgba(0,212,255,0.15); font-family: var(--font-mono);"
+              >{tag}</span>
+            {/each}
           </div>
+          <div class="mt-4 text-xs" style="color: var(--color-cyan); font-family: var(--font-mono);">
+            {isExpanded ? '▴ Details' : '▾ Details'}
+          </div>
+          {#if isExpanded}
+            <div
+              class="mt-4 rounded-lg p-4"
+              style="background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25);"
+            >
+              <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--color-cyan); font-family: var(--font-mono);">
+                Learn More
+              </div>
+              <ul class="space-y-1.5">
+                {#each service.bullets as bullet}
+                  <li class="text-sm flex gap-2" style="color: var(--color-text-dim);">
+                    <span style="color: var(--color-cyan);">•</span>
+                    <span>{bullet}</span>
+                  </li>
+                {/each}
+              </ul>
+            </div>
+          {/if}
+        </div>
+      {/each}
+    </div>
+
+    <div
+      role="tabpanel"
+      id="panel-creative"
+      aria-labelledby="tab-creative"
+      class="grid grid-cols-1 gap-6 sm:grid-cols-2"
+      hidden={activeTab !== 'creative'}
+      aria-hidden={activeTab !== 'creative'}
+    >
+      {#each creativeServices as service, i}
+        {@const isExpanded = expandedCreativeIndex === i}
+        <div
+          class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
+          style="background: var(--color-card); transition-delay: {i * 0.1}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
+          role="button"
+          tabindex="0"
+          aria-expanded={isExpanded}
+          aria-label={service.title}
+          onclick={() => toggleService('creative', i)}
+          onkeydown={(e) => {
+            if (e.key === 'Enter' || e.key === ' ') {
+              e.preventDefault();
+              toggleService('creative', i);
+            }
+          }}
+        >
+          <div class="text-3xl mb-4" aria-hidden="true">{service.icon}</div>
+          <h3 class="text-lg font-semibold mb-3" style="font-family: var(--font-heading); color: var(--color-text);">
+            {service.title}
+          </h3>
+          <p class="text-sm leading-relaxed flex-1 mb-4" style="color: var(--color-text-dim);">
+            {service.description}
+          </p>
+          <div class="flex flex-wrap gap-2 mt-auto">
+            {#each service.tags as tag}
+              <span
+                class="text-xs px-2 py-0.5 rounded"
+                style="background: rgba(0,212,255,0.08); color: var(--color-cyan-dim); border: 1px solid rgba(0,212,255,0.15); font-family: var(--font-mono);"
+              >{tag}</span>
+            {/each}
+          </div>
+          <div class="mt-4 text-xs" style="color: var(--color-cyan); font-family: var(--font-mono);">
+            {isExpanded ? '▴ Details' : '▾ Details'}
+          </div>
+          {#if isExpanded}
+            <div
+              class="mt-4 rounded-lg p-4"
+              style="background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.25);"
+            >
+              <div class="text-xs uppercase tracking-widest mb-2" style="color: var(--color-cyan); font-family: var(--font-mono);">
+                Learn More
+              </div>
+              <ul class="space-y-1.5">
+                {#each service.bullets as bullet}
+                  <li class="text-sm flex gap-2" style="color: var(--color-text-dim);">
+                    <span style="color: var(--color-cyan);">•</span>
+                    <span>{bullet}</span>
+                  </li>
+                {/each}
+              </ul>
+            </div>
+          {/if}
+        </div>
+      {/each}
+
+      <!-- Labs callout -->
+      <div
+        class="rounded-xl p-6 sm:col-span-2 animate-on-scroll"
+        style="background: linear-gradient(135deg, rgba(0,120,212,0.1) 0%, rgba(0,212,255,0.05) 100%); border: 1px solid rgba(0,120,212,0.25);"
+      >
+        <div class="text-3xl mb-3" aria-hidden="true">🧪</div>
+        <h3 class="text-lg font-semibold mb-2" style="font-family: var(--font-heading);">Labs & Open Source</h3>
+        <p class="text-sm mb-4" style="color: var(--color-text-dim);">
+          Side projects include an Adblock Compiler (compiler-as-a-service for filter lists),
+          privacy tooling, and experiments in compiler theory. Check the blog and GitHub.
+        </p>
+        <div class="flex flex-wrap gap-3">
+          <a href="https://github.com/jaypatrick" target="_blank" rel="noopener noreferrer" class="btn btn-outline" style="padding: 0.5rem 1.25rem;">
+            GitHub Repos →
+          </a>
+          <a href="/blog" class="btn btn-outline" style="padding: 0.5rem 1.25rem;">
+            Blog →
+          </a>
         </div>
       </div>
-    {/if}
+    </div>
 
     <!-- Book Me CTA -->
     <div class="mt-16 text-center animate-on-scroll">
