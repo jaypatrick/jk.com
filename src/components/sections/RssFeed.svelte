@@ -74,10 +74,18 @@
 <section class="section-pad" style="background: var(--color-surface);">
   <div class="section-container">
     <div class="section-label animate-on-scroll">WHAT I THINK</div>
-    <div class="mb-10 animate-on-scroll">
+    <div class="mb-10 animate-on-scroll flex items-end justify-between gap-4 flex-wrap">
       <h2 class="text-4xl font-bold mb-4 lg:text-5xl" style="font-family: var(--font-heading);">
         Latest <span class="gradient-text">Thoughts</span>
       </h2>
+      <a
+        href="https://blog.jaysonknight.com/"
+        target="_blank"
+        rel="noopener noreferrer"
+        style="color: var(--color-cyan); text-decoration: none; font-family: var(--font-heading);"
+      >
+        View all posts →
+      </a>
     </div>
 
     {#if loading}
