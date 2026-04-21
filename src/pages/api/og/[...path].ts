@@ -7,6 +7,8 @@ import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../../../lib/og-defaul
 const STATIC_OG_FALLBACK_PATH = '/og-fallback.png';
 const OG_IMAGE_CACHE_CONTROL =
   'public, max-age=86400, s-maxage=86400, stale-while-revalidate=604800';
+const OG_GENERATED_FALLBACK_CACHE_CONTROL =
+  'public, max-age=60, s-maxage=300, stale-while-revalidate=600';
 
 let fallbackOgPngPromise: Promise<Uint8Array> | undefined;
 
@@ -79,7 +81,7 @@ export const GET: APIRoute = async ({ params, request }) => {
       status: 200,
       headers: {
         'Content-Type': 'image/png',
-        'Cache-Control': 'no-store',
+        'Cache-Control': OG_GENERATED_FALLBACK_CACHE_CONTROL,
       },
     });
   }
