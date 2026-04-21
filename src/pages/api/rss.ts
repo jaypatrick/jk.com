@@ -120,11 +120,11 @@ export const GET: APIRoute = async ({ request }) => {
       });
     }
 
-    const xml = await response.text();
     const contentType = response.headers.get('Content-Type')?.toLowerCase() ?? '';
-    const isXmlLike = contentType.includes('xml');
-    const isTextLike = contentType.startsWith('text/') && !contentType.includes('html');
-    if (contentType && !isXmlLike && !isTextLike) {
+    const mimeType = contentType.split(';', 1)[0]?.trim() ?? '';
+    const isXmlLike = mimeType.includes('xml');
+    const isAllowedTextFallback = mimeType === 'text/plain';
+    if (mimeType && !isXmlLike && !isAllowedTextFallback) {
       return new Response(
         JSON.stringify({ error: 'Feed returned non-XML response (possible bot challenge or redirect)' }),
         {
@@ -134,6 +134,7 @@ export const GET: APIRoute = async ({ request }) => {
       );
     }
 
+    const xml = await response.text();
     const items = parseRssOrAtom(xml, max);
 
     return new Response(JSON.stringify({ items }), {

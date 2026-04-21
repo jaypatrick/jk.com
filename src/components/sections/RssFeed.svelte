@@ -144,16 +144,15 @@
         </div>
       {:else}
         <p class="animate-on-scroll text-sm md:text-base" style="color: var(--color-text-dim);">
-          No posts available right now. Check back soon or visit
+          No posts available right now. Check back soon or
           <a
             href="https://blog.jaysonknight.com/"
             target="_blank"
             rel="noopener noreferrer"
             style="color: var(--color-cyan); text-decoration: none; font-family: var(--font-heading);"
           >
-            the blog directly
+            visit the blog directly.
           </a>
-          .
         </p>
       {/if}
     {/if}
