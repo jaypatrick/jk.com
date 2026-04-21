@@ -75,7 +75,7 @@
   <div class="section-container">
     <div class="section-label animate-on-scroll">WHAT I THINK</div>
     <div class="mb-10 animate-on-scroll flex items-end justify-between gap-4 flex-wrap">
-      <h2 class="text-4xl font-bold mb-4 lg:text-5xl" style="font-family: var(--font-heading);">
+      <h2 class="text-4xl font-bold mb-0 lg:text-5xl" style="font-family: var(--font-heading);">
         Latest <span class="gradient-text">Thoughts</span>
       </h2>
       <a
