@@ -63,7 +63,7 @@ describe('GET /api/rss', () => {
   });
 
   it('returns feed items on success', async () => {
-    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+    const fetchMock = vi.spyOn(globalThis, 'fetch').mockResolvedValue(
       new Response(
         `<?xml version="1.0"?>
         <rss><channel>
@@ -93,6 +93,34 @@ describe('GET /api/rss', () => {
           description: 'Hello world',
         },
       ],
+    });
+    expect(fetchMock).toHaveBeenCalledWith(
+      'https://example.com/rss.xml',
+      expect.objectContaining({
+        headers: expect.objectContaining({
+          Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml',
+          'User-Agent': 'Mozilla/5.0 (compatible; JKcom-RSSBot/1.0; +https://jaysonknight.com)',
+        }),
+      })
+    );
+  });
+
+  it('returns 502 when upstream content type is non-XML', async () => {
+    vi.spyOn(globalThis, 'fetch').mockResolvedValue(
+      new Response('<html><body>challenge</body></html>', {
+        status: 200,
+        headers: { 'Content-Type': 'text/html; charset=UTF-8' },
+      })
+    );
+
+    const response = await GET({
+      request: new Request('https://example.com/api/rss?url=https%3A%2F%2Fexample.com%2Frss.xml'),
+    } as Parameters<typeof GET>[0]);
+    const payload = await response.json();
+
+    expect(response.status).toBe(502);
+    expect(payload).toEqual({
+      error: 'Feed returned non-XML response (possible bot challenge or redirect)',
     });
   });
 });
