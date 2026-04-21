@@ -8,6 +8,7 @@ import Services from '../components/sections/Services.svelte';
 import Portfolio from '../components/sections/Portfolio.svelte';
 import RssFeed from '../components/sections/RssFeed.svelte';
 import Contact from '../components/sections/Contact.svelte';
+import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
 // Cloudflare runtime locals — available in SSR
 const { runtime } = Astro.locals;
@@ -15,8 +16,8 @@ const { runtime } = Astro.locals;
 ---
 
 <BaseLayout
-  title="JK.com | AI Engineering, Cloud Architecture & Consulting — Jayson Knight"
-  description="Jayson Knight — AI Engineer & Solutions Architect specializing in Anthropic Claude, agentic systems, Microsoft Azure, Cloudflare AI platforms, Rust/WASM, TypeScript/Deno, and .NET. 20+ years building enterprise software that scales. Based in Charlotte, NC."
+  title={DEFAULT_OG_TITLE}
+  description={DEFAULT_OG_DESCRIPTION}
 >
   <!-- Hero: full-screen "THIS. IS. JK.com" -->
   <Hero client:load />
