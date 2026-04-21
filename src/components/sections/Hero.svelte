@@ -65,7 +65,7 @@
       style="opacity: {mounted ? 1 : 0}; transform: translateY({mounted ? 0 : -12}px); transition: all 0.6s ease 0.1s;"
     >
       <span style="color: var(--color-cyan); margin-right: 0.25rem;">▸</span>
-      Charlotte, NC · Available for Projects
+      Charlotte, NC · Available for Consulting
     </div>
 
     <!-- Main heading — "THIS. IS. JK.com" with glitch treatment -->

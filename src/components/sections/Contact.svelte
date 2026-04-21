@@ -20,7 +20,7 @@
 
   let fieldErrors = $state<Partial<Record<keyof ContactFormData, string>>>({});
   let isCalendlyReady = $state(false);
-  let calendlyInlineContainer: HTMLDivElement | null = null;
+  let calendlyInlineContainer = $state<HTMLDivElement | null>(null);
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -292,7 +292,7 @@
                 bind:value={form.message}
                 required
                 rows={5}
-                placeholder="Tell me about your project, timeline, and budget..."
+                placeholder="Tell me about your consulting or architecture design needs, timeline, and budget..."
                 class="w-full rounded-lg px-4 py-3 text-sm resize-vertical transition-all"
                 style="background: var(--color-surface); border: 1px solid {fieldErrors.message ? 'var(--color-red)' : 'var(--color-border)'}; color: var(--color-text); outline: none; min-height: 120px;"
                 onfocus={(e) => { (e.currentTarget as HTMLTextAreaElement).style.borderColor = 'var(--color-cyan)'; }}

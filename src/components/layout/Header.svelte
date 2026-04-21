@@ -99,9 +99,10 @@
       <img
         src="/favicon.svg"
         alt="JK logo"
-        width="36"
-        height="36"
+        width="48"
+        height="48"
         class="transition-transform duration-300 group-hover:scale-110"
+        style="filter: drop-shadow(0 0 6px rgba(0,212,255,0.6));"
       />
       <div>
         <span
