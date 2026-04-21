@@ -27,26 +27,50 @@
     },
     {
       icon: '⚡',
-      title: '.NET Modernization',
+      title: '.NET & TypeScript/Deno Modernization',
       description:
-        'Migrate legacy .NET Framework apps to .NET 9/10. Architect minimal APIs, Blazor frontends, Orleans distributed systems, and cloud-native patterns on Azure.',
-      tags: ['.NET 9', 'C#', 'Blazor', 'Orleans'],
+        'Migrate legacy .NET Framework apps to .NET 9/10, and build greenfield TypeScript services with Deno and Deno Deploy. Architect minimal APIs, Blazor frontends, Orleans distributed systems, and cloud-native patterns on Azure.',
+      tags: ['.NET 9', 'C#', 'Deno', 'TypeScript'],
       bullets: [
-        'Incremental migration planning for legacy workloads',
-        'Performance tuning and observability instrumentation',
-        'Modern CI/CD pipelines for .NET services',
+        'Incremental migration planning for legacy .NET workloads',
+        'TypeScript/Deno service design with Deno Deploy edge deployment',
+        'Modern CI/CD pipelines for .NET and Deno services',
+      ],
+    },
+    {
+      icon: '🤖',
+      title: 'AI Engineering & Agentic Systems',
+      description:
+        'End-to-end AI platform design using Anthropic Claude as the primary model. I design Agentic Development Environments (ADEs), orchestration agents, MCP servers, and AI gateways — all deployable to the Cloudflare edge.',
+      tags: ['Anthropic Claude', 'MCP', 'AI Gateway', 'Agents'],
+      bullets: [
+        'Agentic Development Environment (ADE) design & implementation',
+        'Orchestration agent pipelines and multi-agent coordination',
+        'MCP server and AI gateway deployment on Cloudflare Workers',
+      ],
+    },
+    {
+      icon: '🦀',
+      title: 'Rust & WebAssembly',
+      description:
+        'Deep Rust expertise across the full stack — standalone systems programming, server-side WASM with WASI/component model, and client-side WASM in both Rust and TypeScript.',
+      tags: ['Rust', 'WASM', 'WASI', 'TypeScript'],
+      bullets: [
+        'Standalone Rust systems: CLIs, daemons, high-performance libs',
+        'Server-side WASM components (WASI) for edge & serverless runtimes',
+        'Client-side WASM modules in Rust and TypeScript for browser & Cloudflare Workers',
       ],
     },
     {
       icon: '🔶',
       title: 'Cloudflare Platform',
       description:
-        'Full Cloudflare stack implementation: Workers, D1, R2, KV, Queues, Zero Trust / SASE. I\'m an expert-level practitioner — this entire site runs on Cloudflare.',
-      tags: ['Workers', 'D1', 'R2', 'Zero Trust'],
+        'Full Cloudflare stack implementation: Workers, D1, R2, KV, Queues, Zero Trust / SASE, AI Gateway, MCP servers, and Vectorize. I\'m an expert-level practitioner — this entire site runs on Cloudflare.',
+      tags: ['Workers', 'AI Gateway', 'MCP', 'Zero Trust'],
       bullets: [
-        'Workers and Durable architecture design',
+        'Workers and Durable Objects architecture design',
+        'AI Gateway and MCP server deployment at the edge',
         'Zero Trust rollout with staged policy enforcement',
-        'Edge data patterns across D1, R2, and KV',
       ],
     },
     {
