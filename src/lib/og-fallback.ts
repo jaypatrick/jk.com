@@ -1,7 +1,7 @@
-const PNG_SIGNATURE = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10]);
+const PNG_SIGNATURE: Uint8Array<ArrayBuffer> = Uint8Array.from([137, 80, 78, 71, 13, 10, 26, 10]);
 const FALLBACK_WIDTH = 1200;
 const FALLBACK_HEIGHT = 630;
-const FALLBACK_RGB = Uint8Array.from([0x05, 0x05, 0x0a]);
+const FALLBACK_RGB: Uint8Array<ArrayBuffer> = Uint8Array.from([0x05, 0x05, 0x0a]);
 const CRC32_POLYNOMIAL = 0xedb88320;
 
 const crc32Table = (() => {
@@ -16,7 +16,7 @@ const crc32Table = (() => {
   return table;
 })();
 
-const concatBytes = (chunks: Uint8Array[]): Uint8Array => {
+const concatBytes = (chunks: Uint8Array[]): Uint8Array<ArrayBuffer> => {
   const totalLength = chunks.reduce((sum, chunk) => sum + chunk.byteLength, 0);
   const result = new Uint8Array(totalLength);
   let offset = 0;
@@ -27,7 +27,7 @@ const concatBytes = (chunks: Uint8Array[]): Uint8Array => {
   return result;
 };
 
-const uint32ToBytes = (value: number): Uint8Array => {
+const uint32ToBytes = (value: number): Uint8Array<ArrayBuffer> => {
   const bytes = new Uint8Array(4);
   const view = new DataView(bytes.buffer);
   view.setUint32(0, value);
@@ -42,7 +42,7 @@ const crc32 = (data: Uint8Array): number => {
   return (crc ^ 0xffffffff) >>> 0;
 };
 
-const createChunk = (type: 'IHDR' | 'IDAT' | 'IEND', data: Uint8Array): Uint8Array => {
+const createChunk = (type: 'IHDR' | 'IDAT' | 'IEND', data: Uint8Array): Uint8Array<ArrayBuffer> => {
   const typeBytes = new TextEncoder().encode(type);
   const crcInput = concatBytes([typeBytes, data]);
   return concatBytes([
@@ -53,7 +53,7 @@ const createChunk = (type: 'IHDR' | 'IDAT' | 'IEND', data: Uint8Array): Uint8Arr
   ]);
 };
 
-const createIhdrData = (): Uint8Array => {
+const createIhdrData = (): Uint8Array<ArrayBuffer> => {
   const ihdrData = new Uint8Array(13);
   const view = new DataView(ihdrData.buffer);
   view.setUint32(0, FALLBACK_WIDTH);
@@ -66,7 +66,7 @@ const createIhdrData = (): Uint8Array => {
   return ihdrData;
 };
 
-const createRawScanlineData = (): Uint8Array => {
+const createRawScanlineData = (): Uint8Array<ArrayBuffer> => {
   const rowLength = 1 + FALLBACK_WIDTH * 3;
   const rowData = new Uint8Array(rowLength);
   for (let offset = 1; offset < rowLength; offset += 3) {
@@ -80,17 +80,17 @@ const createRawScanlineData = (): Uint8Array => {
   return rawScanlineData;
 };
 
-const compressDeflateRaw = async (data: Uint8Array): Promise<Uint8Array> => {
+const compressDeflate = async (data: Uint8Array): Promise<Uint8Array<ArrayBuffer>> => {
   const blobData = Uint8Array.from(data);
   const compressed = await new Response(
-    new Blob([blobData]).stream().pipeThrough(new CompressionStream('deflate-raw'))
+    new Blob([blobData]).stream().pipeThrough(new CompressionStream('deflate'))
   ).arrayBuffer();
   return new Uint8Array(compressed);
 };
 
-export async function generateFallbackOgPng(): Promise<Uint8Array> {
+export async function generateFallbackOgPng(): Promise<Uint8Array<ArrayBuffer>> {
   const ihdrData = createIhdrData();
-  const idatData = await compressDeflateRaw(createRawScanlineData());
+  const idatData = await compressDeflate(createRawScanlineData());
 
   return concatBytes([
     PNG_SIGNATURE,

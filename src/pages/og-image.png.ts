@@ -4,9 +4,9 @@ import { generateOgImage } from '../lib/og';
 import { generateFallbackOgPng } from '../lib/og-fallback';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
-let fallbackOgPngPromise: Promise<Uint8Array> | undefined;
+let fallbackOgPngPromise: Promise<Uint8Array<ArrayBuffer>> | undefined;
 
-const getFallbackOgPng = (): Promise<Uint8Array> => {
+const getFallbackOgPng = (): Promise<Uint8Array<ArrayBuffer>> => {
   if (!fallbackOgPngPromise) {
     fallbackOgPngPromise = generateFallbackOgPng().catch((error) => {
       fallbackOgPngPromise = undefined;
@@ -41,7 +41,7 @@ export const GET: APIRoute = async ({ request }) => {
     });
   } catch (err) {
     console.error('[og-image.png] generateOgImage failed — serving solid-color fallback:', err);
-    return new Response(Uint8Array.from(await getFallbackOgPng()), {
+    return new Response(await getFallbackOgPng(), {
       status: 200,
       headers: {
         'Content-Type': 'image/png',
