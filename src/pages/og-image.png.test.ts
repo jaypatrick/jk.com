@@ -1,19 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../lib/og-defaults';
 
-const { generateOgImage } = vi.hoisted(() => ({
+const { generateOgImage, assetsFetch } = vi.hoisted(() => ({
   generateOgImage: vi.fn(),
+  assetsFetch: vi.fn(),
 }));
 
 vi.mock('../lib/og', () => ({
   generateOgImage,
 }));
+vi.mock('cloudflare:workers', () => ({
+  env: {
+    ASSETS: {
+      fetch: assetsFetch,
+    },
+  },
+}));
 
 import { GET } from './og-image.png';
 
 describe('GET /og-image.png', () => {
-  const assetsFetch = vi.fn();
-
   beforeEach(() => {
     generateOgImage.mockReset();
     generateOgImage.mockResolvedValue(Uint8Array.from([1, 2, 3]));
@@ -24,7 +30,6 @@ describe('GET /og-image.png', () => {
   it('generates the default OG image with correct defaults', async () => {
     const response = await GET({
       request: new Request('https://example.com/og-image.png'),
-      locals: { runtime: { env: { ASSETS: { fetch: assetsFetch } } } },
     } as unknown as Parameters<typeof GET>[0]);
 
     const body = new Uint8Array(await response.arrayBuffer());
@@ -51,7 +56,6 @@ describe('GET /og-image.png', () => {
 
     const response = await GET({
       request: new Request('https://example.com/og-image.png'),
-      locals: { runtime: { env: { ASSETS: { fetch: assetsFetch } } } },
     } as unknown as Parameters<typeof GET>[0]);
 
     const body = new Uint8Array(await response.arrayBuffer());
@@ -65,7 +69,6 @@ describe('GET /og-image.png', () => {
 
     const response = await GET({
       request: new Request('https://example.com/og-image.png'),
-      locals: { runtime: { env: { ASSETS: { fetch: assetsFetch } } } },
     } as unknown as Parameters<typeof GET>[0]);
 
     expect(response.status).toBe(500);

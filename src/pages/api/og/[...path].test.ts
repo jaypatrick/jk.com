@@ -1,19 +1,25 @@
 import { beforeEach, describe, expect, it, vi } from 'vitest';
 import { DEFAULT_OG_DESCRIPTION, DEFAULT_OG_TITLE } from '../../../lib/og-defaults';
 
-const { generateOgImage } = vi.hoisted(() => ({
+const { generateOgImage, assetsFetch } = vi.hoisted(() => ({
   generateOgImage: vi.fn(),
+  assetsFetch: vi.fn(),
 }));
 
 vi.mock('../../../lib/og', () => ({
   generateOgImage,
 }));
+vi.mock('cloudflare:workers', () => ({
+  env: {
+    ASSETS: {
+      fetch: assetsFetch,
+    },
+  },
+}));
 
 import { GET } from './[...path]';
 
 describe('GET /api/og/[...path]', () => {
-  const assetsFetch = vi.fn();
-
   beforeEach(() => {
     generateOgImage.mockReset();
     generateOgImage.mockResolvedValue(Uint8Array.from([1, 2, 3]));
@@ -25,7 +31,6 @@ describe('GET /api/og/[...path]', () => {
     const response = await GET({
       params: {},
       request: new Request('https://example.com/api/og'),
-      locals: { runtime: { env: { ASSETS: { fetch: assetsFetch } } } },
     } as unknown as Parameters<typeof GET>[0]);
     const body = new Uint8Array(await response.arrayBuffer());
 
@@ -49,7 +54,6 @@ describe('GET /api/og/[...path]', () => {
     await GET({
       params: { path: 'blog/new-post' },
       request: new Request('https://example.com/api/og?title=%20Custom%20&description=%20Desc%20'),
-      locals: { runtime: { env: { ASSETS: { fetch: assetsFetch } } } },
     } as unknown as Parameters<typeof GET>[0]);
 
     expect(generateOgImage).toHaveBeenCalledWith(
@@ -70,7 +74,6 @@ describe('GET /api/og/[...path]', () => {
     const response = await GET({
       params: { path: 'blog/new-post' },
       request: new Request('https://example.com/api/og?title=Custom&description=Desc'),
-      locals: { runtime: { env: { ASSETS: { fetch: assetsFetch } } } },
     } as unknown as Parameters<typeof GET>[0]);
 
     const body = new Uint8Array(await response.arrayBuffer());
@@ -85,7 +88,6 @@ describe('GET /api/og/[...path]', () => {
     const response = await GET({
       params: { path: 'blog/new-post' },
       request: new Request('https://example.com/api/og?title=Custom&description=Desc'),
-      locals: { runtime: { env: { ASSETS: { fetch: assetsFetch } } } },
     } as unknown as Parameters<typeof GET>[0]);
 
     expect(response.status).toBe(500);
