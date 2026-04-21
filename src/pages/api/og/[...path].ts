@@ -10,19 +10,6 @@ const OG_IMAGE_CACHE_CONTROL =
 const OG_GENERATED_FALLBACK_CACHE_CONTROL =
   'public, max-age=60, s-maxage=300, stale-while-revalidate=600';
 
-let fallbackOgPngPromise: Promise<Uint8Array> | undefined;
-
-const getFallbackOgPng = (): Promise<Uint8Array> => {
-  if (!fallbackOgPngPromise) {
-    fallbackOgPngPromise = generateFallbackOgPng().catch((error) => {
-      fallbackOgPngPromise = undefined;
-      throw error;
-    });
-  }
-
-  return fallbackOgPngPromise;
-};
-
 const getPagePath = (pathParam: string | undefined): string => {
   if (!pathParam) {
     return '/';
@@ -77,7 +64,7 @@ export const GET: APIRoute = async ({ params, request }) => {
       console.error('[og] static fallback failed:', fallbackErr);
     }
 
-    return new Response(await getFallbackOgPng(), {
+    return new Response(await generateFallbackOgPng(), {
       status: 200,
       headers: {
         'Content-Type': 'image/png',
