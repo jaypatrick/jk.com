@@ -42,6 +42,13 @@ jobs:
           # Add build-time env vars here (non-secret only)
           SITE_URL: https://jaysonknight.com
 
+      - name: Verify OG runtime assets in build output
+        run: |
+          test -f dist/client/wasm/resvg.wasm
+          test -f dist/client/fonts/space-grotesk-400.woff
+          test -f dist/client/fonts/space-grotesk-700.woff
+          ls -l dist/client/wasm dist/client/fonts
+
       - name: Upload build artifact
         uses: actions/upload-artifact@v4
         with:
@@ -78,6 +85,13 @@ jobs:
         with:
           name: dist
           path: dist/
+
+      - name: Verify OG runtime assets in deploy artifact
+        run: |
+          test -f dist/client/wasm/resvg.wasm
+          test -f dist/client/fonts/space-grotesk-400.woff
+          test -f dist/client/fonts/space-grotesk-700.woff
+          ls -l dist/client/wasm dist/client/fonts
 
       - name: Deploy to Cloudflare Workers
         run: npx wrangler deploy --config dist/server/wrangler.json
