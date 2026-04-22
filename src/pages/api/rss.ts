@@ -11,7 +11,7 @@ type FeedItem = {
 
 const extractTag = (block: string, tags: string[]): string => {
   for (const tag of tags) {
-    const match = block.match(new RegExp(`<${tag}(?:\\s[^>]*)?>([\\s\\S]*?)<\\/${tag}>`, 'i'));
+    const match = block.match(new RegExp(`<${tag}(?:\s[^>]*)?>([\s\S]*?)<\/${tag}>`, 'i'));
     if (match?.[1]) {
       return match[1].trim();
     }
@@ -22,19 +22,33 @@ const extractTag = (block: string, tags: string[]): string => {
 
 const stripCdata = (value: string): string => value.replace(/^<!\[CDATA\[(.*)\]\]>$/s, '$1').trim();
 
+const safeFromCodePoint = (codePoint: number): string => {
+  if (codePoint >= 0 && codePoint <= 0x10ffff) {
+    return String.fromCodePoint(codePoint);
+  }
+  return '\uFFFD';
+};
+
 const decodeXmlEntities = (value: string): string =>
   value
+    .replace(/&#x([0-9a-f]+);/gi, (_match, hex: string) => safeFromCodePoint(Number.parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_match, dec: string) => safeFromCodePoint(Number.parseInt(dec, 10)))
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
     .replace(/&#39;/g, "'")
     .replace(/&amp;/g, '&');
 
-const cleanDescription = (value: string): string => {
-  const text = decodeXmlEntities(stripCdata(value))
+/** Strips HTML tags, decodes entities, and normalises whitespace — without truncation. */
+const cleanText = (value: string): string =>
+  decodeXmlEntities(stripCdata(value))
     .replace(/<[^>]+>/g, ' ')
     .replace(/\s+/g, ' ')
     .trim();
+
+/** Like cleanText but truncates to 200 characters with an ellipsis. */
+const cleanDescription = (value: string): string => {
+  const text = cleanText(value);
 
   if (text.length <= 200) {
     return text;
@@ -104,6 +118,74 @@ const getMax = (value: string | null): number => {
   return Math.max(1, Math.min(parsed, 20));
 };
 
+/**
+ * Wraps fetch with a timeout. Uses AbortSignal.timeout when available; otherwise
+ * falls back to AbortController + setTimeout and always clears the timer in a
+ * finally block so the event loop is never kept alive by a stale timer.
+ */
+const fetchWithTimeout = async (
+  input: RequestInfo | URL,
+  init: Omit<RequestInit, 'signal'> = {},
+  timeoutMs = 8000
+): Promise<Response> => {
+  if (typeof AbortSignal.timeout === 'function') {
+    return fetch(input, { ...init, signal: AbortSignal.timeout(timeoutMs) });
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => controller.abort(), timeoutMs);
+  try {
+    return await fetch(input, { ...init, signal: controller.signal });
+  } finally {
+    clearTimeout(timeoutId);
+  }
+};
+
+const parseWordPressPosts = (
+  payload: unknown
+): Array<{ title: string; link: string; pubDate: string; description: string }> | null => {
+  if (!Array.isArray(payload)) {
+    return null;
+  }
+
+  const items = payload
+    .map((post) => {
+      const source = typeof post === 'object' && post ? (post as Record<string, unknown>) : null;
+      const link = typeof source?.link === 'string' ? source.link.trim() : '';
+      const titleRendered =
+        source?.title && typeof source.title === 'object'
+          ? (source.title as Record<string, unknown>).rendered
+          : undefined;
+      const excerptRendered =
+        source?.excerpt && typeof source.excerpt === 'object'
+          ? (source.excerpt as Record<string, unknown>).rendered
+          : undefined;
+      const dateGmt = typeof source?.date_gmt === 'string' ? source.date_gmt.trim() : '';
+      const date = typeof source?.date === 'string' ? source.date.trim() : '';
+      // Use cleanText (no truncation) for titles so long titles are not silently cut off.
+      const title = cleanText(typeof titleRendered === 'string' ? titleRendered : '') || 'Untitled';
+      const pubDateSource = dateGmt ? `${dateGmt}Z` : date;
+      const parsedPubDate = pubDateSource ? new Date(pubDateSource) : null;
+      const pubDate = parsedPubDate && !Number.isNaN(parsedPubDate.getTime()) ? parsedPubDate.toUTCString() : pubDateSource;
+
+      return {
+        title,
+        link,
+        pubDate,
+        description: cleanDescription(typeof excerptRendered === 'string' ? excerptRendered : ''),
+      };
+    })
+    .filter((item) => item.link);
+
+  return items;
+};
+
+const respondWithItems = (items: FeedItem[]): Response =>
+  new Response(JSON.stringify({ items }), {
+    status: 200,
+    headers: { 'Content-Type': 'application/json' },
+  });
+
 export const GET: APIRoute = async ({ request }) => {
   const requestUrl = new URL(request.url);
   const urlParam = requestUrl.searchParams.get('url')?.trim() ?? '';
@@ -127,18 +209,45 @@ export const GET: APIRoute = async ({ request }) => {
     });
   }
   const sanitizedFeedUrl = sanitizeUrlForLog(parsedFeedUrl);
+  const tryWordPressFallback = async (): Promise<FeedItem[] | null> => {
+    try {
+      const wpApiUrl = new URL('/wp-json/wp/v2/posts', `${parsedFeedUrl.origin}/`);
+      wpApiUrl.searchParams.set('per_page', String(max));
+      wpApiUrl.searchParams.set('_fields', 'link,title.rendered,excerpt.rendered,date,date_gmt');
+
+      const response = await fetchWithTimeout(wpApiUrl, {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'Mozilla/5.0 (compatible; JKcom-RSSBot/1.0; +https://jaysonknight.com)',
+        },
+        cache: 'no-store',
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const items = parseWordPressPosts(await response.json());
+      return items?.slice(0, max) ?? null;
+    } catch {
+      return null;
+    }
+  };
 
   try {
-    const response = await fetch(feedUrl, {
+    const response = await fetchWithTimeout(feedUrl, {
       headers: {
         Accept: 'application/rss+xml, application/atom+xml, application/xml, text/xml, */*',
         'User-Agent': 'Mozilla/5.0 (compatible; JKcom-RSSBot/1.0; +https://jaysonknight.com)',
       },
       cache: 'no-store',
-      signal: AbortSignal.timeout(8000),
     });
 
     if (!response.ok) {
+      const fallbackItems = await tryWordPressFallback();
+      if (fallbackItems) {
+        return respondWithItems(fallbackItems);
+      }
       console.error('[api/rss] Failed to fetch feed with non-OK status:', response.status, 'for URL:', sanitizedFeedUrl);
       return new Response(JSON.stringify({ error: `Failed to fetch feed (${response.status}).` }), {
         status: 502,
@@ -149,6 +258,10 @@ export const GET: APIRoute = async ({ request }) => {
     const contentType = response.headers.get('Content-Type')?.toLowerCase() ?? '';
     const mimeType = contentType.split(';', 1)[0]?.trim() ?? '';
     if (mimeType === 'text/html') {
+      const fallbackItems = await tryWordPressFallback();
+      if (fallbackItems) {
+        return respondWithItems(fallbackItems);
+      }
       console.error('[api/rss] Feed returned text/html — likely bot challenge for URL:', sanitizedFeedUrl);
       return new Response(
         JSON.stringify({ error: 'Feed returned an HTML page instead of XML (possible bot challenge or redirect)' }),
@@ -161,6 +274,10 @@ export const GET: APIRoute = async ({ request }) => {
 
     const xml = await response.text();
     if (!isValidFeedDocument(xml)) {
+      const fallbackItems = await tryWordPressFallback();
+      if (fallbackItems) {
+        return respondWithItems(fallbackItems);
+      }
       console.error('[api/rss] Response body is not a valid RSS/Atom document for URL:', sanitizedFeedUrl);
       return new Response(JSON.stringify({ error: 'Feed URL did not return a valid RSS or Atom document' }), {
         status: 502,
@@ -169,12 +286,19 @@ export const GET: APIRoute = async ({ request }) => {
     }
 
     const items = parseRssOrAtom(xml, max);
+    if (items.length === 0) {
+      const fallbackItems = await tryWordPressFallback();
+      if (fallbackItems) {
+        return respondWithItems(fallbackItems);
+      }
+    }
 
-    return new Response(JSON.stringify({ items }), {
-      status: 200,
-      headers: { 'Content-Type': 'application/json' },
-    });
+    return respondWithItems(items);
   } catch (error) {
+    const fallbackItems = await tryWordPressFallback();
+    if (fallbackItems) {
+      return respondWithItems(fallbackItems);
+    }
     const errorName = error instanceof Error ? error.name : 'UnknownError';
     const errorMessage =
       error instanceof Error

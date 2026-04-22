@@ -174,6 +174,28 @@ describe('parseRssOrAtom', () => {
       },
     ]);
   });
+
+  it('decodes numeric HTML entities in descriptions', () => {
+    const xml = `<?xml version="1.0"?>
+      <rss><channel>
+        <item>
+          <title>Encoded Description</title>
+          <link>https://example.com/encoded</link>
+          <description>Cloudflare&#8217;s edge roadmap&#8230;</description>
+        </item>
+      </channel></rss>`;
+
+    const items = parseRssOrAtom(xml, 5);
+
+    expect(items).toEqual([
+      {
+        title: 'Encoded Description',
+        link: 'https://example.com/encoded',
+        pubDate: '',
+        description: 'Cloudflare’s edge roadmap…',
+      },
+    ]);
+  });
 });
 
 describe('GET /api/rss', () => {
@@ -318,5 +340,66 @@ describe('GET /api/rss', () => {
 
     expect(response.status).toBe(200);
     expect(payload).toEqual({ items: [] });
+  });
+
+  it('falls back to WordPress posts API when feed fetch returns html', async () => {
+    const fetchMock = vi
+      .spyOn(globalThis, 'fetch')
+      .mockResolvedValueOnce(
+        new Response('<html><body>challenge</body></html>', {
+          status: 200,
+          headers: { 'Content-Type': 'text/html; charset=UTF-8' },
+        })
+      )
+      .mockResolvedValueOnce(
+        new Response(
+          JSON.stringify([
+            {
+              link: 'https://blog.jaysonknight.com/2026/03/26/edge-first-architecture-why-cloudflare-workers-changes-how-you-think-about-design/',
+              title: { rendered: 'Edge-First Architecture' },
+              excerpt: { rendered: '<p>Cloudflare&#8217;s distributed model...</p>' },
+              date_gmt: '2026-03-27T02:43:10',
+              date: '2026-03-26T22:43:10',
+            },
+          ]),
+          {
+            status: 200,
+            headers: { 'Content-Type': 'application/json; charset=utf-8' },
+          }
+        )
+      );
+
+    const response = await GET({
+      request: new Request('https://example.com/api/rss?url=https%3A%2F%2Fblog.jaysonknight.com%2Ffeed%2F&max=5'),
+    } as Parameters<typeof GET>[0]);
+    const payload = (await response.json()) as { items: Array<{ title: string; link: string; description: string }> };
+
+    expect(response.status).toBe(200);
+    expect(payload.items).toEqual([
+      {
+        title: 'Edge-First Architecture',
+        link: 'https://blog.jaysonknight.com/2026/03/26/edge-first-architecture-why-cloudflare-workers-changes-how-you-think-about-design/',
+        pubDate: 'Fri, 27 Mar 2026 02:43:10 GMT',
+        description: 'Cloudflare’s distributed model...',
+      },
+    ]);
+
+    const fallbackCall = fetchMock.mock.calls[1];
+    expect(fallbackCall).toBeDefined();
+    const [fallbackUrl, fallbackOptions] = fallbackCall;
+    expect(fallbackUrl).toBeInstanceOf(URL);
+    expect((fallbackUrl as URL).toString()).toContain('https://blog.jaysonknight.com/wp-json/wp/v2/posts?');
+    expect((fallbackUrl as URL).searchParams.get('per_page')).toBe('5');
+    expect((fallbackUrl as URL).searchParams.get('_fields')).toBe('link,title.rendered,excerpt.rendered,date,date_gmt');
+    expect(fallbackOptions).toEqual(
+      expect.objectContaining({
+        cache: 'no-store',
+        signal: expect.any(AbortSignal),
+        headers: expect.objectContaining({
+          Accept: 'application/json',
+          'User-Agent': 'Mozilla/5.0 (compatible; JKcom-RSSBot/1.0; +https://jaysonknight.com)',
+        }),
+      })
+    );
   });
 });
