@@ -9,7 +9,7 @@ const normalizedBlogPageSource = blogPageSource.replace(/\s+/g, ' ');
 describe('/blog page', () => {
   it('links to blog.jaysonknight.com instead of Bloqr', () => {
     expect(normalizedBlogPageSource).toMatch(/href="https:\/\/blog\.jaysonknight\.com\/"/);
-    expect(blogPageSource).not.toContain('bloqr.jaysonknight.com');
+    expect(normalizedBlogPageSource).not.toContain('bloqr.jaysonknight.com');
     expect(normalizedBlogPageSource).toMatch(/Read the Blog\s*→/);
   });
 
