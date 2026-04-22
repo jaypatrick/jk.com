@@ -13,8 +13,10 @@ describe('/blog page', () => {
   });
 
   it('includes an RSS feed section for recent posts', () => {
-    expect(blogPageSource).toMatch(
-      /<RssFeed\b(?=[^>]*\bclient:load\b)(?=[^>]*\bfeedUrl="https:\/\/blog\.jaysonknight\.com\/feed\/")(?=[^>]*\bmaxItems=\{10\})[^>]*\/>/
-    );
+    const rssFeedTag = blogPageSource.match(/<RssFeed\b[^>]*\/>/)?.[0];
+    expect(rssFeedTag).toBeDefined();
+    expect(rssFeedTag).toMatch(/\bclient:load\b/);
+    expect(rssFeedTag).toMatch(/\bfeedUrl="https:\/\/blog\.jaysonknight\.com\/feed\/"/);
+    expect(rssFeedTag).toMatch(/\bmaxItems=\{10\}/);
   });
 });
