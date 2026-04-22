@@ -74,7 +74,15 @@
   }
 
   function isActiveLink(href: string) {
-    return activeHref === href || `/${activeHref}` === href;
+    if (activeHref === href) {
+      return true;
+    }
+
+    if (activeHref.startsWith('#')) {
+      return `/${activeHref}` === href;
+    }
+
+    return false;
   }
 
 </script>
