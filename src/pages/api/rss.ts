@@ -24,6 +24,8 @@ const stripCdata = (value: string): string => value.replace(/^<!\[CDATA\[(.*)\]\
 
 const decodeXmlEntities = (value: string): string =>
   value
+    .replace(/&#x([0-9a-f]+);/gi, (_match, hex: string) => String.fromCodePoint(Number.parseInt(hex, 16)))
+    .replace(/&#(\d+);/g, (_match, dec: string) => String.fromCodePoint(Number.parseInt(dec, 10)))
     .replace(/&lt;/g, '<')
     .replace(/&gt;/g, '>')
     .replace(/&quot;/g, '"')
@@ -104,6 +106,63 @@ const getMax = (value: string | null): number => {
   return Math.max(1, Math.min(parsed, 20));
 };
 
+const createTimeoutSignal = (ms: number): AbortSignal => {
+  if (typeof AbortSignal.timeout === 'function') {
+    return AbortSignal.timeout(ms);
+  }
+
+  const controller = new AbortController();
+  const timeoutId = setTimeout(() => {
+    controller.abort();
+  }, ms);
+  controller.signal.addEventListener(
+    'abort',
+    () => {
+      clearTimeout(timeoutId);
+    },
+    { once: true }
+  );
+  return controller.signal;
+};
+
+const parseWordPressPosts = (
+  payload: unknown
+): Array<{ title: string; link: string; pubDate: string; description: string }> | null => {
+  if (!Array.isArray(payload)) {
+    return null;
+  }
+
+  const items = payload
+    .map((post) => {
+      const source = typeof post === 'object' && post ? (post as Record<string, unknown>) : null;
+      const link = typeof source?.link === 'string' ? source.link.trim() : '';
+      const titleRendered =
+        source?.title && typeof source.title === 'object'
+          ? (source.title as Record<string, unknown>).rendered
+          : undefined;
+      const excerptRendered =
+        source?.excerpt && typeof source.excerpt === 'object'
+          ? (source.excerpt as Record<string, unknown>).rendered
+          : undefined;
+      const dateGmt = typeof source?.date_gmt === 'string' ? source.date_gmt.trim() : '';
+      const date = typeof source?.date === 'string' ? source.date.trim() : '';
+      const title = cleanDescription(typeof titleRendered === 'string' ? titleRendered : '') || 'Untitled';
+      const pubDateSource = dateGmt ? `${dateGmt}Z` : date;
+      const parsedPubDate = pubDateSource ? new Date(pubDateSource) : null;
+      const pubDate = parsedPubDate && !Number.isNaN(parsedPubDate.getTime()) ? parsedPubDate.toUTCString() : pubDateSource;
+
+      return {
+        title,
+        link,
+        pubDate,
+        description: cleanDescription(typeof excerptRendered === 'string' ? excerptRendered : ''),
+      };
+    })
+    .filter((item) => item.link);
+
+  return items;
+};
+
 export const GET: APIRoute = async ({ request }) => {
   const requestUrl = new URL(request.url);
   const urlParam = requestUrl.searchParams.get('url')?.trim() ?? '';
@@ -127,6 +186,31 @@ export const GET: APIRoute = async ({ request }) => {
     });
   }
   const sanitizedFeedUrl = sanitizeUrlForLog(parsedFeedUrl);
+  const tryWordPressFallback = async (): Promise<FeedItem[] | null> => {
+    try {
+      const wpApiUrl = new URL('/wp-json/wp/v2/posts', `${parsedFeedUrl.origin}/`);
+      wpApiUrl.searchParams.set('per_page', String(max));
+      wpApiUrl.searchParams.set('_fields', 'link,title.rendered,excerpt.rendered,date,date_gmt');
+
+      const response = await fetch(wpApiUrl, {
+        headers: {
+          Accept: 'application/json',
+          'User-Agent': 'Mozilla/5.0 (compatible; JKcom-RSSBot/1.0; +https://jaysonknight.com)',
+        },
+        cache: 'no-store',
+        signal: createTimeoutSignal(8000),
+      });
+
+      if (!response.ok) {
+        return null;
+      }
+
+      const items = parseWordPressPosts(await response.json());
+      return items?.slice(0, max) ?? null;
+    } catch {
+      return null;
+    }
+  };
 
   try {
     const response = await fetch(feedUrl, {
@@ -135,10 +219,17 @@ export const GET: APIRoute = async ({ request }) => {
         'User-Agent': 'Mozilla/5.0 (compatible; JKcom-RSSBot/1.0; +https://jaysonknight.com)',
       },
       cache: 'no-store',
-      signal: AbortSignal.timeout(8000),
+      signal: createTimeoutSignal(8000),
     });
 
     if (!response.ok) {
+      const fallbackItems = await tryWordPressFallback();
+      if (fallbackItems) {
+        return new Response(JSON.stringify({ items: fallbackItems }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
       console.error('[api/rss] Failed to fetch feed with non-OK status:', response.status, 'for URL:', sanitizedFeedUrl);
       return new Response(JSON.stringify({ error: `Failed to fetch feed (${response.status}).` }), {
         status: 502,
@@ -149,6 +240,13 @@ export const GET: APIRoute = async ({ request }) => {
     const contentType = response.headers.get('Content-Type')?.toLowerCase() ?? '';
     const mimeType = contentType.split(';', 1)[0]?.trim() ?? '';
     if (mimeType === 'text/html') {
+      const fallbackItems = await tryWordPressFallback();
+      if (fallbackItems) {
+        return new Response(JSON.stringify({ items: fallbackItems }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
       console.error('[api/rss] Feed returned text/html — likely bot challenge for URL:', sanitizedFeedUrl);
       return new Response(
         JSON.stringify({ error: 'Feed returned an HTML page instead of XML (possible bot challenge or redirect)' }),
@@ -161,6 +259,13 @@ export const GET: APIRoute = async ({ request }) => {
 
     const xml = await response.text();
     if (!isValidFeedDocument(xml)) {
+      const fallbackItems = await tryWordPressFallback();
+      if (fallbackItems) {
+        return new Response(JSON.stringify({ items: fallbackItems }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
       console.error('[api/rss] Response body is not a valid RSS/Atom document for URL:', sanitizedFeedUrl);
       return new Response(JSON.stringify({ error: 'Feed URL did not return a valid RSS or Atom document' }), {
         status: 502,
@@ -169,12 +274,28 @@ export const GET: APIRoute = async ({ request }) => {
     }
 
     const items = parseRssOrAtom(xml, max);
+    if (items.length === 0) {
+      const fallbackItems = await tryWordPressFallback();
+      if (fallbackItems) {
+        return new Response(JSON.stringify({ items: fallbackItems }), {
+          status: 200,
+          headers: { 'Content-Type': 'application/json' },
+        });
+      }
+    }
 
     return new Response(JSON.stringify({ items }), {
       status: 200,
       headers: { 'Content-Type': 'application/json' },
     });
   } catch (error) {
+    const fallbackItems = await tryWordPressFallback();
+    if (fallbackItems) {
+      return new Response(JSON.stringify({ items: fallbackItems }), {
+        status: 200,
+        headers: { 'Content-Type': 'application/json' },
+      });
+    }
     const errorName = error instanceof Error ? error.name : 'UnknownError';
     const errorMessage =
       error instanceof Error
