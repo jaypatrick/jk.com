@@ -4,18 +4,17 @@ import { fileURLToPath } from 'node:url';
 
 const blogPagePath = fileURLToPath(new URL('./index.astro', import.meta.url));
 const blogPageSource = readFileSync(blogPagePath, 'utf8');
-const normalizedBlogPageSource = blogPageSource.replace(/\s+/g, ' ');
 
 describe('/blog page', () => {
   it('links to blog.jaysonknight.com instead of Bloqr', () => {
-    expect(normalizedBlogPageSource).toMatch(/href="https:\/\/blog\.jaysonknight\.com\/"/);
-    expect(normalizedBlogPageSource).not.toContain('bloqr.jaysonknight.com');
-    expect(normalizedBlogPageSource).toMatch(/Read the Blog\s*→/);
+    expect(blogPageSource).toMatch(/href="https:\/\/blog\.jaysonknight\.com\/"/);
+    expect(blogPageSource).not.toContain('bloqr.jaysonknight.com');
+    expect(blogPageSource).toMatch(/Read the Blog\s*→/);
   });
 
   it('includes an RSS feed section for recent posts', () => {
-    expect(normalizedBlogPageSource).toMatch(/<RssFeed\b[^>]*\bclient:load\b/);
-    expect(normalizedBlogPageSource).toMatch(/\bfeedUrl="https:\/\/blog\.jaysonknight\.com\/feed\/"/);
-    expect(normalizedBlogPageSource).toMatch(/\bmaxItems=\{10\}/);
+    expect(blogPageSource).toMatch(
+      /<RssFeed\b(?=[^>]*\bclient:load\b)(?=[^>]*\bfeedUrl="https:\/\/blog\.jaysonknight\.com\/feed\/")(?=[^>]*\bmaxItems=\{10\})[^>]*\/>/
+    );
   });
 });
