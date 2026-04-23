@@ -153,7 +153,7 @@
           or want to ship something that's never been built — I'm interested.
         </p>
 
-        <div class="mb-6 glow-border rounded-xl p-5" style="background: var(--color-card);">
+        <div class="mb-6 rounded-xl p-5" style="background: var(--color-card); border: 1px solid var(--color-border);">
           <h3 class="text-sm font-mono uppercase tracking-widest mb-3" style="color: var(--color-cyan);">
             Fast-Track Website Upgrades
           </h3>
@@ -165,7 +165,7 @@
               <button
                 type="button"
                 onclick={() => applyQuickStart(item.brief)}
-                class="text-left rounded-lg p-3 transition-all hover:-translate-y-0.5"
+                class="text-left rounded-lg p-3 transition-all hover:-translate-y-0.5 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-cyan-400 focus-visible:ring-offset-2 focus-visible:ring-offset-slate-950"
                 style="background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.2);"
               >
                 <div class="text-xs font-mono uppercase tracking-widest mb-1" style="color: var(--color-cyan);">Quick Start</div>
