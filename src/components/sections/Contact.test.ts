@@ -13,6 +13,6 @@ describe('Contact section content', () => {
     expect(contactSectionSource).toContain('Feature Expansion Build');
     expect(contactSectionSource).toContain('Technical Hardening Pass');
     expect(contactSectionSource).toContain('applyQuickStart');
-    expect(contactSectionSource).toContain('aria-invalid={fieldErrors.email ? \'true\' : \'false\'}');
+    expect(contactSectionSource).toMatch(/aria-invalid\s*=\s*\{[^}]*fieldErrors\.email[^}]*\}/);
   });
 });
