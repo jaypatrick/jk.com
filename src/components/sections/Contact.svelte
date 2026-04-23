@@ -21,6 +21,7 @@
   let fieldErrors = $state<Partial<Record<keyof ContactFormData, string>>>({});
   let isCalendlyReady = $state(false);
   let calendlyInlineContainer = $state<HTMLDivElement | null>(null);
+  const calendlyEmbedUrl = 'https://calendly.com/jaysonknight?background_color=0d1117&text_color=e2e8f0&primary_color=00d4ff&hide_gdpr_banner=1';
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -95,7 +96,7 @@
 
     calendlyInlineContainer.innerHTML = '';
     calendly.initInlineWidget({
-      url: 'https://calendly.com/jaysonknight',
+      url: calendlyEmbedUrl,
       parentElement: calendlyInlineContainer,
     });
   });
@@ -107,7 +108,7 @@
     <!-- Section label -->
     <div class="section-label animate-on-scroll">CONTACT</div>
 
-    <div class="grid grid-cols-1 gap-16 lg:grid-cols-2 items-start">
+    <div class="grid grid-cols-1 gap-10 lg:grid-cols-2 items-start">
 
       <!-- Left: Info -->
       <div class="animate-on-scroll">
@@ -116,13 +117,13 @@
           <span class="gradient-text">Something Great</span>
         </h2>
 
-        <p class="text-lg mb-10" style="color: var(--color-text-dim); line-height: 1.8;">
+        <p class="text-lg mb-6" style="color: var(--color-text-dim); line-height: 1.8;">
           Whether you're planning a cloud migration, need an architecture review,
           or want to ship something that's never been built — I'm interested.
         </p>
 
         <!-- Contact details -->
-        <div class="space-y-6 mb-10">
+        <div class="space-y-6 mb-6">
           <a
             href="tel:+19807297877"
             class="flex items-center gap-4 group"
@@ -160,16 +161,23 @@
             style="padding: 0.5rem 1.25rem; font-size: 0.8rem;"
           >GitHub</a>
           <a
-            href="https://calendly.com/jaysonknight"
-            onclick={openCalendlyPopup}
-            class="btn btn-red"
+            href="https://www.linkedin.com/in/jaysonknight"
+            target="_blank"
+            rel="noopener noreferrer"
+            class="btn btn-outline"
             style="padding: 0.5rem 1.25rem; font-size: 0.8rem;"
-          >📅 Book Me</a>
+          >LinkedIn</a>
           <a
             href="/blog"
             class="btn btn-outline"
             style="padding: 0.5rem 1.25rem; font-size: 0.8rem;"
           >Blog</a>
+          <a
+            href="https://calendly.com/jaysonknight"
+            onclick={openCalendlyPopup}
+            class="btn btn-red"
+            style="padding: 0.5rem 1.25rem; font-size: 0.8rem;"
+          >📅 Book Me</a>
         </div>
       </div>
 
@@ -334,12 +342,12 @@
     </div>
 
     {#if isCalendlyReady}
-      <div class="mt-16 animate-on-scroll visible">
+      <div class="mt-10 animate-on-scroll visible">
         <div class="section-label mb-6" style="color: var(--color-cyan);">BOOK DIRECTLY</div>
         <div
           bind:this={calendlyInlineContainer}
           class="calendly-inline-widget rounded-xl"
-          data-url="https://calendly.com/jaysonknight"
+          data-url={calendlyEmbedUrl}
           style="min-width:320px;height:630px;background: var(--color-card); border: 1px solid var(--color-border);"
         ></div>
       </div>

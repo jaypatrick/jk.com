@@ -8,12 +8,12 @@
   let activeHref = $state('');
 
   const navLinks = [
-    { href: '#home', label: 'Home' },
-    { href: '#about', label: 'About' },
-    { href: '#services', label: 'Services' },
-    { href: '#portfolio', label: 'Portfolio' },
+    { href: '/#home', label: 'Home' },
+    { href: '/#about', label: 'About' },
+    { href: '/#services', label: 'Services' },
+    { href: '/#portfolio', label: 'Portfolio' },
     { href: '/blog', label: 'Blog' },
-    { href: '#contact', label: 'Contact' },
+    { href: '/#contact', label: 'Contact' },
   ];
 
   $effect(() => {
@@ -73,6 +73,18 @@
     isMenuOpen = false;
   }
 
+  function isActiveLink(href: string) {
+    if (activeHref === href) {
+      return true;
+    }
+
+    if (activeHref.startsWith('#')) {
+      return `/${activeHref}` === href;
+    }
+
+    return false;
+  }
+
 </script>
 
 <header
@@ -118,17 +130,17 @@
         <a
           {href}
           class="text-sm font-medium transition-colors duration-200 hover:text-cyan relative group"
-          style="color: {activeHref === href ? 'var(--color-text)' : 'var(--color-text-dim)'}; text-decoration: none; font-family: var(--font-heading);"
-          aria-current={activeHref === href ? 'page' : undefined}
+          style="color: {isActiveLink(href) ? 'var(--color-text)' : 'var(--color-text-dim)'}; text-decoration: none; font-family: var(--font-heading);"
+          aria-current={isActiveLink(href) ? 'page' : undefined}
         >
           {label}
           <span
             class="absolute -bottom-1 left-0 h-px transition-all duration-300"
             style="
               background: var(--color-cyan);
-              width: {activeHref === href ? '100%' : '0'};
+              width: {isActiveLink(href) ? '100%' : '0'};
             "
-            class:group-hover:w-full={activeHref !== href}
+            class:group-hover:w-full={!isActiveLink(href)}
             aria-hidden="true"
           ></span>
         </a>
@@ -189,8 +201,8 @@
         {href}
         onclick={closeMenu}
         class="text-lg font-medium py-2 transition-colors"
-        style="color: {activeHref === href ? 'var(--color-cyan)' : 'var(--color-text-dim)'}; text-decoration: none; border-bottom: 1px solid var(--color-border);"
-        aria-current={activeHref === href ? 'page' : undefined}
+        style="color: {isActiveLink(href) ? 'var(--color-cyan)' : 'var(--color-text-dim)'}; text-decoration: none; border-bottom: 1px solid var(--color-border);"
+        aria-current={isActiveLink(href) ? 'page' : undefined}
       >
         {label}
       </a>
