@@ -124,13 +124,13 @@
 
         <div class="mb-6 rounded-xl p-5" style="background: var(--color-card); border: 1px solid var(--color-border);">
           <h3 class="text-sm font-mono uppercase tracking-widest mb-3" style="color: var(--color-cyan);">
-            Website Improvement Ideas
+            State-of-the-Art Website Roadmap
           </h3>
           <ul class="space-y-2 text-sm" style="color: var(--color-text-dim); line-height: 1.65;">
-            <li>• Improve performance with image optimization, route-level code splitting, and stricter cache headers.</li>
-            <li>• Increase conversions with clearer CTAs above the fold and shorter contact-form friction.</li>
-            <li>• Strengthen SEO by expanding long-tail service pages and internal links to proof/case studies.</li>
-            <li>• Add more trust signals: measurable outcomes, client testimonials, and timeline-based case studies.</li>
+            <li><strong style="color: var(--color-text);">Visual:</strong> stronger visual hierarchy, tighter spacing rhythm, richer motion micro-interactions, and premium illustration/icon direction.</li>
+            <li><strong style="color: var(--color-text);">Structural:</strong> clearer information architecture by separating services, proof, and outcomes into focused landing pages with stronger internal linking.</li>
+            <li><strong style="color: var(--color-text);">Features:</strong> interactive case studies, downloadable architecture briefs, and an AI-assisted intake flow that routes visitors by goals and timeline.</li>
+            <li><strong style="color: var(--color-text);">Technical:</strong> edge-first performance tuning (image optimization, route-level code splitting, caching strategy), automated accessibility checks, and SEO schema expansion.</li>
           </ul>
         </div>
 

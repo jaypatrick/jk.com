@@ -6,11 +6,11 @@ const contactSectionPath = fileURLToPath(new URL('./Contact.svelte', import.meta
 const contactSectionSource = readFileSync(contactSectionPath, 'utf8');
 
 describe('Contact section content', () => {
-  it('includes a website improvement ideas block with practical suggestions', () => {
-    expect(contactSectionSource).toContain('Website Improvement Ideas');
-    expect(contactSectionSource).toContain('Improve performance with image optimization');
-    expect(contactSectionSource).toContain('Increase conversions with clearer CTAs above the fold');
-    expect(contactSectionSource).toContain('Strengthen SEO by expanding long-tail service pages');
-    expect(contactSectionSource).toContain('Add more trust signals: measurable outcomes');
+  it('includes a state-of-the-art roadmap with visual, structural, feature, and technical improvements', () => {
+    expect(contactSectionSource).toContain('State-of-the-Art Website Roadmap');
+    expect(contactSectionSource).toContain('Visual:</strong>');
+    expect(contactSectionSource).toContain('Structural:</strong>');
+    expect(contactSectionSource).toContain('Features:</strong>');
+    expect(contactSectionSource).toContain('Technical:</strong>');
   });
 });
