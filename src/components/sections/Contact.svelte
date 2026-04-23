@@ -21,7 +21,38 @@
   let fieldErrors = $state<Partial<Record<keyof ContactFormData, string>>>({});
   let isCalendlyReady = $state(false);
   let calendlyInlineContainer = $state<HTMLDivElement | null>(null);
+  let messageField = $state<HTMLTextAreaElement | null>(null);
   const calendlyEmbedUrl = 'https://calendly.com/jaysonknight?background_color=0d1117&text_color=e2e8f0&primary_color=00d4ff&hide_gdpr_banner=1';
+  const quickStartItems = [
+    {
+      title: 'Visual Refresh Sprint',
+      brief: 'I want a visual refresh sprint focused on hierarchy, spacing, motion polish, and premium UI consistency.',
+    },
+    {
+      title: 'Structural IA Overhaul',
+      brief: 'I want to restructure the site architecture so services, proof, and outcomes are easier to navigate and convert.',
+    },
+    {
+      title: 'Feature Expansion Build',
+      brief: 'I want to add interactive case studies, downloadable assets, and smarter intake flows for higher-quality leads.',
+    },
+    {
+      title: 'Technical Hardening Pass',
+      brief: 'I want Core Web Vitals optimization, accessibility QA automation, and schema/SEO technical hardening.',
+    },
+  ] as const;
+
+  function applyQuickStart(brief: string) {
+    form.message = brief;
+    state = 'idle';
+    errorMessage = '';
+    fieldErrors.message = '';
+
+    requestAnimationFrame(() => {
+      messageField?.focus();
+      messageField?.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    });
+  }
 
   async function handleSubmit(e: SubmitEvent) {
     e.preventDefault();
@@ -122,16 +153,26 @@
           or want to ship something that's never been built — I'm interested.
         </p>
 
-        <div class="mb-6 rounded-xl p-5" style="background: var(--color-card); border: 1px solid var(--color-border);">
+        <div class="mb-6 glow-border rounded-xl p-5" style="background: var(--color-card);">
           <h3 class="text-sm font-mono uppercase tracking-widest mb-3" style="color: var(--color-cyan);">
-            State-of-the-Art Website Roadmap
+            Fast-Track Website Upgrades
           </h3>
-          <ul class="space-y-2 text-sm" style="color: var(--color-text-dim); line-height: 1.65;">
-            <li><strong style="color: var(--color-text);">Visual:</strong> stronger visual hierarchy, tighter spacing rhythm, richer motion micro-interactions, and premium illustration/icon direction.</li>
-            <li><strong style="color: var(--color-text);">Structural:</strong> clearer information architecture by separating services, proof, and outcomes into focused landing pages with stronger internal linking.</li>
-            <li><strong style="color: var(--color-text);">Features:</strong> interactive case studies, downloadable architecture briefs, and an AI-assisted intake flow that routes visitors by goals and timeline.</li>
-            <li><strong style="color: var(--color-text);">Technical:</strong> edge-first performance tuning (image optimization, route-level code splitting, caching strategy), automated accessibility checks, and SEO schema expansion.</li>
-          </ul>
+          <p class="text-sm mb-4" style="color: var(--color-text-dim); line-height: 1.65;">
+            Choose one to prefill the contact form and launch immediately.
+          </p>
+          <div class="grid grid-cols-1 gap-3 sm:grid-cols-2">
+            {#each quickStartItems as item}
+              <button
+                type="button"
+                onclick={() => applyQuickStart(item.brief)}
+                class="text-left rounded-lg p-3 transition-all hover:-translate-y-0.5"
+                style="background: rgba(0,212,255,0.06); border: 1px solid rgba(0,212,255,0.2);"
+              >
+                <div class="text-xs font-mono uppercase tracking-widest mb-1" style="color: var(--color-cyan);">Quick Start</div>
+                <div class="text-sm font-semibold" style="color: var(--color-text);">{item.title}</div>
+              </button>
+            {/each}
+          </div>
         </div>
 
         <!-- Contact details -->
@@ -250,6 +291,7 @@
                   bind:value={form.name}
                   required
                   autocomplete="name"
+                  aria-invalid={fieldErrors.name ? 'true' : 'false'}
                   placeholder="Jane Smith"
                   class="w-full rounded-lg px-4 py-3 text-sm transition-all"
                   style="background: var(--color-surface); border: 1px solid {fieldErrors.name ? 'var(--color-red)' : 'var(--color-border)'}; color: var(--color-text); outline: none;"
@@ -285,13 +327,15 @@
               <label for="contact-email" class="block text-xs font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-dim);">
                 Email <span style="color: var(--color-red);">*</span>
               </label>
-              <input
-                id="contact-email"
-                type="email"
-                bind:value={form.email}
-                required
-                autocomplete="email"
-                placeholder="jane@company.com"
+                <input
+                  id="contact-email"
+                  type="email"
+                  bind:value={form.email}
+                  required
+                  autocomplete="email"
+                  inputmode="email"
+                  aria-invalid={fieldErrors.email ? 'true' : 'false'}
+                  placeholder="jane@company.com"
                 class="w-full rounded-lg px-4 py-3 text-sm transition-all"
                 style="background: var(--color-surface); border: 1px solid {fieldErrors.email ? 'var(--color-red)' : 'var(--color-border)'}; color: var(--color-text); outline: none;"
                 onfocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = 'var(--color-cyan)'; }}
@@ -309,9 +353,11 @@
               </label>
               <textarea
                 id="contact-message"
+                bind:this={messageField}
                 bind:value={form.message}
                 required
                 rows={5}
+                aria-invalid={fieldErrors.message ? 'true' : 'false'}
                 placeholder="Tell me about your consulting or architecture design needs, timeline, and budget..."
                 class="w-full rounded-lg px-4 py-3 text-sm resize-vertical transition-all"
                 style="background: var(--color-surface); border: 1px solid {fieldErrors.message ? 'var(--color-red)' : 'var(--color-border)'}; color: var(--color-text); outline: none; min-height: 120px;"
