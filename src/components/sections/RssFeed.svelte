@@ -262,7 +262,7 @@
   }
 
   .feed-read-more:hover {
-    color: var(--color-cyan-glow, #00f5ff);
+    color: var(--color-pink, #f72585);
     gap: 0.65rem;
   }
 

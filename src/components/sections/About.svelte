@@ -85,7 +85,7 @@
             {@const isExpanded = expandedExpertiseIndex === i}
             <div
               class="glow-border rounded-lg p-4 cursor-pointer"
-              style="background: var(--color-card); border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
+              style="background: var(--color-card); border-color: {isExpanded ? 'var(--color-pink)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-pink)' : undefined};"
               role="button"
               tabindex="0"
               aria-expanded={isExpanded}

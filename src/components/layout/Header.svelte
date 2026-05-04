@@ -137,7 +137,7 @@
           <span
             class="absolute -bottom-1 left-0 h-px transition-all duration-300"
             style="
-              background: var(--color-cyan);
+              background: {isActiveLink(href) ? 'var(--color-purple)' : 'var(--color-cyan)'};
               width: {isActiveLink(href) ? '100%' : '0'};
             "
             class:group-hover:w-full={!isActiveLink(href)}

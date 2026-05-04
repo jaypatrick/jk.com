@@ -122,7 +122,11 @@
       {#each ['Azure Architect', 'AI Engineer', 'Cloudflare Specialist', 'Rust & WASM', 'Privacy & Security'] as tag}
         <li
           class="chip"
-          style="background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.3); color: var(--color-cyan);"
+          style="
+            background: {tag === 'AI Engineer' ? 'rgba(123,47,247,0.1)' : tag === 'Rust & WASM' ? 'rgba(247,37,133,0.1)' : 'rgba(0,212,255,0.08)'};
+            border-color: {tag === 'AI Engineer' ? 'rgba(123,47,247,0.4)' : tag === 'Rust & WASM' ? 'rgba(247,37,133,0.4)' : 'rgba(0,212,255,0.3)'};
+            color: {tag === 'AI Engineer' ? 'var(--color-purple)' : tag === 'Rust & WASM' ? 'var(--color-pink)' : 'var(--color-cyan)'};
+          "
         >
           {tag}
         </li>
@@ -187,7 +191,7 @@
   }
 
   .glitch-text::after {
-    color: var(--color-red);
+    color: var(--color-pink);
     animation: glitch-2 8s steps(1) infinite;
     opacity: 0.4;
   }
