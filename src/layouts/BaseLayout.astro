@@ -4,6 +4,7 @@
 import '../styles/global.css';
 import Header from '../components/layout/Header.svelte';
 import Footer from '../components/layout/Footer.svelte';
+import ShimmerToggle from '../components/ui/ShimmerToggle.svelte';
 import { buildSeoMetadata } from '../lib/seo';
 
 interface Props {
@@ -77,6 +78,17 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
     <!-- Theme color for browser chrome -->
     <meta name="theme-color" content="#05050a" />
 
+    <!-- Restore motion preference before first paint to avoid animation flash -->
+    <script is:inline>
+      (function () {
+        var stored = localStorage.getItem('reduce-motion');
+        var prefersReduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+        if (stored === 'true' || (stored === null && prefersReduced)) {
+          document.documentElement.dataset.reduceMotion = 'true';
+        }
+      })();
+    </script>
+
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
@@ -135,6 +147,11 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
     </main>
 
     <Footer />
+
+    <!-- Motion toggle — fixed utility, bottom-right corner -->
+    <div style="position: fixed; bottom: 1.25rem; right: 1.25rem; z-index: 40;">
+      <ShimmerToggle client:load />
+    </div>
 
     <!-- Cloudflare Web Analytics -->
     {cfAnalyticsToken && (

@@ -400,6 +400,14 @@ code, pre, kbd, samp {
   }
 }
 
+/* User-initiated motion preference — toggled via JS */
+html[data-reduce-motion="true"] .iridescent::after,
+html[data-reduce-motion="true"] .gradient-text,
+html[data-reduce-motion="true"] .glitch-text::before,
+html[data-reduce-motion="true"] .glitch-text::after {
+  animation-play-state: paused;
+}
+
 /* ============================================================
    PROSE — for blog content via EmDash
    ============================================================ */
