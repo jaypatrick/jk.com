@@ -1,4 +1,6 @@
 <script lang="ts">
+  import ShimmerToggle from '../ui/ShimmerToggle.svelte';
+
   const year = new Date().getFullYear();
 
   const links = [
@@ -111,11 +113,14 @@
       style="border-top: 1px solid var(--color-border); color: var(--color-text-ghost); font-family: var(--font-mono);"
     >
       <span>© {year} Jayson Knight · JK.com · All rights reserved</span>
-      <span style="color: var(--color-cyan-dim);">
-        Powered by Cloudflare Workers
-        <span style="color: var(--color-border);">·</span>
-        Charlotte, NC
-      </span>
+      <div class="flex items-center gap-4">
+        <ShimmerToggle />
+        <span style="color: var(--color-cyan-dim);">
+          Powered by Cloudflare Workers
+          <span style="color: var(--color-border);">·</span>
+          Charlotte, NC
+        </span>
+      </div>
     </div>
   </div>
 </footer>

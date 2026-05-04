@@ -390,6 +390,11 @@ code, pre, kbd, samp {
   transform: translateY(0);
 }
 
+/* User-controlled shimmer pause — toggled via ShimmerToggle component */
+html[data-shimmer-paused="true"] .iridescent::after {
+  animation-play-state: paused;
+}
+
 /* Respect user preference for reduced motion */
 @media (prefers-reduced-motion: reduce) {
   .gradient-text {
