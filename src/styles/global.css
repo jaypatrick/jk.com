@@ -26,6 +26,10 @@
   --color-cyan-glow:  #00f5ff;   /* neon glow variant */
   --color-red:        #ff2d55;   /* accent red — CTAs, warnings */
   --color-red-dim:    #cc2244;
+  --color-pink:       #f72585;   /* neon magenta/pink */
+  --color-pink-dim:   #c1006a;
+  --color-purple:     #7b2ff7;   /* electric violet */
+  --color-purple-dim: #5a1db8;
 
   /* Text */
   --color-text:       #e2e8f0;   /* primary text */
@@ -52,6 +56,8 @@
   --glow-cyan-sm:     0 0 8px rgba(0, 212, 255, 0.3);
   --glow-red:         0 0 20px rgba(255, 45, 85, 0.4);
   --glow-primary:     0 0 20px rgba(0, 120, 212, 0.4);
+  --glow-pink:        0 0 20px rgba(247, 37, 133, 0.4);
+  --glow-purple:      0 0 20px rgba(123, 47, 247, 0.4);
 }
 
 /* ============================================================
@@ -230,7 +236,7 @@ code, pre, kbd, samp {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-primary) 60%, var(--color-cyan-glow) 100%);
+  background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-purple) 40%, var(--color-pink) 70%, var(--color-cyan-glow) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;

@@ -384,7 +384,7 @@
             <button
               type="submit"
               disabled={state === 'submitting'}
-              class="btn btn-primary w-full justify-center"
+              class="btn btn-primary w-full justify-center submit-cta"
               style="opacity: {state === 'submitting' ? 0.7 : 1}; cursor: {state === 'submitting' ? 'not-allowed' : 'pointer'};"
               aria-busy={state === 'submitting'}
             >
@@ -412,3 +412,10 @@
     {/if}
   </div>
 </section>
+
+<style>
+  .submit-cta:hover:not(:disabled) {
+    background: linear-gradient(135deg, var(--color-purple, #7b2ff7) 0%, var(--color-pink, #f72585) 100%);
+    box-shadow: var(--glow-pink, 0 0 20px rgba(247, 37, 133, 0.4));
+  }
+</style>
