@@ -80,8 +80,10 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
     <!-- Shimmer preference — restore before first paint to prevent flash -->
     <script is:inline>
       (function() {
-        const v = localStorage.getItem('shimmer-paused');
-        if (v === 'true') document.documentElement.dataset.shimmerPaused = 'true';
+        try {
+          const v = localStorage.getItem('shimmer-paused');
+          if (v === 'true') document.documentElement.dataset.shimmerPaused = 'true';
+        } catch (_) {}
       })();
     </script>
 
@@ -142,7 +144,7 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
       <slot />
     </main>
 
-    <Footer />
+    <Footer client:idle />
 
     <!-- Cloudflare Web Analytics -->
     {cfAnalyticsToken && (

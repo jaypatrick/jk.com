@@ -6,15 +6,19 @@
   let paused = $state(false);
 
   onMount(() => {
-    const stored = localStorage.getItem('shimmer-paused');
-    paused = stored === 'true';
+    try {
+      const stored = localStorage.getItem('shimmer-paused');
+      paused = stored === 'true';
+    } catch (_) {}
     document.documentElement.dataset.shimmerPaused = String(paused);
   });
 
   function toggle() {
     paused = !paused;
     document.documentElement.dataset.shimmerPaused = String(paused);
-    localStorage.setItem('shimmer-paused', String(paused));
+    try {
+      localStorage.setItem('shimmer-paused', String(paused));
+    } catch (_) {}
   }
 </script>
 
