@@ -218,7 +218,7 @@ export const GET: APIRoute = async ({ request }) => {
     try {
       const site = parsedFeedUrl.hostname;
       const wpComApiUrl = new URL(
-        `https://public-api.wordpress.com/rest/v1.1/sites/${encodeURIComponent(site)}/posts/`
+        `https://public-api.wordpress.com/rest/v1.1/sites/${site}/posts/`
       );
       wpComApiUrl.searchParams.set('number', String(max));
 
