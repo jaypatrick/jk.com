@@ -185,6 +185,21 @@ code, pre, kbd, samp {
   50%       { box-shadow: var(--glow-cyan); }
 }
 
+@keyframes shimmer-streak {
+  0%   { background-position: 200% 0; }
+  50%  { background-position: -50% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@keyframes text-static {
+  0%, 92%, 100% { clip-path: none; transform: none; }
+  93%           { clip-path: inset(30% 0 40% 0); transform: translateX(1px); }
+  94%           { clip-path: inset(60% 0 10% 0); transform: translateX(-1px); }
+  95%           { clip-path: none; transform: none; }
+  96%           { clip-path: inset(20% 0 70% 0); transform: translateX(2px); }
+  97%           { clip-path: none; transform: none; }
+}
+
 /* ============================================================
    UTILITY CLASSES
    ============================================================ */
@@ -200,6 +215,29 @@ code, pre, kbd, samp {
 .glow-border:hover {
   border-color: var(--color-cyan);
   box-shadow: var(--glow-cyan);
+}
+
+/* Iridescent border shimmer — a thin pink→purple streak that sweeps slowly
+   across the border, like light catching a surface. 95% invisible, 5% magic. */
+.iridescent {
+  position: relative;
+}
+
+.iridescent::after {
+  content: '';
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(90deg, transparent 0%, #f72585 45%, #7b2ff7 55%, transparent 100%);
+  background-size: 300% 100%;
+  background-position: 200% 0;
+  animation: shimmer-streak 8s ease-in-out infinite;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: destination-out;
+  mask-composite: exclude;
+  opacity: 0.55;
+  pointer-events: none;
 }
 
 /* Cyan text glow */
@@ -236,10 +274,11 @@ code, pre, kbd, samp {
 
 /* Gradient text */
 .gradient-text {
-  background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-purple) 40%, var(--color-pink) 70%, var(--color-cyan-glow) 100%);
+  background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-purple) 50%, var(--color-cyan-glow) 100%);
   -webkit-background-clip: text;
   -webkit-text-fill-color: transparent;
   background-clip: text;
+  animation: text-static 12s steps(1) infinite;
 }
 
 /* Chip / tag */

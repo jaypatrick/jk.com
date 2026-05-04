@@ -144,7 +144,7 @@
       <a
         href="https://calendly.com/jaysonknight"
         onclick={openCalendlyPopup}
-        class="btn btn-red"
+        class="btn btn-red iridescent"
         aria-label="Book a meeting via Calendly"
       >
         <span>📅</span>

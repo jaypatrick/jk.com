@@ -77,7 +77,7 @@
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-20">
       {#each caseStudies as study, i}
         <article
-          class="glow-border rounded-xl p-7 flex flex-col gap-4 animate-on-scroll"
+          class="glow-border iridescent rounded-xl p-7 flex flex-col gap-4 animate-on-scroll"
           style="background: var(--color-card); transition-delay: {i * 0.1}s;"
           aria-label={study.title}
         >

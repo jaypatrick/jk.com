@@ -116,7 +116,7 @@
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {#each formattedItems as item, i}
             <article
-              class="feed-card rounded-xl p-6 flex flex-col"
+              class="feed-card iridescent rounded-xl p-6 flex flex-col"
               in:fade={{ duration: 400, delay: i * 80 }}
             >
               <!-- Top accent bar -->
