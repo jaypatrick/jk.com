@@ -14,7 +14,9 @@
   }
 
   $effect(() => {
-    // Initialize from localStorage / OS preference on mount (no reactive reads of `paused`)
+    // This effect has no reactive reads of `paused`, so it runs exactly once on
+    // mount. `paused = initial` is a write, not a read, and `applyState(initial)`
+    // uses a local const — neither creates a reactive dependency.
     const stored = localStorage.getItem(STORAGE_KEY);
     const initial = stored !== null
       ? stored === 'true'
@@ -72,15 +74,16 @@
     line-height: 1;
   }
 
-  .shimmer-toggle:hover,
+  .shimmer-toggle:hover {
+    color: var(--color-cyan);
+    border-color: var(--color-cyan-dim);
+    background: rgba(0, 212, 255, 0.06);
+  }
+
   .shimmer-toggle:focus-visible {
     color: var(--color-cyan);
     border-color: var(--color-cyan-dim);
     background: rgba(0, 212, 255, 0.06);
-    outline: none;
-  }
-
-  .shimmer-toggle:focus-visible {
     outline: 2px solid var(--color-cyan);
     outline-offset: 3px;
   }
