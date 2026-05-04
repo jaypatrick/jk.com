@@ -117,25 +117,22 @@
       {#if formattedItems.length > 0}
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {#each formattedItems as item, i}
-            <article
-              class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll"
-              style="background: var(--color-card); transition-delay: {i * 0.05}s;"
-            >
-              <p class="text-xs mb-3 uppercase tracking-widest" style="color: var(--color-text-ghost); font-family: var(--font-mono);">
+            <article class="feed-card glow-border rounded-xl p-6 flex flex-col animate-on-scroll" style="transition-delay: {i * 0.05}s;">
+              <p class="text-xs mb-3 uppercase tracking-widest" style="color: var(--color-text-ghost, #64748b); font-family: var(--font-mono);">
                 {item.formattedDate}
               </p>
               <h3 class="text-xl font-bold mb-3" style="font-family: var(--font-heading);">
-                <a href={item.link} target="_blank" rel="noopener noreferrer" style="color: var(--color-text); text-decoration: none;">
+                <a href={item.link} target="_blank" rel="noopener noreferrer" class="feed-card-title">
                   {item.title}
                 </a>
               </h3>
-              <p class="text-sm leading-relaxed mb-5" style="color: var(--color-text-dim);">{item.description}</p>
+              <p class="text-sm leading-relaxed mb-5 feed-card-desc">{item.description}</p>
               <a
                 href={item.link}
                 target="_blank"
                 rel="noopener noreferrer"
                 class="mt-auto"
-                style="color: var(--color-cyan); text-decoration: none; font-family: var(--font-heading);"
+                style="color: var(--color-cyan, #00d4ff); text-decoration: none; font-family: var(--font-heading);"
                 aria-label={'Read more: ' + item.title}
               >
                 Read More →
@@ -162,3 +159,23 @@
     {/if}
   </div>
 </section>
+
+<style>
+  .feed-card {
+    background: var(--color-card, #1e293b);
+    border: 1px solid var(--color-border, rgba(0, 212, 255, 0.15));
+  }
+
+  .feed-card-title {
+    color: var(--color-text, #f1f5f9);
+    text-decoration: none;
+  }
+
+  .feed-card-title:hover {
+    color: var(--color-cyan, #00d4ff);
+  }
+
+  .feed-card-desc {
+    color: var(--color-text-dim, #94a3b8);
+  }
+</style>
