@@ -1,9 +1,11 @@
 <script lang="ts">
   // ShimmerToggle.svelte — user-controlled toggle for the iridescent shimmer animation
-  // Svelte 5 runes: $state, $effect
+  // Svelte 5 runes: $state + onMount for one-time initialization
+  import { onMount } from 'svelte';
+
   let paused = $state(false);
 
-  $effect(() => {
+  onMount(() => {
     const stored = localStorage.getItem('shimmer-paused');
     paused = stored === 'true';
     document.documentElement.dataset.shimmerPaused = String(paused);
@@ -41,7 +43,7 @@
 
   .shimmer-toggle[aria-pressed="true"] {
     color: var(--color-text-ghost);
-    border-color: var(--color-border);
+    border: 1px solid var(--color-border);
     background: transparent;
   }
 </style>
