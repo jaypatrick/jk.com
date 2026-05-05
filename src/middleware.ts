@@ -28,13 +28,14 @@ const securityHeaders = defineMiddleware(async ({ url }, next) => {
   if (isHtml) {
     const csp = [
       "default-src 'self'",
-      "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://assets.calendly.com",
+      "script-src 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://assets.calendly.com https://www.google-analytics.com https://www.googletagmanager.com",
+      "script-src-elem 'self' 'unsafe-inline' https://static.cloudflareinsights.com https://assets.calendly.com https://www.google-analytics.com https://www.googletagmanager.com",
       "style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://assets.calendly.com",
       "font-src 'self' data: https://fonts.gstatic.com",
       "img-src 'self' data: blob: https:",
-      "connect-src 'self' https://cloudflareinsights.com https://static.cloudflareinsights.com https://calendly.com https://assets.calendly.com",
+      "connect-src 'self' https://cloudflareinsights.com https://static.cloudflareinsights.com https://calendly.com https://assets.calendly.com https://www.google-analytics.com https://www.googletagmanager.com https://region1.google-analytics.com",
       "media-src 'self'",
-      "frame-src 'self' https://calendly.com https://*.calendly.com",
+      "frame-src 'self' https://calendly.com https://*.calendly.com https://m.stripe.network",
       "frame-ancestors 'none'",
       "base-uri 'self'",
       "form-action 'self'",
