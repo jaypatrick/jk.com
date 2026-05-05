@@ -228,7 +228,7 @@
           <a
             href="https://calendly.com/jaysonknight"
             onclick={openCalendlyPopup}
-            class="btn btn-red"
+            class="btn btn-red iridescent"
             style="padding: 0.5rem 1.25rem; font-size: 0.8rem;"
           >📅 Book Me</a>
         </div>
@@ -260,7 +260,7 @@
           </p>
           <form
             onsubmit={handleSubmit}
-            class="glow-border rounded-xl p-8 space-y-6"
+            class="glow-border iridescent rounded-xl p-8 space-y-6"
             style="background: var(--color-card);"
             aria-describedby="contact-form-description"
             aria-label="Contact form"

@@ -239,7 +239,7 @@
       {#each technicalServices as service, i}
         {@const isExpanded = expandedTechnicalIndex === i}
         <div
-          class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
+          class="glow-border iridescent rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
           style="background: var(--color-card); transition-delay: {i * 0.07}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
           role="button"
           tabindex={activeTab === 'technical' ? 0 : -1}
@@ -303,7 +303,7 @@
       {#each creativeServices as service, i}
         {@const isExpanded = expandedCreativeIndex === i}
         <div
-          class="glow-border rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
+          class="glow-border iridescent rounded-xl p-6 flex flex-col animate-on-scroll cursor-pointer"
           style="background: var(--color-card); transition-delay: {i * 0.1}s; border-color: {isExpanded ? 'var(--color-cyan)' : undefined}; box-shadow: {isExpanded ? 'var(--glow-cyan)' : undefined};"
           role="button"
           tabindex={activeTab === 'creative' ? 0 : -1}
@@ -398,7 +398,7 @@
       <a
         href="https://calendly.com/jaysonknight"
         onclick={openCalendlyPopup}
-        class="btn btn-red"
+        class="btn btn-red iridescent"
         aria-label="Book a consultation via Calendly"
       >
         📅 Book a Consultation
