@@ -153,7 +153,7 @@
           or want to ship something that's never been built — I'm interested.
         </p>
 
-        <div class="mb-6 rounded-xl p-5" style="background: var(--color-card); border: 1px solid var(--color-border);">
+        <div class="mb-6 iridescent rounded-xl p-5" style="background: var(--color-card); border: 1px solid var(--color-border);">
           <h3 class="text-sm font-mono uppercase tracking-widest mb-3" style="color: var(--color-cyan);">
             Fast-Track Website Upgrades
           </h3>
@@ -404,7 +404,7 @@
         <div class="section-label mb-6" style="color: var(--color-cyan);">BOOK DIRECTLY</div>
         <div
           bind:this={calendlyInlineContainer}
-          class="calendly-inline-widget rounded-xl"
+          class="calendly-inline-widget iridescent rounded-xl"
           data-url={calendlyEmbedUrl}
           style="min-width:320px;height:630px;background: var(--color-card); border: 1px solid var(--color-border);"
         ></div>

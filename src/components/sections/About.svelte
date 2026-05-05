@@ -118,7 +118,7 @@
 
         <!-- Philosophy -->
         <div
-          class="rounded-xl p-6"
+          class="iridescent rounded-xl p-6"
           style="background: rgba(0,120,212,0.05); border: 1px solid rgba(0,120,212,0.2);"
         >
           <h3

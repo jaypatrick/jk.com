@@ -358,7 +358,7 @@
 
       <!-- Labs callout -->
       <div
-        class="rounded-xl p-6 sm:col-span-2 animate-on-scroll"
+        class="iridescent rounded-xl p-6 sm:col-span-2 animate-on-scroll"
         style="background: linear-gradient(135deg, rgba(0,120,212,0.1) 0%, rgba(0,212,255,0.05) 100%); border: 1px solid rgba(0,120,212,0.25);"
       >
         <div class="text-3xl mb-3" aria-hidden="true">🧪</div>
