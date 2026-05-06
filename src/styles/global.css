@@ -186,9 +186,9 @@ code, pre, kbd, samp {
 }
 
 @keyframes shimmer-streak {
-  0%   { background-position: 200% 0; }
-  50%  { background-position: -50% 0; }
-  100% { background-position: 200% 0; }
+  0%   { transform: translateX(200%); }
+  50%  { transform: translateX(-200%); }
+  100% { transform: translateX(200%); }
 }
 
 @keyframes text-static {
@@ -221,6 +221,8 @@ code, pre, kbd, samp {
    across the border, like light catching a surface. 95% invisible, 5% magic. */
 .iridescent {
   position: relative;
+  overflow: hidden;        /* clip the sweeping pseudo-element */
+  contain: layout style;   /* scope recalcs to this subtree */
 }
 
 .iridescent::after {
@@ -230,8 +232,7 @@ code, pre, kbd, samp {
   border-radius: inherit;
   padding: 1px;
   background: linear-gradient(90deg, transparent 0%, #f72585 45%, #7b2ff7 55%, transparent 100%);
-  background-size: 300% 100%;
-  background-position: 200% 0;
+  transform: translateX(200%);
   animation: shimmer-streak 8s ease-in-out infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
