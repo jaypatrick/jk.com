@@ -233,7 +233,6 @@ code, pre, kbd, samp {
   padding: 1px;
   background: linear-gradient(90deg, transparent 0%, #f72585 45%, #7b2ff7 55%, transparent 100%);
   transform: translateX(200%);
-  will-change: transform;  /* promote to compositor layer */
   animation: shimmer-streak 8s ease-in-out infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
