@@ -189,17 +189,54 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
           { threshold: 0, rootMargin: '0px' }
         );
 
-        function observeShimmerEls() {
-          document.querySelectorAll('.iridescent:not([data-shimmer-observed])').forEach((el) => {
-            el.setAttribute('data-shimmer-observed', '1');
-            shimmerObserver.observe(el);
+        function observeShimmerEl(el) {
+          if (el.hasAttribute('data-shimmer-observed')) return;
+          el.setAttribute('data-shimmer-observed', '1');
+          shimmerObserver.observe(el);
+        }
+
+        function observeShimmerRoot(root) {
+          if (!(root instanceof Element) && !(root instanceof Document)) return;
+
+          if (root instanceof Element && root.matches('.iridescent')) {
+            observeShimmerEl(root);
+          }
+
+          root.querySelectorAll('.iridescent:not([data-shimmer-observed])').forEach((el) => {
+            observeShimmerEl(el);
           });
         }
 
-        observeShimmerEls();
+        const pendingNodes = new Set();
+        let scheduled = false;
+
+        function flushPendingShimmerNodes() {
+          scheduled = false;
+          pendingNodes.forEach((node) => {
+            observeShimmerRoot(node);
+          });
+          pendingNodes.clear();
+        }
+
+        function scheduleObserveAddedNodes(mutationList) {
+          mutationList.forEach((mutation) => {
+            mutation.addedNodes.forEach((node) => {
+              if (node.nodeType === Node.ELEMENT_NODE) {
+                pendingNodes.add(node);
+              }
+            });
+          });
+
+          if (!scheduled && pendingNodes.size > 0) {
+            scheduled = true;
+            requestAnimationFrame(flushPendingShimmerNodes);
+          }
+        }
+
+        observeShimmerRoot(document);
 
         // Catch dynamically-added tiles (e.g. RssFeed mounts async)
-        const mutationObs = new MutationObserver(observeShimmerEls);
+        const mutationObs = new MutationObserver(scheduleObserveAddedNodes);
         mutationObs.observe(document.body, { childList: true, subtree: true });
       })();
     </script>
