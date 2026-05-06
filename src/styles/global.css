@@ -221,8 +221,7 @@ code, pre, kbd, samp {
    across the border, like light catching a surface. 95% invisible, 5% magic. */
 .iridescent {
   position: relative;
-  overflow: hidden;        /* clip the sweeping pseudo-element */
-  contain: layout style;   /* scope recalcs to this subtree */
+  overflow: hidden;
 }
 
 .iridescent::after {
@@ -233,6 +232,7 @@ code, pre, kbd, samp {
   padding: 1px;
   background: linear-gradient(90deg, transparent 0%, #f72585 45%, #7b2ff7 55%, transparent 100%);
   transform: translateX(200%);
+  will-change: transform;
   animation: shimmer-streak 8s ease-in-out infinite;
   -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
   -webkit-mask-composite: destination-out;
@@ -393,6 +393,11 @@ code, pre, kbd, samp {
 
 /* User-controlled shimmer pause — toggled via ShimmerToggle component */
 html[data-shimmer-paused="true"] .iridescent::after {
+  animation-play-state: paused;
+}
+
+/* Shimmer paused when tile is scrolled out of the viewport */
+.iridescent:not(.shimmer-in-view)::after {
   animation-play-state: paused;
 }
 

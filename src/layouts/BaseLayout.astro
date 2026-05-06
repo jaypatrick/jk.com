@@ -172,5 +172,36 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
         observer.observe(el);
       });
     </script>
+
+    <!-- Shimmer viewport observer — pause ::after on off-screen tiles to save GPU -->
+    <script>
+      (function () {
+        const shimmerObserver = new IntersectionObserver(
+          (entries) => {
+            entries.forEach((entry) => {
+              if (entry.isIntersecting) {
+                entry.target.classList.add('shimmer-in-view');
+              } else {
+                entry.target.classList.remove('shimmer-in-view');
+              }
+            });
+          },
+          { threshold: 0, rootMargin: '0px' }
+        );
+
+        function observeShimmerEls() {
+          document.querySelectorAll('.iridescent:not([data-shimmer-observed])').forEach((el) => {
+            el.setAttribute('data-shimmer-observed', '1');
+            shimmerObserver.observe(el);
+          });
+        }
+
+        observeShimmerEls();
+
+        // Catch dynamically-added tiles (e.g. RssFeed mounts async)
+        const mutationObs = new MutationObserver(observeShimmerEls);
+        mutationObs.observe(document.body, { childList: true, subtree: true });
+      })();
+    </script>
   </body>
 </html>
