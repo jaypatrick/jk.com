@@ -396,8 +396,8 @@ html[data-shimmer-paused="true"] .iridescent::after {
   animation-play-state: paused;
 }
 
-/* Shimmer paused when tile is scrolled out of the viewport */
-.iridescent:not(.shimmer-in-view)::after {
+/* Shimmer paused when tile is scrolled out of the viewport, but only after JS enables viewport pause behavior */
+html[data-shimmer-viewport-pause="true"] .iridescent:not(.shimmer-in-view)::after {
   animation-play-state: paused;
 }
 
