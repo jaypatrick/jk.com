@@ -9,10 +9,9 @@
   let mounted = $state(false);
   const FULL_TEXT = 'Imagination | Unleashed';
   const TYPEWRITER_PRE_DELAY_MS = 400;
-  const TYPEWRITER_BASE_DELAY_MS = 55;
-  const TYPEWRITER_JITTER_MS = 15;
-  const TYPEWRITER_MIN_DELAY_MS = 35;
-  const CURSOR_HIDE_DELAY_MS = 1500;
+  const TYPEWRITER_BASE_DELAY_MS = 110;
+  const TYPEWRITER_JITTER_MS = 40;
+  const TYPEWRITER_MIN_DELAY_MS = 60;
   let displayedText = $state('');
   let cursorVisible = $state(false);
   let cursorBlinking = $state(false);
@@ -59,11 +58,10 @@
   $effect(() => {
     let preDelay: ReturnType<typeof setTimeout> | undefined;
     let typingTick: ReturnType<typeof setTimeout> | undefined;
-    let hideCursorDelay: ReturnType<typeof setTimeout> | undefined;
 
     function renderStaticLine() {
       displayedText = FULL_TEXT;
-      cursorVisible = false;
+      cursorVisible = true;
       cursorBlinking = false;
       typingDone = true;
     }
@@ -74,11 +72,9 @@
 
       if (nextIndex >= FULL_TEXT.length) {
         typingDone = true;
+        // Keep the cursor visible and blinking indefinitely after typing completes
+        cursorVisible = true;
         cursorBlinking = true;
-        hideCursorDelay = setTimeout(() => {
-          cursorVisible = false;
-          cursorBlinking = false;
-        }, CURSOR_HIDE_DELAY_MS);
         return;
       }
 
@@ -118,7 +114,6 @@
       return () => {
         if (preDelay !== undefined) clearTimeout(preDelay);
         if (typingTick !== undefined) clearTimeout(typingTick);
-        if (hideCursorDelay !== undefined) clearTimeout(hideCursorDelay);
       };
     }
 
@@ -129,7 +124,6 @@
       document.removeEventListener('tv-intro-done', handler);
       if (preDelay !== undefined) clearTimeout(preDelay);
       if (typingTick !== undefined) clearTimeout(typingTick);
-      if (hideCursorDelay !== undefined) clearTimeout(hideCursorDelay);
     };
   });
 
