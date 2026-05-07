@@ -11,6 +11,9 @@ const OG_WIDTH = 1200;
 const OG_HEIGHT = 630;
 const OG_BACKGROUND = '#05050a';
 const OG_ACCENT = '#00d4ff';
+const OG_TEXT = '#e2e8f0';
+const OG_TEXT_DIM = '#94a3b8';
+const OG_TEXT_GHOST = '#475569';
 const OG_SITE_LABEL = 'jaysonknight.com';
 
 interface SatoriLikeElement {
@@ -131,13 +134,17 @@ const createOgTree = ({
       height: `${OG_HEIGHT}px`,
       display: 'flex',
       backgroundColor: OG_BACKGROUND,
-      color: '#ffffff',
+      color: OG_TEXT,
       fontFamily: '"Space Grotesk"',
       padding: '58px 64px',
       boxSizing: 'border-box',
+      // Phosphor grid overlay: subtle cyan grid lines
+      backgroundImage: `linear-gradient(rgba(0,212,255,0.03) 1px, transparent 1px), linear-gradient(90deg, rgba(0,212,255,0.03) 1px, transparent 1px)`,
+      backgroundSize: '48px 48px',
     },
     children: [
       {
+        // Phosphor accent bar — cyan glow left edge
         type: 'div',
         props: {
           style: {
@@ -146,6 +153,7 @@ const createOgTree = ({
             backgroundColor: OG_ACCENT,
             borderRadius: '2px',
             marginRight: '32px',
+            boxShadow: `0 0 12px ${OG_ACCENT}, 0 0 24px rgba(0,212,255,0.3)`,
           },
         },
       },
@@ -161,15 +169,55 @@ const createOgTree = ({
           },
           children: [
             {
+              // Phosphor terminal-style site label + tagline row
               type: 'div',
               props: {
                 style: {
-                  color: '#9ca3af',
-                  fontSize: 24,
-                  letterSpacing: '0.08em',
-                  textTransform: 'uppercase',
+                  display: 'flex',
+                  alignItems: 'center',
+                  gap: '16px',
                 },
-                children: 'JK.com',
+                children: [
+                  {
+                    type: 'div',
+                    props: {
+                      style: {
+                        color: OG_TEXT_GHOST,
+                        fontSize: 22,
+                        letterSpacing: '0.1em',
+                        textTransform: 'uppercase',
+                        fontFamily: '"Space Grotesk"',
+                      },
+                      children: 'JK.com',
+                    },
+                  },
+                  {
+                    // Separator
+                    type: 'div',
+                    props: {
+                      style: {
+                        color: OG_TEXT_GHOST,
+                        fontSize: 18,
+                        opacity: 0.4,
+                      },
+                      children: '//',
+                    },
+                  },
+                  {
+                    // Phosphor tagline: IMAGINATION | UNLEASHED
+                    type: 'div',
+                    props: {
+                      style: {
+                        color: OG_ACCENT,
+                        fontSize: 16,
+                        letterSpacing: '0.18em',
+                        textTransform: 'uppercase',
+                        fontFamily: '"Space Grotesk"',
+                      },
+                      children: 'IMAGINATION | UNLEASHED',
+                    },
+                  },
+                ],
               },
             },
             {
@@ -185,8 +233,8 @@ const createOgTree = ({
                     type: 'div',
                     props: {
                       style: {
-                        color: '#ffffff',
-                        fontSize: 66,
+                        color: OG_TEXT,
+                        fontSize: 62,
                         lineHeight: 1.1,
                         fontWeight: 700,
                         maxWidth: '980px',
@@ -198,8 +246,8 @@ const createOgTree = ({
                     type: 'div',
                     props: {
                       style: {
-                        color: '#888888',
-                        fontSize: 34,
+                        color: OG_TEXT_DIM,
+                        fontSize: 32,
                         lineHeight: 1.3,
                         maxWidth: '920px',
                       },
@@ -210,12 +258,14 @@ const createOgTree = ({
               },
             },
             {
+              // Phosphor footer: URL in cyan
               type: 'div',
               props: {
                 style: {
                   color: OG_ACCENT,
-                  fontSize: 27,
+                  fontSize: 24,
                   lineHeight: 1.2,
+                  letterSpacing: '0.04em',
                 },
                 children: `${OG_SITE_LABEL}${path}`,
               },

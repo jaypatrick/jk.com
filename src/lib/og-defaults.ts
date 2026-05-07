@@ -1,5 +1,5 @@
 export const DEFAULT_OG_TITLE =
-  'JK.com | AI Engineering, Cloud Architecture & Consulting — Jayson Knight';
+  'JK.com | Imagination | Unleashed — Jayson Knight';
 
 export const DEFAULT_OG_DESCRIPTION =
-  'Jayson Knight — AI Engineer & Solutions Architect specializing in Anthropic Claude, agentic systems, Microsoft Azure, Cloudflare AI platforms, Rust/WASM, TypeScript/Deno, and .NET. 20+ years building enterprise software that scales. Based in Charlotte, NC.';
+  'Jayson Knight — AI Architect & Engineer specializing in agentic systems, multi-agent orchestration, MCP servers, and ADEs. Building on Anthropic Claude, Microsoft Azure, and the Cloudflare edge. Creator of Bloqr, an AI-native publishing platform. 20+ years of enterprise software. Charlotte, NC.';
