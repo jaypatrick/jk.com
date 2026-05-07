@@ -184,7 +184,7 @@
       aria-label="Online. Location: Charlotte, NC. Available for consulting."
     >
       <span class="status-dot" aria-hidden="true"></span>
-      <span class="status-text">ONLINE</span>
+      <span class="status-text status-online">ONLINE</span>
       <span class="status-sep" aria-hidden="true">//</span>
       <span class="status-text">LOCATION: CHARLOTTE, NC</span>
       <span class="status-sep" aria-hidden="true">//</span>
@@ -403,7 +403,12 @@
   }
 
   .status-text {
-    color: var(--color-text-ghost);
+    color: var(--color-text-dim);  /* #94a3b8 — readable but not loud */
+  }
+
+  .status-online {
+    color: var(--color-cyan);
+    font-weight: 600;
   }
 
   @keyframes status-pulse {

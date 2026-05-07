@@ -90,6 +90,20 @@ const shouldRenderTvIntro = Astro.url.pathname === '/';
       })();
     </script>
 
+    <!-- Phosphor — suppress grid flash during TV intro -->
+    <script is:inline>
+      (function() {
+        try {
+          var isHome = window.location.pathname === '/';
+          var seen = sessionStorage.getItem('tv-intro-seen');
+          var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+          if (isHome && !seen && !reduced) {
+            document.documentElement.setAttribute('data-phosphor-intro', 'active');
+          }
+        } catch(_) {}
+      })();
+    </script>
+
     <!-- Preconnect for performance -->
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 
