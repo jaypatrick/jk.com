@@ -110,10 +110,11 @@
           <!-- Tags + link -->
           <div class="flex flex-wrap items-center gap-2 mt-auto">
             {#each study.tags as tag}
-              <span
-                class="text-xs px-2 py-0.5 rounded"
-                style="background: rgba(0,212,255,0.07); color: var(--color-cyan-dim); border: 1px solid rgba(0,212,255,0.12); font-family: var(--font-mono);"
-              >{tag}</span>
+              <span class="portfolio-tag">
+                <span class="portfolio-tag-bracket" aria-hidden="true">[</span>
+                {tag}
+                <span class="portfolio-tag-bracket" aria-hidden="true">]</span>
+              </span>
             {/each}
             {#if study.link}
               <a
@@ -252,4 +253,37 @@
       transform: translateX(calc(-50% - 0.375rem));
     }
   }
-</style>
+
+  /* Phosphor — bracket-style tech tags matching Hero role tokens */
+  .portfolio-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.2rem;
+    padding: 0.2rem 0.5rem;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 212, 255, 0.18);
+    background: rgba(0, 212, 255, 0.04);
+    color: var(--color-cyan-dim);
+    font-family: var(--font-mono);
+    font-size: 0.68rem;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    transition: border-color 0.2s ease, color 0.2s ease;
+  }
+
+  .portfolio-tag:hover {
+    border-color: rgba(0, 212, 255, 0.4);
+    color: var(--color-cyan);
+  }
+
+  .portfolio-tag-bracket {
+    color: var(--color-cyan);
+    opacity: 0.45;
+    font-weight: 300;
+    font-size: 0.8em;
+    transition: opacity 0.2s ease;
+  }
+
+  .portfolio-tag:hover .portfolio-tag-bracket {
+    opacity: 0.9;
+  }</style>

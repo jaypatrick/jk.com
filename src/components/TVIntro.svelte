@@ -203,23 +203,6 @@
       <div class="scanlines"></div>
       <div class="scanline-flicker"></div>
     {/if}
-
-    {#if phase === 'emerge' || phase === 'clear'}
-      <div class="intro-text" class:revealed={phase === 'emerge' || phase === 'clear'}>
-        <h1
-          class="glitch-text relative text-7xl font-black tracking-tight text-white select-none sm:text-8xl lg:text-9xl"
-          data-text="THIS. IS."
-        >
-          THIS. IS.
-        </h1>
-        <div
-          class="gradient-text text-glow text-7xl font-black tracking-tight sm:text-8xl lg:text-9xl"
-          style="font-family: var(--font-heading);"
-        >
-          JK.com
-        </div>
-      </div>
-    {/if}
   </div>
 
   {#if phase === 'line'}
@@ -325,46 +308,6 @@
     mix-blend-mode: screen;
   }
 
-  .intro-text {
-    position: absolute;
-    inset: 0;
-    display: grid;
-    place-content: center;
-    text-align: center;
-    clip-path: inset(0 0 100% 0);
-    opacity: 0;
-    transition: clip-path 300ms ease, opacity 300ms ease;
-  }
-
-  .intro-text.revealed {
-    clip-path: inset(0 0 0% 0);
-    opacity: 1;
-  }
-
-  .glitch-text::before,
-  .glitch-text::after {
-    content: attr(data-text);
-    position: absolute;
-    left: 0;
-    right: 0;
-    top: 0;
-    color: white;
-    font-family: var(--font-heading);
-    font-weight: 900;
-  }
-
-  .glitch-text::before {
-    color: var(--color-cyan);
-    animation: glitch-1 8s steps(1) infinite;
-    opacity: 0.6;
-  }
-
-  .glitch-text::after {
-    color: var(--color-pink);
-    animation: glitch-2 8s steps(1) infinite;
-    opacity: 0.4;
-  }
-
   @keyframes scanline-sweep {
     0% {
       transform: translateY(-100%);
@@ -374,37 +317,4 @@
     }
   }
 
-  @keyframes glitch-1 {
-    0%,
-    97%,
-    100% {
-      transform: translate(0);
-      clip-path: inset(0 0 0 0);
-    }
-    98% {
-      transform: translate(-2px, 1px);
-      clip-path: inset(10% 0 65% 0);
-    }
-    99% {
-      transform: translate(2px, -1px);
-      clip-path: inset(60% 0 5% 0);
-    }
-  }
-
-  @keyframes glitch-2 {
-    0%,
-    97%,
-    100% {
-      transform: translate(0);
-      clip-path: inset(0 0 0 0);
-    }
-    98% {
-      transform: translate(2px, -1px);
-      clip-path: inset(20% 0 55% 0);
-    }
-    99% {
-      transform: translate(-2px, 1px);
-      clip-path: inset(50% 0 15% 0);
-    }
-  }
 </style>

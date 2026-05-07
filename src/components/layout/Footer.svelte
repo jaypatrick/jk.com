@@ -22,7 +22,7 @@
   const social = [
     { href: 'https://github.com/jaypatrick', label: 'GitHub', icon: '⌥' },
     { href: 'https://www.linkedin.com/in/jaysonknight', label: 'LinkedIn', icon: '𝕃' },
-    { href: 'https://calendly.com/jaysonknight', label: 'Book Me', icon: '📅' },
+    { href: 'https://calendly.com/jaysonknight', label: 'Book Me', icon: 'CAL' },
   ];
 </script>
 
@@ -94,7 +94,7 @@
             >
               <span
                 class="w-8 h-8 rounded-lg flex items-center justify-center text-xs"
-                style="background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.15);"
+                style="background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.15); font-family: var(--font-mono); color: var(--color-cyan); letter-spacing: 0.05em;"
                 aria-hidden="true"
               >{icon}</span>
               {label}

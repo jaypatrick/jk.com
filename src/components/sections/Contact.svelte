@@ -246,9 +246,9 @@
             style="text-decoration: none;"
           >
             <div
-              class="w-12 h-12 rounded-lg flex items-center justify-center text-xl flex-shrink-0"
+              class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
               style="background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);"
-            >📞</div>
+            ><span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--color-cyan); letter-spacing: 0.05em;">TEL</span></div>
             <div>
               <div class="text-xs mb-0.5 font-mono uppercase tracking-widest" style="color: var(--color-text-ghost);">Phone</div>
               <div class="text-lg font-medium group-hover:text-cyan transition-colors" style="color: var(--color-text);">980.729.7877</div>
@@ -257,9 +257,9 @@
 
           <div class="flex items-center gap-4">
             <div
-              class="w-12 h-12 rounded-lg flex items-center justify-center text-xl flex-shrink-0"
+              class="w-12 h-12 rounded-lg flex items-center justify-center flex-shrink-0"
               style="background: rgba(0,212,255,0.08); border: 1px solid rgba(0,212,255,0.2);"
-            >📍</div>
+            ><span style="font-family: var(--font-mono); font-size: 0.65rem; color: var(--color-cyan); letter-spacing: 0.05em;">LOC</span></div>
             <div>
               <div class="text-xs mb-0.5 font-mono uppercase tracking-widest" style="color: var(--color-text-ghost);">Location</div>
               <div class="text-lg font-medium" style="color: var(--color-text);">Charlotte, North Carolina</div>
@@ -293,7 +293,7 @@
             onclick={openCalendlyPopup}
             class="btn btn-red iridescent"
             style="padding: 0.5rem 1.25rem; font-size: 0.8rem;"
-          >📅 Book Me</a>
+          >Book Me</a>
         </div>
       </div>
 
@@ -307,7 +307,6 @@
             class="rounded-xl p-8 text-center"
             style="background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.3);"
           >
-            <div class="text-5xl mb-4">✅</div>
             <h3 class="text-xl font-bold mb-2" style="font-family: var(--font-heading);">TRANSMISSION_RECEIVED</h3>
             <p style="color: var(--color-text-dim);">Signal confirmed. Standing by for response.</p>
             <button
@@ -474,7 +473,6 @@
           onclick={openCalendlyModal}
           aria-label="Open booking calendar"
         >
-          <span aria-hidden="true">📅</span>
           [ SCHEDULE_SESSION ]
         </button>
       </div>

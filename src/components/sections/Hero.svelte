@@ -262,7 +262,6 @@
         class="btn btn-red iridescent"
         aria-label="Book a meeting via Calendly"
       >
-        <span>📅</span>
         Book Me
       </a>
       <a href="#services" class="btn btn-outline">

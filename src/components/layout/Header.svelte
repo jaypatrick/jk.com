@@ -217,7 +217,7 @@
       class="btn btn-red mt-2 justify-center"
       aria-label="Book a meeting via Calendly"
     >
-      📅 Book Me
+      Book Me
     </a>
   </nav>
 </div>
