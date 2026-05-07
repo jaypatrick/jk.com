@@ -112,6 +112,10 @@ html.tv-intro-active body {
   background: #000;
 }
 
+html.tv-intro-active body > *:not(.tv-intro-overlay):not(.crt-power-line) {
+  visibility: hidden;
+}
+
 /* ============================================================
    TYPOGRAPHY
    ============================================================ */

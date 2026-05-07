@@ -87,4 +87,15 @@ describe('TVIntro component', () => {
     expect(tvIntroSource).toContain('clearTimeout');
     expect(tvIntroSource).toContain('cancelAnimationFrame');
   });
+
+  it('removes the tv-intro-active class from document root on normal completion', () => {
+    expect(tvIntroSource).toContain("classList.remove('tv-intro-active')");
+  });
+
+  it('removes the tv-intro-active class in the immediate skip path (seen or reduced-motion)', () => {
+    // Both finalizeImmediately and notifyDone must remove the class so neither path leaves
+    // the page scroll-locked or black after the intro ends.
+    const matches = [...tvIntroSource.matchAll(/classList\.remove\('tv-intro-active'\)/g)];
+    expect(matches.length).toBeGreaterThanOrEqual(2);
+  });
 });

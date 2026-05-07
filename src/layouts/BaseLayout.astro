@@ -90,7 +90,7 @@ const shouldRenderTvIntro = Astro.url.pathname === '/';
       })();
     </script>
 
-    <!-- Phosphor — suppress grid flash during TV intro -->
+    <!-- Phosphor — suppress grid flash and content flash during TV intro -->
     <script is:inline>
       (function() {
         try {
@@ -99,8 +99,9 @@ const shouldRenderTvIntro = Astro.url.pathname === '/';
           var reduced = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
           if (isHome && !seen && !reduced) {
             document.documentElement.setAttribute('data-phosphor-intro', 'active');
+            document.documentElement.classList.add('tv-intro-active');
           }
-        } catch(_) {}
+        } catch (_) {}
       })();
     </script>
 
@@ -148,15 +149,6 @@ const shouldRenderTvIntro = Astro.url.pathname === '/';
   </head>
 
   <body class="grid-overlay">
-    {shouldRenderTvIntro && <script is:inline>
-      (function() {
-        try {
-          var seen = sessionStorage.getItem('tv-intro-seen');
-          var rm = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
-          if (!seen && !rm) { document.documentElement.classList.add('tv-intro-active'); }
-        } catch(e) {}
-      })();
-    </script>}
     {shouldRenderTvIntro && <TVIntro client:load />}
 
     <!-- Subtle scan-line overlay (CSS only) -->
