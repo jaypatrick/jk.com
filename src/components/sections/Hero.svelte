@@ -1,5 +1,6 @@
 <script lang="ts">
-  // Hero.svelte — "THIS. IS. JK.com" — full-screen hero with cyberpunk glitch
+  // Hero.svelte — "THIS. IS. JK.com" — full-screen hero
+  // Phosphor: glitch text, TV-intro handoff, CRT typewriter subtitle
   // Svelte 5 runes API
   import { openCalendlyPopup } from '$lib/calendly.ts';
   import { introState } from '$lib/intro-store.svelte.ts';
@@ -80,7 +81,8 @@
         return;
       }
 
-      const jitter = Math.random() * (TYPEWRITER_JITTER_MS * 2) - TYPEWRITER_JITTER_MS;
+      // Center a random delay adjustment in the [-TYPEWRITER_JITTER_MS, +TYPEWRITER_JITTER_MS] range.
+      const jitter = (Math.random() * 2 - 1) * TYPEWRITER_JITTER_MS;
       typingTick = setTimeout(
         () => typeNext(nextIndex),
         Math.max(TYPEWRITER_MIN_DELAY_MS, TYPEWRITER_BASE_DELAY_MS + jitter)
@@ -223,7 +225,7 @@
       </div>
     </div>
 
-    <!-- Typewriter subtitle — "Imagination | Unleashed" -->
+    <!-- Phosphor — CRT typewriter subtitle -->
     <div class="mt-6 crt-subtitle-wrap">
       <span class="sr-only">Imagination | Unleashed</span>
       <p class="crt-line text-xl tracking-[0.3em] uppercase" class:done={typingDone} aria-hidden="true">
@@ -288,7 +290,7 @@
 </section>
 
 <style>
-  /* Glitch effect on main heading */
+  /* Phosphor — glitch layers for main heading */
   .glitch-text::before,
   .glitch-text::after {
     content: attr(data-text);

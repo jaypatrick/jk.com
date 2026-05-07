@@ -1,6 +1,6 @@
 <script lang="ts">
   // Portfolio.svelte — "CLIENTS I ADORE" + featured work
-  // Svelte 5 + TailwindCSS v4
+  // Phosphor: BootLabel section labels, signal-lock case study sweep, client marquee
   import BootLabel from '../ui/BootLabel.svelte';
 
   // These are placeholder case studies — swap with actual client work
@@ -243,6 +243,7 @@
     }
   }
 
+  /* Phosphor — clients marquee crawl */
   @keyframes marquee-left {
     from {
       transform: translateX(0);

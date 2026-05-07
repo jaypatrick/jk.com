@@ -3,6 +3,18 @@
  * Cyberpunk aesthetic: near-black, electric blues, cyan accents, red pops
  */
 
+/* ============================================================
+   PHOSPHOR — JK.com Design System
+   A CRT-inspired cyberpunk design language built on:
+   · Phosphor glow (cyan text-shadow persistence)
+   · Scanline overlays & glitch animation
+   · TV power-on sequencing
+   · Terminal typography & monospace aesthetic
+   · Iridescent shimmer borders
+   Named for the phosphor coating in CRT tubes — the source
+   of the warm, persistent glow that defines the aesthetic.
+   ============================================================ */
+
 @import "tailwindcss";
 
 /* ============================================================
@@ -140,6 +152,7 @@ code, pre, kbd, samp {
    GRID OVERLAY — subtle background grid (CSS only, no JS)
    Apply `.grid-overlay` to a container
    ============================================================ */
+/* Phosphor — background grid */
 .grid-overlay {
   background-image:
     linear-gradient(rgba(0, 212, 255, 0.03) 1px, transparent 1px),
@@ -150,6 +163,7 @@ code, pre, kbd, samp {
 /* ============================================================
    GLITCH TEXT EFFECT — for hero heading
    ============================================================ */
+/* Phosphor — glitch displacement */
 @keyframes glitch-1 {
   0%, 100% { clip-path: inset(0 0 95% 0); transform: translate(-2px, 0); }
   25%       { clip-path: inset(30% 0 50% 0); transform: translate(2px, 0); }
@@ -163,6 +177,7 @@ code, pre, kbd, samp {
   66%       { clip-path: inset(0 0 80% 0); transform: translate(1px, 0); }
 }
 
+/* Phosphor — CRT flicker */
 @keyframes flicker {
   0%, 99%   { opacity: 1; }
   33%       { opacity: 0.97; }
@@ -170,27 +185,32 @@ code, pre, kbd, samp {
   100%      { opacity: 0.98; }
 }
 
+/* Phosphor — moving scanline */
 @keyframes scan-line {
   0%   { transform: translateY(-100%); }
   100% { transform: translateY(100vh); }
 }
 
+/* Phosphor — entry animation */
 @keyframes fade-up {
   from { opacity: 0; transform: translateY(24px); }
   to   { opacity: 1; transform: translateY(0); }
 }
 
+/* Phosphor — glow pulse */
 @keyframes pulse-glow {
   0%, 100% { box-shadow: var(--glow-cyan-sm); }
   50%       { box-shadow: var(--glow-cyan); }
 }
 
+/* Phosphor — iridescent border sweep */
 @keyframes shimmer-streak {
   0%   { transform: translateX(200%); }
   50%  { transform: translateX(-200%); }
   100% { transform: translateX(200%); }
 }
 
+/* Phosphor — gradient text static corruption */
 @keyframes text-static {
   0%, 92%, 100% { clip-path: none; transform: none; }
   93%           { clip-path: inset(30% 0 40% 0); transform: translateX(1px); }
@@ -204,7 +224,7 @@ code, pre, kbd, samp {
    UTILITY CLASSES
    ============================================================ */
 
-/* Glowing border */
+/* Phosphor — glowing border */
 .glow-border {
   border: 1px solid var(--color-cyan-dim);
   box-shadow: var(--glow-cyan-sm);
@@ -229,6 +249,7 @@ code, pre, kbd, samp {
   border-color: transparent;
 }
 
+/* Phosphor — iridescent shimmer border */
 /* Iridescent border shimmer — a thin pink→purple streak that sweeps slowly
    across the border, like light catching a surface. 95% invisible, 5% magic. */
 .iridescent {
@@ -253,7 +274,7 @@ code, pre, kbd, samp {
   pointer-events: none;
 }
 
-/* Cyan text glow */
+/* Phosphor — cyan phosphor text glow */
 .text-glow {
   text-shadow: 0 0 20px rgba(0, 212, 255, 0.6),
                0 0 40px rgba(0, 212, 255, 0.2);
@@ -285,7 +306,7 @@ code, pre, kbd, samp {
   }
 }
 
-/* Gradient text */
+/* Phosphor — animated gradient text */
 .gradient-text {
   background: linear-gradient(135deg, var(--color-cyan) 0%, var(--color-purple) 50%, var(--color-cyan-glow) 100%);
   -webkit-background-clip: text;
@@ -294,7 +315,7 @@ code, pre, kbd, samp {
   animation: text-static 12s steps(1) infinite;
 }
 
-/* Chip / tag */
+/* Phosphor — tag/chip component */
 .chip {
   display: inline-flex;
   align-items: center;
@@ -364,7 +385,7 @@ code, pre, kbd, samp {
   box-shadow: 0 0 30px rgba(255, 45, 85, 0.5);
 }
 
-/* Divider with label */
+/* Phosphor — section label divider */
 .section-label {
   display: flex;
   align-items: center;
@@ -391,7 +412,7 @@ code, pre, kbd, samp {
   background: linear-gradient(to right, var(--color-cyan-dim), transparent);
 }
 
-/* Animate on scroll — add class with IntersectionObserver */
+/* Phosphor — scroll-triggered reveal animation */
 .animate-on-scroll {
   opacity: 0;
   transform: translateY(20px);

@@ -1,5 +1,6 @@
 <script lang="ts">
   // Header.svelte — site navigation
+  // Phosphor: active nav item uses a cyan underline bar within the CRT-inspired nav
   // Svelte 5 runes: $state, $effect
   import { openCalendlyPopup } from '$lib/calendly.ts';
 

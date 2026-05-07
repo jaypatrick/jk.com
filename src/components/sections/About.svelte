@@ -1,6 +1,6 @@
 <script lang="ts">
   // About.svelte — "WHO I AM" section
-  // Svelte 5, TailwindCSS v4
+  // Phosphor: BootLabel section label, reveal-on-scroll cards, iridescent detail panel
   import BootLabel from '../ui/BootLabel.svelte';
 
   const expertise = [
