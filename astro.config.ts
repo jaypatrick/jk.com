@@ -26,7 +26,7 @@ export default defineConfig({
       enabled: true,
       contentCache: true
     }
-  }
+  },
   
   integrations: [
     svelte(),
