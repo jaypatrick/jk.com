@@ -336,6 +336,8 @@
     );
     display: inline-block;
     padding: 0 0.125em;
+    /* Compensate for letter-spacing trailing gap so centering is correct throughout typing */
+    margin-right: -0.3em;
   }
 
   .crt-cursor {
