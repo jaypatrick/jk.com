@@ -24,6 +24,7 @@
     if (introState.done) return;
     introState.done = true;
     document.documentElement.removeAttribute('data-phosphor-intro');
+    document.documentElement.classList.remove('tv-intro-active');
     document.dispatchEvent(new CustomEvent('tv-intro-done'));
   }
 
@@ -72,6 +73,7 @@
     const finalizeImmediately = () => {
       phase = 'done';
       document.body.style.overflow = originalOverflow;
+      document.documentElement.classList.remove('tv-intro-active');
       notifyDone();
     };
 

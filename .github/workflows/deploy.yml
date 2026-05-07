@@ -36,8 +36,6 @@ jobs:
         with:
           path: .astro/
           key: astro-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('src/**', 'astro.config.*', 'tsconfig.json', 'package-lock.json') }}
-          restore-keys: |
-            astro-${{ runner.os }}-node${{ env.NODE_VERSION }}-
 
       - name: Generate Wrangler types
         run: npx wrangler types --env-interface CloudflareBindings src/env.d.ts
