@@ -2,7 +2,7 @@
   import ShimmerToggle from '../ui/ShimmerToggle.svelte';
 
   const year = new Date().getFullYear();
-  const buildDate = new Date().toISOString().slice(0, 10).replace(/-/g, '.');
+  const buildDate = String(import.meta.env.PUBLIC_BUILD_DATE ?? '').replace(/-/g, '.');
 
   const links = [
     { href: '#about', label: 'About' },
