@@ -6,6 +6,11 @@
 
   let mounted = $state(false);
   const FULL_TEXT = 'Imagination | Unleashed';
+  const TYPEWRITER_PRE_DELAY_MS = 400;
+  const TYPEWRITER_BASE_DELAY_MS = 55;
+  const TYPEWRITER_JITTER_MS = 15;
+  const TYPEWRITER_MIN_DELAY_MS = 35;
+  const CURSOR_HIDE_DELAY_MS = 1500;
   let displayedText = $state('');
   let cursorVisible = $state(false);
   let cursorBlinking = $state(false);
@@ -21,8 +26,11 @@
       mountDelay = setTimeout(() => { mounted = true; }, 100);
     }
 
-    document.addEventListener('tv-intro-done', activate, { once: true });
-    if (introState.done) activate();
+    if (introState.done) {
+      activate();
+    } else {
+      document.addEventListener('tv-intro-done', activate, { once: true });
+    }
 
     return () => {
       document.removeEventListener('tv-intro-done', activate);
@@ -55,12 +63,15 @@
         hideCursorDelay = setTimeout(() => {
           cursorVisible = false;
           cursorBlinking = false;
-        }, 1500);
+        }, CURSOR_HIDE_DELAY_MS);
         return;
       }
 
-      const jitter = Math.random() * 30 - 15;
-      typingTick = setTimeout(() => typeNext(nextIndex), Math.max(35, 55 + jitter));
+      const jitter = Math.random() * (TYPEWRITER_JITTER_MS * 2) - TYPEWRITER_JITTER_MS;
+      typingTick = setTimeout(
+        () => typeNext(nextIndex),
+        Math.max(TYPEWRITER_MIN_DELAY_MS, TYPEWRITER_BASE_DELAY_MS + jitter)
+      );
     }
 
     function startTypewriter() {
@@ -78,16 +89,20 @@
       preDelay = setTimeout(() => {
         cursorBlinking = false;
         typeNext(0);
-      }, 400);
+      }, TYPEWRITER_PRE_DELAY_MS);
+    }
+
+    if (introState.done) {
+      startTypewriter();
+      return () => {
+        if (preDelay !== undefined) clearTimeout(preDelay);
+        if (typingTick !== undefined) clearTimeout(typingTick);
+        if (hideCursorDelay !== undefined) clearTimeout(hideCursorDelay);
+      };
     }
 
     const handler = () => startTypewriter();
     document.addEventListener('tv-intro-done', handler, { once: true });
-
-    // Fallback: if intro was already skipped before this effect ran
-    if (introState.done) {
-      startTypewriter();
-    }
 
     return () => {
       document.removeEventListener('tv-intro-done', handler);

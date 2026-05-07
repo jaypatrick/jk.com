@@ -2,6 +2,14 @@
   import { introState } from '$lib/intro-store.svelte.ts';
 
   type Phase = 'off' | 'power-on' | 'static' | 'emerge' | 'clear' | 'done';
+  const POWER_ON_START_MS = 50;
+  const POWER_ON_EXPAND_MS = 70;
+  const STATIC_START_MS = 200;
+  const EMERGE_START_MS = 450;
+  const CLEAR_START_MS = 900;
+  const DONE_START_MS = 1400;
+  const SWEEP_BAR_SPEED = 4;
+  const SWEEP_BAR_HEIGHT = 40;
 
   let phase = $state<Phase>('off');
   let canvas = $state<HTMLCanvasElement | undefined>(undefined);
@@ -20,8 +28,8 @@
     const data = imageData.data;
     const blockSize = 3;
 
-    const barY = (frame * 4) % h;
-    const barHeight = 40;
+    const barY = (frame * SWEEP_BAR_SPEED) % h;
+    const barHeight = SWEEP_BAR_HEIGHT;
 
     for (let y = 0; y < h; y += blockSize) {
       for (let x = 0; x < w; x += blockSize) {
@@ -79,31 +87,31 @@
       powerOnPlayed = true;
       powerTransitionEnabled = false;
       collapsedToLine = true;
-    }, 50);
+    }, POWER_ON_START_MS);
 
     schedule(() => {
       powerTransitionEnabled = true;
       collapsedToLine = false;
-    }, 70);
+    }, POWER_ON_EXPAND_MS);
 
     schedule(() => {
       phase = 'static';
-    }, 200);
+    }, STATIC_START_MS);
 
     schedule(() => {
       phase = 'emerge';
-    }, 450);
+    }, EMERGE_START_MS);
 
     schedule(() => {
       phase = 'clear';
       document.body.style.overflow = originalOverflow;
-    }, 900);
+    }, CLEAR_START_MS);
 
     schedule(() => {
       phase = 'done';
       sessionStorage.setItem('tv-intro-seen', '1');
       notifyDone();
-    }, 1400);
+    }, DONE_START_MS);
 
     cleanups.push(() => {
       timeouts.forEach((id) => clearTimeout(id));
