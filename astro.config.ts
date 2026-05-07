@@ -20,6 +20,14 @@ export default defineConfig({
   // Astro 6 uses workerd runtime natively — no platformProxy config needed
   adapter: cloudflare(cloudflareAdapterOptions),
 
+  // Experimental rendering options
+  experimental: {
+    queuedRendering: {
+      enabled: true,
+      contentCache: true
+    }
+  }
+  
   integrations: [
     svelte(),
     emdash({
