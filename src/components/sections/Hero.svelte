@@ -2,13 +2,127 @@
   // Hero.svelte — "THIS. IS. JK.com" — full-screen hero with cyberpunk glitch
   // Svelte 5 runes API
   import { openCalendlyPopup } from '$lib/calendly.ts';
+  import { introState } from '$lib/intro-store.svelte.ts';
 
   let mounted = $state(false);
+  const FULL_TEXT = 'Imagination | Unleashed';
+  const TYPEWRITER_PRE_DELAY_MS = 400;
+  const TYPEWRITER_BASE_DELAY_MS = 55;
+  const TYPEWRITER_JITTER_MS = 15;
+  const TYPEWRITER_MIN_DELAY_MS = 35;
+  const CURSOR_HIDE_DELAY_MS = 1500;
+  let displayedText = $state('');
+  let cursorVisible = $state(false);
+  let cursorBlinking = $state(false);
+  let typingDone = $state(false);
+  let typewriterStarted = $state(false);
+  let prefersReducedMotion = $state(false);
 
   $effect(() => {
-    // Small delay so CSS animation reads as intentional
-    const t = setTimeout(() => { mounted = true; }, 100);
-    return () => clearTimeout(t);
+    if (typeof window === 'undefined') return;
+
+    const mediaQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const syncPreference = () => {
+      prefersReducedMotion = mediaQuery.matches;
+    };
+
+    syncPreference();
+    mediaQuery.addEventListener('change', syncPreference);
+    return () => mediaQuery.removeEventListener('change', syncPreference);
+  });
+
+  // Hero mounts its content after TV intro completes (or immediately if skipped)
+  $effect(() => {
+    let mountDelay: ReturnType<typeof setTimeout> | undefined;
+
+    function activate() {
+      if (mounted) return;
+      if (mountDelay !== undefined) clearTimeout(mountDelay);
+      mountDelay = setTimeout(() => { mounted = true; }, 100);
+    }
+
+    if (introState.done) {
+      activate();
+    } else {
+      document.addEventListener('tv-intro-done', activate, { once: true });
+    }
+
+    return () => {
+      document.removeEventListener('tv-intro-done', activate);
+      if (mountDelay !== undefined) clearTimeout(mountDelay);
+    };
+  });
+
+  // Listen for the TV intro completion event, then start typewriter
+  $effect(() => {
+    let preDelay: ReturnType<typeof setTimeout> | undefined;
+    let typingTick: ReturnType<typeof setTimeout> | undefined;
+    let hideCursorDelay: ReturnType<typeof setTimeout> | undefined;
+
+    function renderStaticLine() {
+      displayedText = FULL_TEXT;
+      cursorVisible = false;
+      cursorBlinking = false;
+      typingDone = true;
+    }
+
+    function typeNext(index: number) {
+      const nextIndex = index + 1;
+      displayedText = FULL_TEXT.slice(0, nextIndex);
+
+      if (nextIndex >= FULL_TEXT.length) {
+        typingDone = true;
+        cursorBlinking = true;
+        hideCursorDelay = setTimeout(() => {
+          cursorVisible = false;
+          cursorBlinking = false;
+        }, CURSOR_HIDE_DELAY_MS);
+        return;
+      }
+
+      const jitter = Math.random() * (TYPEWRITER_JITTER_MS * 2) - TYPEWRITER_JITTER_MS;
+      typingTick = setTimeout(
+        () => typeNext(nextIndex),
+        Math.max(TYPEWRITER_MIN_DELAY_MS, TYPEWRITER_BASE_DELAY_MS + jitter)
+      );
+    }
+
+    function startTypewriter() {
+      if (typewriterStarted || typingDone) return;
+      typewriterStarted = true;
+
+      if (prefersReducedMotion) {
+        renderStaticLine();
+        return;
+      }
+
+      cursorVisible = true;
+      cursorBlinking = true;
+
+      preDelay = setTimeout(() => {
+        cursorBlinking = false;
+        typeNext(0);
+      }, TYPEWRITER_PRE_DELAY_MS);
+    }
+
+    if (introState.done) {
+      startTypewriter();
+      return () => {
+        if (preDelay !== undefined) clearTimeout(preDelay);
+        if (typingTick !== undefined) clearTimeout(typingTick);
+        if (hideCursorDelay !== undefined) clearTimeout(hideCursorDelay);
+      };
+    }
+
+    const handler = () => startTypewriter();
+    document.addEventListener('tv-intro-done', handler, { once: true });
+
+    return () => {
+      document.removeEventListener('tv-intro-done', handler);
+      if (preDelay !== undefined) clearTimeout(preDelay);
+      if (typingTick !== undefined) clearTimeout(typingTick);
+      if (hideCursorDelay !== undefined) clearTimeout(hideCursorDelay);
+    };
   });
 
   function chipStyle(tag: string): string {
@@ -109,18 +223,18 @@
       </div>
     </div>
 
-    <!-- Subtitle -->
-    <p
-      class="mt-6 text-xl font-light tracking-[0.3em] uppercase"
-      style="
-        color: var(--color-text-dim);
-        opacity: {mounted ? 1 : 0};
-        transition: opacity 0.8s ease 0.5s;
-        font-family: var(--font-mono);
-      "
-    >
-      Imagination&thinsp;|&thinsp;Unleashed
-    </p>
+    <!-- Typewriter subtitle — "Imagination | Unleashed" -->
+    <div class="mt-6 crt-subtitle-wrap">
+      <span class="sr-only">Imagination | Unleashed</span>
+      <p class="crt-line text-xl tracking-[0.3em] uppercase" class:done={typingDone} aria-hidden="true">
+        {displayedText}<span
+          class="crt-cursor"
+          class:blink={cursorBlinking}
+          class:hidden={!cursorVisible}
+          aria-hidden="true"
+        >█</span>
+      </p>
+    </div>
 
     <!-- Role tags -->
     <ul
@@ -197,5 +311,60 @@
     color: var(--color-pink);
     animation: glitch-2 8s steps(1) infinite;
     opacity: 0.4;
+  }
+
+  /* CRT subtitle line */
+  .crt-subtitle-wrap {
+    min-height: 2em;
+  }
+
+  .crt-line {
+    font-family: var(--font-mono);
+    color: var(--color-cyan);
+    text-shadow:
+      0 0 4px #fff,
+      0 0 8px var(--color-cyan),
+      0 0 16px var(--color-cyan),
+      0 0 32px rgba(0, 212, 255, 0.4);
+    background: repeating-linear-gradient(
+      0deg,
+      transparent,
+      transparent 2px,
+      rgba(0, 0, 0, 0.06) 2px,
+      rgba(0, 0, 0, 0.06) 4px
+    );
+    display: inline-block;
+    padding: 0 0.125em;
+  }
+
+  .crt-cursor {
+    display: inline-block;
+    opacity: 1;
+    color: var(--color-cyan);
+    text-shadow: 0 0 8px var(--color-cyan);
+    transition: opacity 0.05s;
+    margin-left: 1px;
+  }
+
+  .crt-cursor.blink {
+    animation: cursor-blink 0.7s step-end infinite;
+  }
+
+  .crt-cursor.hidden {
+    opacity: 0;
+  }
+
+  @keyframes cursor-blink {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0; }
+  }
+
+  .crt-line.done {
+    animation: phosphor-decay 2s ease forwards;
+  }
+
+  @keyframes phosphor-decay {
+    0% { text-shadow: 0 0 4px #fff, 0 0 12px var(--color-cyan), 0 0 32px rgba(0,212,255,0.6), 0 0 60px rgba(0,212,255,0.3); }
+    100% { text-shadow: 0 0 4px #fff, 0 0 8px var(--color-cyan), 0 0 16px rgba(0,212,255,0.4); }
   }
 </style>

@@ -16,6 +16,7 @@ node_modules/
 # Wrangler generated files — commit wrangler.jsonc but not these
 .wrangler/
 wrangler.d.ts
+emdash-env.d.ts
 
 # OS & editor
 .DS_Store
