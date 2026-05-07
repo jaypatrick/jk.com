@@ -29,14 +29,6 @@ jobs:
       - name: Install dependencies
         run: npm ci
 
-      # Caches Astro's incremental build output (.astro/) to skip recompiling
-      # unchanged pages and components on repeat runs.
-      - name: Cache Astro build
-        uses: actions/cache@v4
-        with:
-          path: .astro/
-          key: astro-${{ runner.os }}-node${{ env.NODE_VERSION }}-${{ hashFiles('src/**', 'astro.config.*', 'tsconfig.json', 'package-lock.json') }}
-
       - name: Generate Wrangler types
         run: npx wrangler types --env-interface CloudflareBindings src/env.d.ts
         continue-on-error: true  # Non-fatal if bindings not yet set up
