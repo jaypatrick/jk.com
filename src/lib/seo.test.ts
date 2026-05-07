@@ -15,7 +15,7 @@ describe('buildSeoMetadata', () => {
 
     expect(seo.canonicalUrl).toBe('https://jaysonknight.com/blog');
     expect(seo.ogImageUrl).toBe(
-      'https://jaysonknight.com/api/og/blog?title=Blog+%7C+JK.com+%E2%80%94+Jayson+Knight&description=Thoughts+on+Azure+and+Cloudflare.'
+      'https://jaysonknight.com/api/og/blog?title=Blog+%7C+JK.com+%E2%80%94+Jayson+Knight&description=Thoughts+on+Azure+and+Cloudflare.&v=2'
     );
     expect(seo.ogImageAlt).toBe('Blog | JK.com — Jayson Knight — social preview image');
     expect(seo.author).toBe('Jayson Knight');
@@ -30,7 +30,7 @@ describe('buildSeoMetadata', () => {
     expect(seo.title).toBe(DEFAULT_OG_TITLE);
     expect(seo.description).toBe(DEFAULT_OG_DESCRIPTION);
     expect(seo.ogImageUrl).toBe(
-      'https://jaysonknight.com/api/og/privacy?title=JK.com+%7C+Unbounded+%7C+Imagination+%E2%80%94+Jayson+Knight&description=Jayson+Knight+%E2%80%94+AI+Architect+%26+Engineer+specializing+in+agentic+systems%2C+multi-agent+orchestration%2C+MCP+servers%2C+and+ADEs.+Building+on+Anthropic+Claude%2C+Microsoft+Azure%2C+and+the+Cloudflare+edge.+Creator+of+Bloqr%2C+an+AI-native+publishing+platform.+20%2B+years+of+enterprise+software.+Charlotte%2C+NC.'
+      'https://jaysonknight.com/api/og/privacy?title=JK.com+%7C+Unbounded+Imagination+%E2%80%94+Jayson+Knight&description=Jayson+Knight+%E2%80%94+AI+Architect+%26+Engineer+specializing+in+agentic+systems%2C+multi-agent+orchestration%2C+MCP+servers%2C+and+ADEs.+Building+on+Anthropic+Claude%2C+Microsoft+Azure%2C+and+the+Cloudflare+edge.+Creator+of+Bloqr%2C+an+AI-native+publishing+platform.+20%2B+years+of+enterprise+software.+Charlotte%2C+NC.&v=2'
     );
     expect(seo.ogImageAlt).toBe(`${DEFAULT_OG_TITLE} — social preview image`);
     expect(seo.author).toBe('Jayson Knight');
@@ -56,7 +56,7 @@ describe('buildSeoMetadata', () => {
 
     expect(seo.canonicalUrl).toBe('https://jaysonknight.com/');
     expect(seo.ogImageUrl).toBe(
-      'https://jaysonknight.com/api/og?title=JK.com+%E2%80%94+Jayson+Knight&description=Home+page+overview.'
+      'https://jaysonknight.com/api/og?title=JK.com+%E2%80%94+Jayson+Knight&description=Home+page+overview.&v=2'
     );
   });
 
@@ -70,7 +70,7 @@ describe('buildSeoMetadata', () => {
 
     expect(seo.canonicalUrl).toBe('https://jaysonknight.com/blog/new-post');
     expect(seo.ogImageUrl).toBe(
-      'https://jaysonknight.com/api/og/blog/new-post?title=New+Post+%7C+JK.com+%E2%80%94+Jayson+Knight&description=Deep+dive+into+nested+route+metadata.'
+      'https://jaysonknight.com/api/og/blog/new-post?title=New+Post+%7C+JK.com+%E2%80%94+Jayson+Knight&description=Deep+dive+into+nested+route+metadata.&v=2'
     );
   });
 });

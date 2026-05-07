@@ -43,6 +43,7 @@ export const buildSeoMetadata = ({
         const dynamicOgUrl = new URL(dynamicOgPath, site);
         dynamicOgUrl.searchParams.set('title', resolvedTitle);
         dynamicOgUrl.searchParams.set('description', resolvedDescription);
+        dynamicOgUrl.searchParams.set('v', '2');
         return dynamicOgUrl.href;
       })();
 
