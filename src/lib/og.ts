@@ -214,7 +214,7 @@ const createOgTree = ({
                         textTransform: 'uppercase',
                         fontFamily: '"Space Grotesk"',
                       },
-                      children: 'IMAGINATION | UNLEASHED',
+                      children: 'IMAGINATION, UNLEASHED',
                     },
                   },
                 ],
