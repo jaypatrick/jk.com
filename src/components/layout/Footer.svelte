@@ -134,13 +134,13 @@
 
   <div class="sys-status" aria-label="System status">
     <span class="sys-dot" aria-hidden="true"></span>
-    SYS: ONLINE
+    <span class="sys-text">SYS: ONLINE</span>
     <span class="sys-sep" aria-hidden="true">//</span>
-    BUILD: {buildDate}
+    <span class="sys-text">BUILD: {buildDate}</span>
     <span class="sys-sep" aria-hidden="true">//</span>
-    NODE: CLT-01
+    <span class="sys-text">NODE: CLT-01</span>
     <span class="sys-sep" aria-hidden="true">//</span>
-    STACK: ASTRO·SVELTE·CLOUDFLARE
+    <span class="sys-text">STACK: ASTRO·SVELTE·CLOUDFLARE</span>
   </div>
 </footer>
 
@@ -155,8 +155,6 @@
     font-family: var(--font-mono);
     font-size: 0.6rem;
     letter-spacing: 0.12em;
-    color: var(--color-text-ghost);
-    opacity: 0.5;
     text-transform: uppercase;
   }
 
@@ -170,8 +168,14 @@
     flex-shrink: 0;
   }
 
+  .sys-text {
+    color: var(--color-text-dim);
+    opacity: 0.6;
+  }
+
   .sys-sep {
-    opacity: 0.35;
+    color: var(--color-text-ghost);
+    opacity: 0.4;
   }
 
   @keyframes sys-pulse {
