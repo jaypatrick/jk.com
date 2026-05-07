@@ -30,7 +30,7 @@ describe('buildSeoMetadata', () => {
     expect(seo.title).toBe(DEFAULT_OG_TITLE);
     expect(seo.description).toBe(DEFAULT_OG_DESCRIPTION);
     expect(seo.ogImageUrl).toBe(
-      'https://jaysonknight.com/api/og/privacy?title=JK.com+%7C+Imagination+%7C+Unleashed+%E2%80%94+Jayson+Knight&description=Jayson+Knight+%E2%80%94+AI+Architect+%26+Engineer+specializing+in+agentic+systems%2C+multi-agent+orchestration%2C+MCP+servers%2C+and+ADEs.+Building+on+Anthropic+Claude%2C+Microsoft+Azure%2C+and+the+Cloudflare+edge.+Creator+of+Bloqr%2C+an+AI-native+publishing+platform.+20%2B+years+of+enterprise+software.+Charlotte%2C+NC.'
+      'https://jaysonknight.com/api/og/privacy?title=JK.com+%7C+Unbounded+%7C+Imagination+%E2%80%94+Jayson+Knight&description=Jayson+Knight+%E2%80%94+AI+Architect+%26+Engineer+specializing+in+agentic+systems%2C+multi-agent+orchestration%2C+MCP+servers%2C+and+ADEs.+Building+on+Anthropic+Claude%2C+Microsoft+Azure%2C+and+the+Cloudflare+edge.+Creator+of+Bloqr%2C+an+AI-native+publishing+platform.+20%2B+years+of+enterprise+software.+Charlotte%2C+NC.'
     );
     expect(seo.ogImageAlt).toBe(`${DEFAULT_OG_TITLE} — social preview image`);
     expect(seo.author).toBe('Jayson Knight');
