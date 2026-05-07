@@ -1,16 +1,15 @@
 <script lang="ts">
   import { introState } from '$lib/intro-store.svelte.ts';
 
-  type Phase = 'off' | 'power-on' | 'static' | 'emerge' | 'clear' | 'done';
-  const POWER_ON_START_MS = 50;       // collapse to line immediately
-  const POWER_ON_EXPAND_MS = 300;     // hold line for 250ms, then expand
-  const EXPAND_TRANSITION_MS = 220;   // 160ms CSS expand transition + existing 60ms gap before static
-  const STATIC_START_MS = POWER_ON_EXPAND_MS + EXPAND_TRANSITION_MS;
-  const EMERGE_START_MS = 800;        // "THIS. IS. JK.com" emerges from static
-  const EMERGE_DURATION_MS = 500;     // duration before static fades out
-  const CLEAR_START_MS = EMERGE_START_MS + EMERGE_DURATION_MS;
-  const CLEAR_FADE_DURATION_MS = 500; // fade/overlay removal duration before completion
-  const DONE_START_MS = CLEAR_START_MS + CLEAR_FADE_DURATION_MS;
+  type Phase = 'off' | 'line' | 'power-on' | 'static' | 'emerge' | 'clear' | 'done';
+  // Absolute intro timeline offsets in ms from animation start, not durations.
+  const POWER_ON_START_MS   = 50;    // show the crt-power-line phase
+  const LINE_HOLD_MS        = 550;   // absolute timestamp when the line phase ends and overlay power-on collapse begins
+  const POWER_ON_EXPAND_MS  = 600;   // absolute timestamp when the overlay starts expanding to full screen
+  const STATIC_START_MS     = 820;   // absolute timestamp when static noise begins
+  const EMERGE_START_MS     = 1100;  // absolute timestamp when "THIS. IS. JK.com" emerges from static
+  const CLEAR_START_MS      = 1600;  // absolute timestamp when the overlay clears/fades
+  const DONE_START_MS       = 2100;  // absolute timestamp when the intro is complete
   const SWEEP_BAR_SPEED = 4;
   const SWEEP_BAR_HEIGHT = 40;
   const STATIC_RESOLUTION_SCALE = 2;
@@ -86,11 +85,15 @@
     document.body.style.overflow = 'hidden';
 
     schedule(() => {
+      phase = 'line';
+    }, POWER_ON_START_MS);
+
+    schedule(() => {
       phase = 'power-on';
       powerOnPlayed = true;
       powerTransitionEnabled = false;
       collapsedToLine = true;
-    }, POWER_ON_START_MS);
+    }, LINE_HOLD_MS);
 
     schedule(() => {
       powerTransitionEnabled = true;
@@ -190,6 +193,7 @@
     class:power-on-played={powerOnPlayed}
     class:power-transition={powerTransitionEnabled}
     class:clear={phase === 'clear'}
+    class:transparent={phase === 'line'}
     style={`transform: scaleY(${collapsedToLine ? '0.004' : '1'});`}
     aria-hidden="true"
   >
@@ -216,6 +220,10 @@
       </div>
     {/if}
   </div>
+
+  {#if phase === 'line'}
+    <div class="crt-power-line" aria-hidden="true"></div>
+  {/if}
 {/if}
 
 <style>
@@ -240,6 +248,42 @@
 
   .tv-intro-overlay.power-on-played {
     background: #060606;
+  }
+
+  .tv-intro-overlay.transparent {
+    background: transparent;
+  }
+
+  .crt-power-line {
+    position: fixed;
+    left: 0;
+    right: 0;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 3px;
+    z-index: 10000;
+    background: linear-gradient(
+      to right,
+      transparent 0%,
+      rgba(0, 212, 255, 0.3) 10%,
+      rgba(255, 255, 255, 0.9) 30%,
+      #fff 50%,
+      rgba(255, 255, 255, 0.9) 70%,
+      rgba(0, 212, 255, 0.3) 90%,
+      transparent 100%
+    );
+    box-shadow:
+      0 0 4px #fff,
+      0 0 12px rgba(0, 212, 255, 0.8),
+      0 0 24px rgba(0, 212, 255, 0.4),
+      0 0 48px rgba(0, 212, 255, 0.2);
+    animation: crt-line-flicker 80ms steps(1) infinite;
+    pointer-events: none;
+  }
+
+  @keyframes crt-line-flicker {
+    0%, 100% { opacity: 1; }
+    50%       { opacity: 0.85; }
   }
 
   .noise-canvas,

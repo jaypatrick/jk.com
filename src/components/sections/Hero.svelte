@@ -127,15 +127,7 @@
     };
   });
 
-  function chipStyle(tag: string): string {
-    if (tag === 'AI Engineer') {
-      return 'background: rgba(123,47,247,0.1); border-color: rgba(123,47,247,0.4); color: var(--color-purple);';
-    }
-    if (tag === 'Rust & WASM') {
-      return 'background: rgba(247,37,133,0.1); border-color: rgba(247,37,133,0.4); color: var(--color-pink);';
-    }
-    return 'background: rgba(0,212,255,0.08); border-color: rgba(0,212,255,0.3); color: var(--color-cyan);';
-  }
+
 </script>
 
 <section
@@ -185,13 +177,18 @@
   <!-- Content -->
   <div class="section-container relative z-10 text-center">
 
-    <!-- Tag chip -->
+    <!-- Phosphor — terminal status readout -->
     <div
-      class="chip mb-8 mx-auto"
+      class="status-readout mb-8 mx-auto"
       style="opacity: {mounted ? 1 : 0}; transform: translateY({mounted ? 0 : -12}px); transition: all 0.6s ease 0.1s;"
+      aria-label="Online. Location: Charlotte, NC. Available for consulting."
     >
-      <span style="color: var(--color-cyan); margin-right: 0.25rem;">▸</span>
-      Charlotte, NC · Available for Consulting
+      <span class="status-dot" aria-hidden="true"></span>
+      <span class="status-text">ONLINE</span>
+      <span class="status-sep" aria-hidden="true">//</span>
+      <span class="status-text">LOCATION: CHARLOTTE, NC</span>
+      <span class="status-sep" aria-hidden="true">//</span>
+      <span class="status-text">STATUS: AVAILABLE</span>
     </div>
 
     <!-- Main heading — "THIS. IS. JK.com" with glitch treatment -->
@@ -246,8 +243,10 @@
       style="opacity: {mounted ? 1 : 0}; transition: opacity 0.8s ease 0.6s;"
     >
       {#each ['Azure Architect', 'AI Engineer', 'Cloudflare Specialist', 'Rust & WASM', 'Privacy & Security'] as tag}
-        <li class="chip" style={chipStyle(tag)}>
+        <li class="bracket-tag iridescent">
+          <span class="bracket-open" aria-hidden="true">[</span>
           {tag}
+          <span class="bracket-close" aria-hidden="true">]</span>
         </li>
       {/each}
     </ul>
@@ -337,6 +336,8 @@
     );
     display: inline-block;
     padding: 0 0.125em;
+    /* Compensate for letter-spacing trailing gap so centering is correct throughout typing */
+    margin-right: -0.3em;
   }
 
   .crt-cursor {
@@ -368,5 +369,89 @@
   @keyframes phosphor-decay {
     0% { text-shadow: 0 0 4px #fff, 0 0 12px var(--color-cyan), 0 0 32px rgba(0,212,255,0.6), 0 0 60px rgba(0,212,255,0.3); }
     100% { text-shadow: 0 0 4px #fff, 0 0 8px var(--color-cyan), 0 0 16px rgba(0,212,255,0.4); }
+  }
+
+  /* Phosphor — terminal status readout chip */
+  .status-readout {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-family: var(--font-mono);
+    font-size: 0.7rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--color-text-ghost);
+    padding: 0.35rem 0.85rem;
+    border: 1px solid rgba(0, 212, 255, 0.15);
+    border-radius: 3px;
+    background: rgba(0, 212, 255, 0.03);
+  }
+
+  .status-dot {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--color-cyan);
+    box-shadow: 0 0 6px var(--color-cyan), 0 0 12px rgba(0, 212, 255, 0.4);
+    flex-shrink: 0;
+    animation: status-pulse 2s ease-in-out infinite;
+  }
+
+  .status-sep {
+    opacity: 0.3;
+    font-size: 0.6rem;
+  }
+
+  .status-text {
+    color: var(--color-text-ghost);
+  }
+
+  @keyframes status-pulse {
+    0%, 100% { opacity: 1; box-shadow: 0 0 6px var(--color-cyan), 0 0 12px rgba(0, 212, 255, 0.4); }
+    50%       { opacity: 0.5; box-shadow: 0 0 3px var(--color-cyan); }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .status-dot { animation: none; }
+  }
+
+  /* Phosphor — bracketed iridescent role tags */
+  .bracket-tag {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.3rem;
+    padding: 0.3rem 0.7rem;
+    border-radius: 3px;
+    border: 1px solid rgba(0, 212, 255, 0.2);
+    background: rgba(0, 212, 255, 0.04);
+    color: var(--color-cyan-dim);
+    font-family: var(--font-mono);
+    font-size: 0.72rem;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    transition: border-color 0.25s ease, color 0.25s ease, box-shadow 0.25s ease;
+    cursor: default;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .bracket-tag:hover {
+    border-color: rgba(0, 212, 255, 0.5);
+    color: var(--color-cyan);
+    box-shadow: 0 0 10px rgba(0, 212, 255, 0.15);
+  }
+
+  .bracket-open,
+  .bracket-close {
+    color: var(--color-cyan);
+    opacity: 0.5;
+    font-weight: 300;
+    font-size: 0.85em;
+    transition: opacity 0.25s ease;
+  }
+
+  .bracket-tag:hover .bracket-open,
+  .bracket-tag:hover .bracket-close {
+    opacity: 1;
   }
 </style>
