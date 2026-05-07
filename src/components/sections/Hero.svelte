@@ -81,7 +81,7 @@
         return;
       }
 
-      const jitter = Math.random() * (TYPEWRITER_JITTER_MS * 2) - TYPEWRITER_JITTER_MS;
+      const jitter = (Math.random() - 0.5) * 2 * TYPEWRITER_JITTER_MS;
       typingTick = setTimeout(
         () => typeNext(nextIndex),
         Math.max(TYPEWRITER_MIN_DELAY_MS, TYPEWRITER_BASE_DELAY_MS + jitter)

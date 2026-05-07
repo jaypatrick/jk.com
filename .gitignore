@@ -32,7 +32,6 @@ npm-debug.log*
 
 # TypeScript
 *.tsbuildinfo
-emdash-env.d.ts
 
 # Test artifacts
 coverage/
