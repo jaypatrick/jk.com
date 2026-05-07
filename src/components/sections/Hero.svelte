@@ -181,7 +181,7 @@
     <div
       class="status-readout mb-8 mx-auto"
       style="opacity: {mounted ? 1 : 0}; transform: translateY({mounted ? 0 : -12}px); transition: all 0.6s ease 0.1s;"
-      aria-label="Status: Online, Location: Charlotte NC, Status: Available"
+      aria-label="Online. Location: Charlotte, NC. Available for consulting."
     >
       <span class="status-dot" aria-hidden="true"></span>
       <span class="status-text">ONLINE</span>
