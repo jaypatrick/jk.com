@@ -2,12 +2,15 @@
   import { introState } from '$lib/intro-store.svelte.ts';
 
   type Phase = 'off' | 'power-on' | 'static' | 'emerge' | 'clear' | 'done';
-  const POWER_ON_START_MS = 50;
-  const POWER_ON_EXPAND_MS = 70;
-  const STATIC_START_MS = 200;
-  const EMERGE_START_MS = 450;
-  const CLEAR_START_MS = 900;
-  const DONE_START_MS = 1400;
+  const POWER_ON_START_MS = 50;       // collapse to line immediately
+  const POWER_ON_EXPAND_MS = 300;     // hold line for 250ms, then expand
+  const EXPAND_TRANSITION_MS = 220;   // 160ms CSS expand transition + existing 60ms gap before static
+  const STATIC_START_MS = POWER_ON_EXPAND_MS + EXPAND_TRANSITION_MS;
+  const EMERGE_START_MS = 800;        // "THIS. IS. JK.com" emerges from static
+  const EMERGE_DURATION_MS = 500;     // duration before static fades out
+  const CLEAR_START_MS = EMERGE_START_MS + EMERGE_DURATION_MS;
+  const CLEAR_FADE_DURATION_MS = 500; // fade/overlay removal duration before completion
+  const DONE_START_MS = CLEAR_START_MS + CLEAR_FADE_DURATION_MS;
   const SWEEP_BAR_SPEED = 4;
   const SWEEP_BAR_HEIGHT = 40;
   const STATIC_RESOLUTION_SCALE = 2;

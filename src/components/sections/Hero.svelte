@@ -15,8 +15,8 @@
   let displayedText = $state('');
   let cursorVisible = $state(false);
   let cursorBlinking = $state(false);
-  let typingDone = $state(false);
-  let typewriterStarted = $state(false);
+  let typingDone = false; // plain non-reactive internal flag — do not make the typewriter $effect depend on completion
+  let typewriterStarted = false; // plain non-reactive guard — must NOT be $state
   let prefersReducedMotion = $state(false);
 
   $effect(() => {
@@ -349,7 +349,7 @@
   }
 
   .crt-cursor.blink {
-    animation: cursor-blink 0.7s step-end infinite;
+    animation: cursor-blink 1.1s step-end infinite;
   }
 
   .crt-cursor.hidden {
