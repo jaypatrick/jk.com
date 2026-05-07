@@ -23,6 +23,7 @@
   function notifyDone() {
     if (introState.done) return;
     introState.done = true;
+    document.documentElement.removeAttribute('data-phosphor-intro');
     document.dispatchEvent(new CustomEvent('tv-intro-done'));
   }
 

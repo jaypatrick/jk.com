@@ -95,6 +95,16 @@ body {
   overflow-x: hidden;
 }
 
+/* Phosphor — hide page content during TV intro to prevent grid flash */
+html[data-phosphor-intro="active"] body {
+  background: #000 !important;
+  background-image: none !important;
+}
+
+html[data-phosphor-intro="active"] .grid-overlay {
+  background-image: none !important;
+}
+
 /* ============================================================
    TYPOGRAPHY
    ============================================================ */
