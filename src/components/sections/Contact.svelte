@@ -25,6 +25,8 @@
   let messageField = $state<HTMLTextAreaElement | null>(null);
   let calendlyModalOpen = $state(false);
   let modalRevealed = $state(false);
+  // Must match the CSS transition duration on .calendly-modal-panel
+  const MODAL_CLOSE_TRANSITION_MS = 300;
   const calendlyEmbedUrl = 'https://calendly.com/jaysonknight?background_color=0d1117&text_color=e2e8f0&primary_color=00d4ff&hide_gdpr_banner=1';
   const quickStartItems = [
     {
@@ -115,7 +117,7 @@
 
   function closeCalendlyModal() {
     modalRevealed = false;
-    setTimeout(() => { calendlyModalOpen = false; }, 300);
+    setTimeout(() => { calendlyModalOpen = false; }, MODAL_CLOSE_TRANSITION_MS);
   }
 
   $effect(() => {
