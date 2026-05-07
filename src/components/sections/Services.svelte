@@ -3,6 +3,7 @@
   // Svelte 5 + TailwindCSS v4
   import { tick } from 'svelte';
   import { openCalendlyPopup } from '$lib/calendly.ts';
+  import BootLabel from '../ui/BootLabel.svelte';
 
   type Service = {
     icon: string;
@@ -189,7 +190,7 @@
   <div class="section-container">
 
     <!-- Section label -->
-    <div class="section-label animate-on-scroll">SERVICES</div>
+    <BootLabel label="SERVICES" class="animate-on-scroll" />
 
     <!-- Section heading -->
     <div class="mb-12 animate-on-scroll">

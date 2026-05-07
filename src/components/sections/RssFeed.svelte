@@ -1,5 +1,6 @@
 <script lang="ts">
   import { fade } from 'svelte/transition';
+  import BootLabel from '../ui/BootLabel.svelte';
 
   type FeedItem = {
     title: string;
@@ -76,7 +77,7 @@
 
 <section id="blog-feed" class="section-pad" aria-labelledby="blog-feed-heading" style="background: var(--color-surface);">
   <div class="section-container">
-    <div class="section-label animate-on-scroll">WHAT I THINK</div>
+    <BootLabel label="WHAT I THINK" class="animate-on-scroll" />
     <div class="mb-10 animate-on-scroll flex items-end justify-between gap-4 flex-wrap">
       <h2 id="blog-feed-heading" class="text-4xl font-bold mb-0 lg:text-5xl" style="font-family: var(--font-heading);">
         Latest <span class="gradient-text">Thoughts</span>

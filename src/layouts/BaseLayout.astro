@@ -4,6 +4,7 @@
 import '../styles/global.css';
 import Header from '../components/layout/Header.svelte';
 import Footer from '../components/layout/Footer.svelte';
+import TVIntro from '../components/TVIntro.svelte';
 import { buildSeoMetadata } from '../lib/seo';
 
 interface Props {
@@ -29,6 +30,7 @@ const seo = buildSeoMetadata({
   ogImage: ogImageProp,
 });
 const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
+const shouldRenderTvIntro = Astro.url.pathname === '/';
 ---
 
 <!doctype html>
@@ -131,6 +133,8 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
   </head>
 
   <body class="grid-overlay">
+    {shouldRenderTvIntro && <TVIntro client:load />}
+
     <!-- Subtle scan-line overlay (CSS only) -->
     <div
       class="pointer-events-none fixed inset-0 z-50 opacity-[0.015]"

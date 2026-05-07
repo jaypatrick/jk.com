@@ -1,0 +1,123 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+---
+
+<BaseLayout title="404 — SIGNAL LOST | JK.com" noIndex={true}>
+  <section class="min-h-screen flex items-center justify-center px-6" style="background: var(--color-bg);">
+    <div class="relative w-full max-w-3xl">
+      <div class="absolute inset-0 pointer-events-none" aria-hidden="true">
+        <svg class="absolute top-0 left-0 w-10 h-10 opacity-40" viewBox="0 0 48 48" fill="none">
+          <path d="M 0 24 L 0 0 L 24 0" stroke="var(--color-cyan)" stroke-width="1.5"></path>
+        </svg>
+        <svg class="absolute top-0 right-0 w-10 h-10 opacity-40" viewBox="0 0 48 48" fill="none">
+          <path d="M 24 0 L 48 0 L 48 24" stroke="var(--color-cyan)" stroke-width="1.5"></path>
+        </svg>
+        <svg class="absolute bottom-0 left-0 w-10 h-10 opacity-40" viewBox="0 0 48 48" fill="none">
+          <path d="M 0 24 L 0 48 L 24 48" stroke="var(--color-cyan)" stroke-width="1.5"></path>
+        </svg>
+        <svg class="absolute bottom-0 right-0 w-10 h-10 opacity-40" viewBox="0 0 48 48" fill="none">
+          <path d="M 24 48 L 48 48 L 48 24" stroke="var(--color-cyan)" stroke-width="1.5"></path>
+        </svg>
+      </div>
+
+      <div class="rounded-2xl p-8 md:p-12 text-center relative z-10" style="background: rgba(17, 24, 39, 0.65); border: 1px solid var(--color-border);">
+        <div class="signal-noise mx-auto mb-8" aria-hidden="true"></div>
+
+        <h1
+          class="glitch-text text-glow text-5xl md:text-6xl font-black mb-3"
+          data-text="ERROR_404"
+          style="font-family: var(--font-mono); color: var(--color-cyan);"
+        >
+          ERROR_404
+        </h1>
+
+        <p
+          class="text-xs md:text-sm uppercase tracking-[0.22em] mb-6"
+          style="font-family: var(--font-mono); color: var(--color-text-ghost);"
+        >
+          SIGNAL_LOST // RESOURCE_NOT_FOUND
+        </p>
+
+        <div class="mx-auto mb-6 h-px w-48" style="background: rgba(0, 212, 255, 0.4);" aria-hidden="true"></div>
+
+        <p class="mb-8" style="color: var(--color-text-dim);">
+          The coordinates you entered don&apos;t exist in this sector.
+        </p>
+
+        <div class="flex flex-wrap justify-center gap-3">
+          <a href="/" class="btn btn-outline">[ RETURN_HOME ]</a>
+          <a href="/#contact" class="btn btn-primary">[ CONTACT ]</a>
+        </div>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .signal-noise {
+    width: 200px;
+    height: 120px;
+    border-radius: 10px;
+    border: 1px solid rgba(0, 212, 255, 0.28);
+    box-shadow: inset 0 0 25px rgba(0, 0, 0, 0.65), 0 0 24px rgba(0, 212, 255, 0.12);
+    background:
+      repeating-linear-gradient(
+        0deg,
+        rgba(0, 212, 255, 0.08) 0px,
+        rgba(0, 212, 255, 0.08) 1px,
+        transparent 1px,
+        transparent 3px
+      ),
+      radial-gradient(circle at 30% 30%, rgba(255, 255, 255, 0.15), transparent 55%),
+      url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='120' height='80' viewBox='0 0 120 80'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='1.15' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='120' height='80' filter='url(%23n)' opacity='0.7'/%3E%3C/svg%3E");
+    background-size: auto, auto, 120px 80px;
+    animation: noise-shift 0.16s steps(2) infinite;
+  }
+
+  .glitch-text {
+    position: relative;
+    display: inline-block;
+  }
+
+  .glitch-text::before,
+  .glitch-text::after {
+    content: attr(data-text);
+    position: absolute;
+    left: 0;
+    right: 0;
+    top: 0;
+    pointer-events: none;
+  }
+
+  .glitch-text::before {
+    color: var(--color-cyan);
+    opacity: 0.55;
+    animation: glitch-1 8s steps(1) infinite;
+  }
+
+  .glitch-text::after {
+    color: var(--color-pink);
+    opacity: 0.35;
+    animation: glitch-2 8s steps(1) infinite;
+  }
+
+  @keyframes noise-shift {
+    0% {
+      background-position: 0 0, 0 0, 0 0;
+    }
+    50% {
+      background-position: 0 0, 0 0, -12px 8px;
+    }
+    100% {
+      background-position: 0 0, 0 0, 10px -6px;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .signal-noise,
+    .glitch-text::before,
+    .glitch-text::after {
+      animation: none;
+    }
+  }
+</style>

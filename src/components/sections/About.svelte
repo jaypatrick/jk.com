@@ -1,6 +1,7 @@
 <script lang="ts">
   // About.svelte — "WHO I AM" section
   // Svelte 5, TailwindCSS v4
+  import BootLabel from '../ui/BootLabel.svelte';
 
   const expertise = [
     { label: 'AI Architecture & Agentic Systems', detail: 'Designing end-to-end agentic workflows: multi-agent orchestration, tool-use pipelines, Agentic Development Environments (ADEs), and production-grade AI systems — including Bloqr, an AI-native publishing platform built from the ground up.' },
@@ -34,7 +35,7 @@
   <div class="section-container">
 
     <!-- Section label -->
-    <div class="section-label animate-on-scroll">WHO I AM</div>
+    <BootLabel label="WHO I AM" class="animate-on-scroll" />
 
     <!-- Two-column layout -->
     <div class="grid grid-cols-1 gap-16 lg:grid-cols-2 lg:gap-24 items-start">
