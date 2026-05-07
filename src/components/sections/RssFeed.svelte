@@ -117,7 +117,7 @@
         <div class="grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-3">
           {#each formattedItems as item, i}
             <article
-              class="feed-card iridescent rounded-xl p-6 flex flex-col"
+              class="feed-card glow-border iridescent rounded-xl p-6 flex flex-col"
               in:fade={{ duration: 400, delay: i * 80 }}
             >
               <!-- Top accent bar -->
@@ -166,23 +166,11 @@
   .feed-card {
     position: relative;
     background: var(--color-card, #111827);
-    border: 1px solid rgba(0, 212, 255, 0.18);
-    box-shadow:
-      inset 0 0 0 1px rgba(0, 212, 255, 0.06),
-      0 0 12px rgba(0, 212, 255, 0.06);
     overflow: hidden;
-    transition:
-      border-color 0.25s ease,
-      box-shadow 0.25s ease,
-      transform 0.2s ease;
+    transition: transform 0.2s ease;
   }
 
   .feed-card:hover {
-    border-color: rgba(0, 212, 255, 0.55);
-    box-shadow:
-      inset 0 0 0 1px rgba(0, 212, 255, 0.12),
-      0 0 28px rgba(0, 212, 255, 0.18),
-      0 0 60px rgba(0, 212, 255, 0.06);
     transform: translateY(-3px);
   }
 
