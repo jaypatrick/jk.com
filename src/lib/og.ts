@@ -204,7 +204,7 @@ const createOgTree = ({
                     },
                   },
                   {
-                    // Phosphor tagline: IMAGINATION | UNLEASHED
+                    // Phosphor tagline: Unbounded Imagination
                     type: 'div',
                     props: {
                       style: {
@@ -214,7 +214,7 @@ const createOgTree = ({
                         textTransform: 'uppercase',
                         fontFamily: '"Space Grotesk"',
                       },
-                      children: 'IMAGINATION, UNLEASHED',
+                      children: 'Unbounded Imagination',
                     },
                   },
                 ],
