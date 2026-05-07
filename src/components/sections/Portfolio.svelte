@@ -1,6 +1,7 @@
 <script lang="ts">
   // Portfolio.svelte — "CLIENTS I ADORE" + featured work
   // Svelte 5 + TailwindCSS v4
+  import BootLabel from '../ui/BootLabel.svelte';
 
   // These are placeholder case studies — swap with actual client work
   const caseStudies = [
@@ -60,7 +61,7 @@
   <div class="section-container">
 
     <!-- Section label -->
-    <div class="section-label animate-on-scroll">PORTFOLIO</div>
+    <BootLabel label="PORTFOLIO" class="animate-on-scroll" />
 
     <!-- Section heading -->
     <div class="mb-12 animate-on-scroll">
@@ -77,8 +78,8 @@
     <div class="grid grid-cols-1 gap-6 lg:grid-cols-2 mb-20">
       {#each caseStudies as study, i}
         <article
-          class="glow-border iridescent rounded-xl p-7 flex flex-col gap-4 animate-on-scroll"
-          style="background: var(--color-card); transition-delay: {i * 0.1}s;"
+          class="portfolio-card glow-border iridescent rounded-xl p-7 flex flex-col gap-4 animate-on-scroll"
+          style="background: var(--color-card); transition-delay: {i * 0.1}s; --signal-lock-delay: {0.3 + (i * 0.1)}s;"
           aria-label={study.title}
         >
           <!-- Label / stat row -->
@@ -132,7 +133,7 @@
 
     <!-- Clients I Adore -->
     <div class="animate-on-scroll">
-      <div class="section-label mb-8" style="color: var(--color-cyan);">CLIENTS I ADORE</div>
+      <BootLabel label="CLIENTS I ADORE" class="mb-8" />
       <div class="clients-marquee" aria-label="Marquee of past clients">
         <div class="clients-track">
           {#each clients as client}
@@ -191,6 +192,55 @@
     border-color: rgba(0, 212, 255, 0.55);
     filter: brightness(1.08);
     box-shadow: 0 0 14px rgba(0, 212, 255, 0.2);
+  }
+
+  .portfolio-card {
+    position: relative;
+    overflow: hidden;
+  }
+
+  .portfolio-card::before {
+    content: '';
+    position: absolute;
+    left: 0;
+    right: 0;
+    height: 60px;
+    background: linear-gradient(
+      to bottom,
+      transparent 0%,
+      rgba(0, 212, 255, 0.12) 40%,
+      rgba(0, 212, 255, 0.25) 50%,
+      rgba(0, 212, 255, 0.12) 60%,
+      transparent 100%
+    );
+    transform: translateY(-200%);
+    pointer-events: none;
+    z-index: 2;
+    opacity: 0;
+  }
+
+  .portfolio-card.visible::before {
+    animation: signal-lock-sweep 350ms ease-out forwards;
+    animation-delay: var(--signal-lock-delay, 0.3s);
+  }
+
+  @keyframes signal-lock-sweep {
+    0% {
+      transform: translateY(-100%);
+      opacity: 1;
+    }
+
+    100% {
+      transform: translateY(400%);
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .portfolio-card.visible::before {
+      animation: none;
+      opacity: 0;
+    }
   }
 
   @keyframes marquee-left {

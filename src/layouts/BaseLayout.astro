@@ -30,6 +30,7 @@ const seo = buildSeoMetadata({
   ogImage: ogImageProp,
 });
 const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
+const shouldRenderTvIntro = Astro.url.pathname === '/';
 ---
 
 <!doctype html>
@@ -132,8 +133,7 @@ const cfAnalyticsToken = import.meta.env.CLOUDFLARE_ANALYTICS_TOKEN;
   </head>
 
   <body class="grid-overlay">
-    <!-- TV power-on intro — fixed overlay, self-removes after sequence -->
-    <TVIntro client:load />
+    {shouldRenderTvIntro && <TVIntro client:load />}
 
     <!-- Subtle scan-line overlay (CSS only) -->
     <div

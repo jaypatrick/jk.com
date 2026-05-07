@@ -2,6 +2,7 @@
   import ShimmerToggle from '../ui/ShimmerToggle.svelte';
 
   const year = new Date().getFullYear();
+  const buildDate = String(import.meta.env.PUBLIC_BUILD_DATE ?? '').replace(/-/g, '.');
 
   const links = [
     { href: '#about', label: 'About' },
@@ -123,4 +124,64 @@
       </div>
     </div>
   </div>
+
+  <div class="sys-status" aria-label="System status">
+    <span class="sys-dot" aria-hidden="true"></span>
+    SYS: ONLINE
+    <span class="sys-sep" aria-hidden="true">//</span>
+    BUILD: {buildDate}
+    <span class="sys-sep" aria-hidden="true">//</span>
+    NODE: CLT-01
+    <span class="sys-sep" aria-hidden="true">//</span>
+    STACK: ASTRO·SVELTE·CLOUDFLARE
+  </div>
 </footer>
+
+<style>
+  .sys-status {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    flex-wrap: wrap;
+    justify-content: center;
+    padding: 0.6rem 0 0.2rem;
+    font-family: var(--font-mono);
+    font-size: 0.6rem;
+    letter-spacing: 0.12em;
+    color: var(--color-text-ghost);
+    opacity: 0.5;
+    text-transform: uppercase;
+  }
+
+  .sys-dot {
+    width: 5px;
+    height: 5px;
+    border-radius: 50%;
+    background: var(--color-cyan);
+    box-shadow: 0 0 4px var(--color-cyan);
+    animation: sys-pulse 2s ease-in-out infinite;
+    flex-shrink: 0;
+  }
+
+  .sys-sep {
+    opacity: 0.35;
+  }
+
+  @keyframes sys-pulse {
+    0%,
+    100% {
+      opacity: 1;
+      box-shadow: 0 0 4px var(--color-cyan);
+    }
+    50% {
+      opacity: 0.4;
+      box-shadow: none;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .sys-dot {
+      animation: none;
+    }
+  }
+</style>

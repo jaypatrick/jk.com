@@ -14,5 +14,9 @@ describe('Contact section content', () => {
     expect(contactSectionSource).toContain('Technical Hardening Pass');
     expect(contactSectionSource).toContain('applyQuickStart');
     expect(contactSectionSource).toMatch(/aria-invalid\s*=\s*\{[^}]*fieldErrors\.email[^}]*\}/);
+    expect(contactSectionSource).toContain('class="terminal-field"');
+    expect(contactSectionSource).toContain('[ TRANSMIT ]');
+    expect(contactSectionSource).toContain('TRANSMISSION_RECEIVED');
+    expect(contactSectionSource).toContain('ERR // {errorMessage}');
   });
 });

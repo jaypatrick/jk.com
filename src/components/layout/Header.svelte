@@ -133,7 +133,7 @@
           style="color: {isActiveLink(href) ? 'var(--color-text)' : 'var(--color-text-dim)'}; text-decoration: none; font-family: var(--font-heading);"
           aria-current={isActiveLink(href) ? 'page' : undefined}
         >
-          {label}
+          {label}{#if isActiveLink(href)}<span class="nav-cursor" aria-hidden="true">_</span>{/if}
           <span
             class="absolute -bottom-1 left-0 h-px transition-all duration-300"
             style="
@@ -223,3 +223,30 @@
 
 <!-- Header spacer — prevents content from hiding behind fixed header -->
 <div style="height: var(--header-height);" aria-hidden="true"></div>
+
+<style>
+  .nav-cursor {
+    display: inline-block;
+    color: var(--color-cyan);
+    font-family: var(--font-mono);
+    animation: nav-cursor-blink 1s step-end infinite;
+    margin-left: 1px;
+  }
+
+  @keyframes nav-cursor-blink {
+    0%,
+    100% {
+      opacity: 1;
+    }
+    50% {
+      opacity: 0;
+    }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .nav-cursor {
+      animation: none;
+      opacity: 1;
+    }
+  }
+</style>

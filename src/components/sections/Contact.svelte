@@ -4,6 +4,7 @@
 
   import { openCalendlyPopup } from '$lib/calendly.ts';
   import { contactSchema, type ContactFormData } from '../../lib/schemas';
+  import BootLabel from '../ui/BootLabel.svelte';
 
   type FormState = 'idle' | 'submitting' | 'success' | 'error';
 
@@ -137,7 +138,7 @@
   <div class="section-container">
 
     <!-- Section label -->
-    <div class="section-label animate-on-scroll">CONTACT</div>
+    <BootLabel label="CONTACT" class="animate-on-scroll" />
 
     <div class="grid grid-cols-1 gap-10 lg:grid-cols-2 items-start">
 
@@ -245,8 +246,8 @@
             style="background: rgba(0,212,255,0.05); border: 1px solid rgba(0,212,255,0.3);"
           >
             <div class="text-5xl mb-4">✅</div>
-            <h3 class="text-xl font-bold mb-2" style="font-family: var(--font-heading);">Message Received</h3>
-            <p style="color: var(--color-text-dim);">I'll be in touch soon. Thanks for reaching out.</p>
+            <h3 class="text-xl font-bold mb-2" style="font-family: var(--font-heading);">TRANSMISSION_RECEIVED</h3>
+            <p style="color: var(--color-text-dim);">Signal confirmed. Standing by for response.</p>
             <button
               class="btn btn-outline mt-6"
               onclick={() => { state = 'idle'; }}
@@ -285,19 +286,19 @@
                 <label for="contact-name" class="block text-xs font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-dim);">
                   Name <span style="color: var(--color-red);">*</span>
                 </label>
-                <input
-                  id="contact-name"
-                  type="text"
-                  bind:value={form.name}
-                  required
-                  autocomplete="name"
-                  aria-invalid={fieldErrors.name ? 'true' : 'false'}
-                  placeholder="Jane Smith"
-                  class="w-full rounded-lg px-4 py-3 text-sm transition-all"
-                  style="background: var(--color-surface); border: 1px solid {fieldErrors.name ? 'var(--color-red)' : 'var(--color-border)'}; color: var(--color-text); outline: none;"
-                  onfocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = 'var(--color-cyan)'; }}
-                  onblur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = fieldErrors.name ? 'var(--color-red)' : 'var(--color-border)'; }}
-                />
+                <div class="terminal-field" class:terminal-field-error={Boolean(fieldErrors.name)}>
+                  <span class="terminal-prompt" aria-hidden="true">&gt;</span>
+                  <input
+                    id="contact-name"
+                    type="text"
+                    bind:value={form.name}
+                    required
+                    autocomplete="name"
+                    aria-invalid={fieldErrors.name ? 'true' : 'false'}
+                    placeholder="Jane Smith"
+                    class="terminal-input"
+                  />
+                </div>
                 {#if fieldErrors.name}
                   <p role="alert" class="mt-1 text-xs" style="color: var(--color-red);">{fieldErrors.name}</p>
                 {/if}
@@ -308,17 +309,17 @@
                 <label for="contact-company" class="block text-xs font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-dim);">
                   Company
                 </label>
-                <input
-                  id="contact-company"
-                  type="text"
-                  bind:value={form.company}
-                  autocomplete="organization"
-                  placeholder="Acme Corp (optional)"
-                  class="w-full rounded-lg px-4 py-3 text-sm transition-all"
-                  style="background: var(--color-surface); border: 1px solid var(--color-border); color: var(--color-text); outline: none;"
-                  onfocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = 'var(--color-cyan)'; }}
-                  onblur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = 'var(--color-border)'; }}
-                />
+                <div class="terminal-field">
+                  <span class="terminal-prompt" aria-hidden="true">&gt;</span>
+                  <input
+                    id="contact-company"
+                    type="text"
+                    bind:value={form.company}
+                    autocomplete="organization"
+                    placeholder="Acme Corp (optional)"
+                    class="terminal-input"
+                  />
+                </div>
               </div>
             </div>
 
@@ -327,6 +328,8 @@
               <label for="contact-email" class="block text-xs font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-dim);">
                 Email <span style="color: var(--color-red);">*</span>
               </label>
+              <div class="terminal-field" class:terminal-field-error={Boolean(fieldErrors.email)}>
+                <span class="terminal-prompt" aria-hidden="true">&gt;</span>
                 <input
                   id="contact-email"
                   type="email"
@@ -336,11 +339,9 @@
                   inputmode="email"
                   aria-invalid={fieldErrors.email ? 'true' : 'false'}
                   placeholder="jane@company.com"
-                class="w-full rounded-lg px-4 py-3 text-sm transition-all"
-                style="background: var(--color-surface); border: 1px solid {fieldErrors.email ? 'var(--color-red)' : 'var(--color-border)'}; color: var(--color-text); outline: none;"
-                onfocus={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = 'var(--color-cyan)'; }}
-                onblur={(e) => { (e.currentTarget as HTMLInputElement).style.borderColor = fieldErrors.email ? 'var(--color-red)' : 'var(--color-border)'; }}
-              />
+                  class="terminal-input"
+                />
+              </div>
               {#if fieldErrors.email}
                 <p role="alert" class="mt-1 text-xs" style="color: var(--color-red);">{fieldErrors.email}</p>
               {/if}
@@ -351,19 +352,19 @@
               <label for="contact-message" class="block text-xs font-mono uppercase tracking-widest mb-2" style="color: var(--color-text-dim);">
                 Message <span style="color: var(--color-red);">*</span>
               </label>
-              <textarea
-                id="contact-message"
-                bind:this={messageField}
-                bind:value={form.message}
-                required
-                rows={5}
-                aria-invalid={fieldErrors.message ? 'true' : 'false'}
-                placeholder="Tell me about your consulting or architecture design needs, timeline, and budget..."
-                class="w-full rounded-lg px-4 py-3 text-sm resize-vertical transition-all"
-                style="background: var(--color-surface); border: 1px solid {fieldErrors.message ? 'var(--color-red)' : 'var(--color-border)'}; color: var(--color-text); outline: none; min-height: 120px;"
-                onfocus={(e) => { (e.currentTarget as HTMLTextAreaElement).style.borderColor = 'var(--color-cyan)'; }}
-                onblur={(e) => { (e.currentTarget as HTMLTextAreaElement).style.borderColor = fieldErrors.message ? 'var(--color-red)' : 'var(--color-border)'; }}
-              ></textarea>
+              <div class="terminal-field terminal-field-multiline" class:terminal-field-error={Boolean(fieldErrors.message)}>
+                <span class="terminal-prompt terminal-prompt-multiline" aria-hidden="true">&gt;</span>
+                <textarea
+                  id="contact-message"
+                  bind:this={messageField}
+                  bind:value={form.message}
+                  required
+                  rows={5}
+                  aria-invalid={fieldErrors.message ? 'true' : 'false'}
+                  placeholder="Tell me about your consulting or architecture design needs, timeline, and budget..."
+                  class="terminal-input terminal-input-textarea"
+                ></textarea>
+              </div>
               {#if fieldErrors.message}
                 <p role="alert" class="mt-1 text-xs" style="color: var(--color-red);">{fieldErrors.message}</p>
               {/if}
@@ -376,7 +377,7 @@
                 class="rounded-lg p-3 text-sm"
                 style="background: rgba(255,45,85,0.08); border: 1px solid rgba(255,45,85,0.3); color: var(--color-red);"
               >
-                {errorMessage}
+                ERR // {errorMessage}
               </div>
             {/if}
 
@@ -389,9 +390,9 @@
               aria-busy={state === 'submitting'}
             >
               {#if state === 'submitting'}
-                <span class="animate-spin">⟳</span> Sending...
+                <span class="animate-spin">⟳</span> TRANSMITTING...
               {:else}
-                Send Message →
+                [ TRANSMIT ]
               {/if}
             </button>
           </form>
@@ -401,7 +402,7 @@
 
     {#if isCalendlyReady}
       <div class="mt-10 animate-on-scroll visible">
-        <div class="section-label mb-6" style="color: var(--color-cyan);">BOOK DIRECTLY</div>
+        <BootLabel label="BOOK DIRECTLY" class="mb-6" />
         <div
           bind:this={calendlyInlineContainer}
           class="calendly-inline-widget iridescent rounded-xl"
@@ -414,6 +415,66 @@
 </section>
 
 <style>
+  .terminal-field {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: var(--color-surface);
+    border: 1px solid var(--color-border);
+    border-radius: 6px;
+    padding: 0 0.75rem;
+    transition: border-color 0.2s ease, box-shadow 0.2s ease;
+  }
+
+  .terminal-field:focus-within {
+    border-color: var(--color-cyan);
+    box-shadow: 0 0 0 1px var(--color-cyan), 0 0 8px rgba(0, 212, 255, 0.2);
+  }
+
+  .terminal-field-error {
+    border-color: var(--color-red);
+  }
+
+  .terminal-prompt {
+    color: var(--color-cyan);
+    font-family: var(--font-mono);
+    font-size: 0.85rem;
+    user-select: none;
+    flex-shrink: 0;
+    opacity: 0.7;
+  }
+
+  .terminal-input {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--color-text);
+    font-family: var(--font-mono);
+    font-size: 0.875rem;
+    padding: 0.75rem 0;
+    width: 100%;
+  }
+
+  .terminal-input::placeholder {
+    color: var(--color-text-ghost);
+    opacity: 0.6;
+  }
+
+  .terminal-field-multiline {
+    align-items: flex-start;
+    padding-top: 0.75rem;
+  }
+
+  .terminal-prompt-multiline {
+    margin-top: 0.05rem;
+  }
+
+  .terminal-input-textarea {
+    resize: vertical;
+    min-height: 120px;
+  }
+
   .submit-cta:hover:not(:disabled) {
     background: linear-gradient(135deg, var(--color-purple, #7b2ff7) 0%, var(--color-pink, #f72585) 100%);
     box-shadow: var(--glow-pink, 0 0 20px rgba(247, 37, 133, 0.4));
