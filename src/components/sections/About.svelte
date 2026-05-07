@@ -1,6 +1,6 @@
 <script lang="ts">
   // About.svelte — "WHO I AM" section
-  // Svelte 5, TailwindCSS v4
+  // Phosphor: BootLabel init sequence on section label
 
   const expertise = [
     { label: 'AI Architecture & Agentic Systems', detail: 'Designing end-to-end agentic workflows: multi-agent orchestration, tool-use pipelines, Agentic Development Environments (ADEs), and production-grade AI systems — including Bloqr, an AI-native publishing platform built from the ground up.' },

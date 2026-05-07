@@ -1,4 +1,6 @@
 <script lang="ts">
+  // Footer.svelte — site footer
+  // Phosphor: SYS: ONLINE status readout bar, built-with terminal block
   import ShimmerToggle from '../ui/ShimmerToggle.svelte';
 
   const year = new Date().getFullYear();
@@ -107,6 +109,7 @@
       </div>
     </div>
 
+    <!-- Phosphor — system status readout bar -->
     <!-- Bottom bar -->
     <div
       class="flex flex-col items-center justify-between gap-4 pt-8 text-xs sm:flex-row"

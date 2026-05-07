@@ -1,5 +1,6 @@
 <script lang="ts">
   // Header.svelte — site navigation
+  // Phosphor: active nav item gets blinking _ cursor in mono cyan
   // Svelte 5 runes: $state, $effect
   import { openCalendlyPopup } from '$lib/calendly.ts';
 

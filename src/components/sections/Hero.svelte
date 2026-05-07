@@ -1,5 +1,6 @@
 <script lang="ts">
-  // Hero.svelte — "THIS. IS. JK.com" — full-screen hero with cyberpunk glitch
+  // Hero.svelte — "THIS. IS. JK.com" — full-screen hero
+  // Phosphor: glitch text, typewriter cursor, phosphor CRT glow on subtitle
   // Svelte 5 runes API
   import { openCalendlyPopup } from '$lib/calendly.ts';
 
@@ -109,7 +110,7 @@
       </div>
     </div>
 
-    <!-- Subtitle -->
+    <!-- Phosphor — typewriter + phosphor glow subtitle -->
     <p
       class="mt-6 text-xl font-light tracking-[0.3em] uppercase"
       style="
@@ -174,7 +175,7 @@
 </section>
 
 <style>
-  /* Glitch effect on main heading */
+  /* Phosphor — glitch layers for main heading */
   .glitch-text::before,
   .glitch-text::after {
     content: attr(data-text);
