@@ -14,7 +14,7 @@
   let displayedText = $state('');
   let cursorVisible = $state(false);
   let cursorBlinking = $state(false);
-  let typingDone = $state(false);
+  let typingDone = false; // plain non-reactive internal flag — do not make the typewriter $effect depend on completion
   let typewriterStarted = false; // plain non-reactive guard — must NOT be $state
   let prefersReducedMotion = $state(false);
 
