@@ -72,7 +72,6 @@
     const finalizeImmediately = () => {
       phase = 'done';
       document.body.style.overflow = originalOverflow;
-      document.documentElement.removeAttribute('data-phosphor-intro');
       notifyDone();
     };
 

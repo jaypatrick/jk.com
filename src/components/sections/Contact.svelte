@@ -2,6 +2,7 @@
   // Contact.svelte — "TALK TO ME" section
   // Phosphor: terminal-style typography, monospace labels, iridescent contact panels
 
+  import { onDestroy } from 'svelte';
   import { openCalendlyPopup } from '$lib/calendly.ts';
   import { contactSchema, type ContactFormData } from '../../lib/schemas';
   import BootLabel from '../ui/BootLabel.svelte';
@@ -25,6 +26,10 @@
   let messageField = $state<HTMLTextAreaElement | null>(null);
   let calendlyModalOpen = $state(false);
   let modalRevealed = $state(false);
+  let closeTimeout: ReturnType<typeof setTimeout> | undefined;
+  let revealTimeout: ReturnType<typeof setTimeout> | undefined;
+  let modalCloseBtn = $state<HTMLButtonElement | null>(null);
+  let scheduleBtn = $state<HTMLButtonElement | null>(null);
   // Must match the CSS transition duration on .calendly-modal-panel
   const MODAL_CLOSE_TRANSITION_MS = 300;
   const calendlyEmbedUrl = 'https://calendly.com/jaysonknight?background_color=0d1117&text_color=e2e8f0&primary_color=00d4ff&hide_gdpr_banner=1';
@@ -115,18 +120,37 @@
     return () => window.clearInterval(interval);
   });
 
-  function closeCalendlyModal() {
+  function scheduleReveal() {
+    if (revealTimeout !== undefined) clearTimeout(revealTimeout);
     modalRevealed = false;
-    setTimeout(() => { calendlyModalOpen = false; }, MODAL_CLOSE_TRANSITION_MS);
+    revealTimeout = setTimeout(() => {
+      modalRevealed = true;
+      revealTimeout = undefined;
+    }, 50);
   }
 
-  $effect(() => {
-    if (!calendlyModalOpen) return;
+  function openCalendlyModal() {
+    if (closeTimeout !== undefined) {
+      clearTimeout(closeTimeout);
+      closeTimeout = undefined;
+    }
+    calendlyModalOpen = true;
+    scheduleReveal();
+  }
 
-    const t = setTimeout(() => { modalRevealed = true; }, 50);
-
-    return () => clearTimeout(t);
-  });
+  function closeCalendlyModal() {
+    if (revealTimeout !== undefined) {
+      clearTimeout(revealTimeout);
+      revealTimeout = undefined;
+    }
+    modalRevealed = false;
+    if (closeTimeout !== undefined) clearTimeout(closeTimeout);
+    closeTimeout = setTimeout(() => {
+      calendlyModalOpen = false;
+      closeTimeout = undefined;
+      scheduleBtn?.focus();
+    }, MODAL_CLOSE_TRANSITION_MS);
+  }
 
   $effect(() => {
     if (!calendlyModalOpen || !isCalendlyReady || !calendlyInlineContainer) return;
@@ -146,6 +170,29 @@
       url: calendlyEmbedUrl,
       parentElement: calendlyInlineContainer,
     });
+  });
+
+  // Document-level Escape handler while modal is open; works even after focus moves into the iframe
+  $effect(() => {
+    if (!calendlyModalOpen) return;
+    function handleKeyDown(e: KeyboardEvent) {
+      if (e.key === 'Escape') closeCalendlyModal();
+    }
+    document.addEventListener('keydown', handleKeyDown);
+    return () => document.removeEventListener('keydown', handleKeyDown);
+  });
+
+  // Move focus to the close button when the modal opens so keyboard users can act immediately
+  $effect(() => {
+    if (!calendlyModalOpen) return;
+    const rafId = requestAnimationFrame(() => { modalCloseBtn?.focus(); });
+    return () => cancelAnimationFrame(rafId);
+  });
+
+  // Cancel any in-flight modal timeouts when the component is destroyed
+  onDestroy(() => {
+    if (closeTimeout !== undefined) clearTimeout(closeTimeout);
+    if (revealTimeout !== undefined) clearTimeout(revealTimeout);
   });
 </script>
 
@@ -423,7 +470,8 @@
         </p>
         <button
           class="btn btn-red iridescent"
-          onclick={() => { calendlyModalOpen = true; }}
+          bind:this={scheduleBtn}
+          onclick={openCalendlyModal}
           aria-label="Open booking calendar"
         >
           <span aria-hidden="true">📅</span>
@@ -440,7 +488,6 @@
         aria-modal="true"
         aria-label="Book a session with Jayson Knight"
         onclick={(e) => { if (e.target === e.currentTarget) closeCalendlyModal(); }}
-        onkeydown={(e) => { if (e.key === 'Escape') closeCalendlyModal(); }}
         tabindex="-1"
       >
         <div class="calendly-modal-panel" class:modal-revealed={modalRevealed}>
@@ -460,6 +507,7 @@
             </div>
             <button
               class="modal-close"
+              bind:this={modalCloseBtn}
               onclick={closeCalendlyModal}
               aria-label="Close booking modal"
             >[ CLOSE ]</button>
@@ -658,5 +706,20 @@
   @keyframes status-pulse {
     0%, 100% { opacity: 1; box-shadow: 0 0 4px var(--color-cyan); }
     50%       { opacity: 0.5; box-shadow: none; }
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .calendly-modal-backdrop {
+      animation: none;
+    }
+    .calendly-modal-panel,
+    .calendly-modal-panel.modal-revealed {
+      transition: none;
+      opacity: 1;
+      transform: scaleY(1);
+    }
+    .status-dot-small {
+      animation: none;
+    }
   }
 </style>

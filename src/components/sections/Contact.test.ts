@@ -19,4 +19,16 @@ describe('Contact section content', () => {
     expect(contactSectionSource).toContain('TRANSMISSION_RECEIVED');
     expect(contactSectionSource).toContain('ERR // {errorMessage}');
   });
+
+  it('includes the Calendly CRT modal trigger and overlay', () => {
+    expect(contactSectionSource).toContain('[ SCHEDULE_SESSION ]');
+    expect(contactSectionSource).toContain('isCalendlyReady');
+    expect(contactSectionSource).toContain('openCalendlyModal');
+    expect(contactSectionSource).toContain('closeCalendlyModal');
+    expect(contactSectionSource).toContain('calendlyModalOpen');
+    expect(contactSectionSource).toContain('calendly-modal-backdrop');
+    expect(contactSectionSource).toContain('calendly-modal-panel');
+    expect(contactSectionSource).toContain('[ CLOSE ]');
+    expect(contactSectionSource).toContain('modal-title');
+  });
 });
